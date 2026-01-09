@@ -1,5 +1,14 @@
-# Add files here to ignore them from prettier formatting
-/dist
-/coverage
-/.nx/cache
-/.nx/workspace-data
+# Ignore artifacts
+dist
+build
+coverage
+node_modules
+
+# Ignore all generated files
+*.tsbuildinfo
+.nx
+
+# Ignore config files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

@@ -1,13 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
-  "compileOnSave": false,
   "files": [],
+  "include": [],
   "references": [
     {
-      "path": "./apps/true-tech-ui-e2e"
-    },
-    {
-      "path": "./apps/true-tech-ui"
+      "path": "./libs/ui-components"
     }
   ]
 }

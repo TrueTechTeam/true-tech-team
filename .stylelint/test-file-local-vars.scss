@@ -1,0 +1,41 @@
+/**
+ * Test file to demonstrate file-local CSS variables
+ *
+ * Run: npx stylelint .stylelint/test-file-local-vars.scss
+ */
+
+.component {
+  /* Define component-specific CSS variables */
+  --button-gap: 8px;
+  --button-padding: 12px 16px;
+  --button-height: 40px;
+
+  /* ✅ Use variables defined in this file - should pass */
+  gap: var(--button-gap);
+  padding: var(--button-padding);
+  height: var(--button-height);
+
+  /* ✅ Use variables from theme - should pass */
+  color: var(--theme-primary);
+  border-radius: var(--radius-md);
+  transition: var(--transition-normal);
+
+  /* ❌ Use undefined variable - should fail */
+  margin: var(--undefined-margin);
+}
+
+.another-component {
+  /* ✅ Can use variables defined earlier in the same file */
+  gap: var(--button-gap);
+
+  /* ✅ Can define and use new local variables */
+  --component-bg: #ffffff;
+  background: var(--component-bg);
+
+  /* ✅ Local variable that references a theme variable */
+  --component-border: 1px solid var(--theme-border-primary);
+  border: var(--component-border);
+
+  /* ❌ Local variable referencing undefined variable - should fail */
+  --bad-border: 1px solid var(--nonexistent-color);
+}
