@@ -20,6 +20,9 @@
     "paths": {
       "@true-tech-team/ui-components": [
         "libs/ui-components/src/index.ts"
+      ],
+      "@landing-app/*": [
+        "libs/landing-app/src/*"
       ]
     },
     "jsx": "react-jsx",
