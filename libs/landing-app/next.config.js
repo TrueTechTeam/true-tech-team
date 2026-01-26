@@ -8,6 +8,14 @@ const path = require('path');
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  // Enable static export for Netlify deployment
+  output: 'export',
+
+  // Disable image optimization for static export (not supported)
+  images: {
+    unoptimized: true,
+  },
+
   nx: {
     svgr: false,
   },

@@ -22,7 +22,7 @@ export default function Header() {
           <a href="/#features">Features</a>
           <a href="/#team">Team</a>
           <a
-            href="http://localhost:6006"
+            href={process.env.NEXT_PUBLIC_STORYBOOK_URL || 'http://localhost:6006'}
             target="_blank"
             rel="noopener noreferrer"
           >

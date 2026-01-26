@@ -45,7 +45,11 @@
     "affected:lint": "nx affected -t lint",
     "affected:build": "nx affected -t build",
     "graph": "nx graph",
-    "reset": "nx reset"
+    "reset": "nx reset",
+    "build:netlify": "npm run build:netlify:landing && npm run build:netlify:storybook && npm run build:netlify:combine",
+    "build:netlify:landing": "nx build landing-app --configuration=production",
+    "build:netlify:storybook": "nx build-storybook ui-components",
+    "build:netlify:combine": "node scripts/combine-netlify-build.js"
   },
   "devDependencies": {
     "@babel/core": "^7.14.5",
