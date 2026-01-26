@@ -2,10 +2,10 @@
 
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
 import { Badge } from '@true-tech-team/ui-components';
 import styles from './dashboard.module.scss';
+import Footer from '../../../components/layout/Footer';
+import Header from '../../../components/layout/Header';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession({

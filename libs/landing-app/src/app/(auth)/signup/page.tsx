@@ -1,7 +1,7 @@
-import SignupForm from '../components/auth/SignupForm';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './signup.module.scss';
+import SignupForm from '../../../components/auth/SignupForm';
 
 export default function SignupPage() {
   return (
