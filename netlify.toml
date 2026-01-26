@@ -2,14 +2,11 @@
 # Using Next.js runtime for server-side features (authentication, API routes)
 
 [build]
-  # Base directory for the Next.js app in monorepo
-  base = "libs/landing-app"
+  # Build command - runs nx from the repo root
+  command = "npx nx build landing-app"
 
-  # Build command - runs from the base directory
-  command = "cd ../.. && npx nx build landing-app"
-
-  # Publish directory relative to base - Netlify's Next.js runtime handles this
-  publish = ".next"
+  # Publish directory - path to the Next.js output
+  publish = "libs/landing-app/.next"
 
 # Environment variables for the build
 [build.environment]
