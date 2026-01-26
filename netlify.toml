@@ -54,6 +54,24 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/iframe.html"
+  to = "https://truetechteamcomponents.netlify.app/iframe.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/index.json"
+  to = "https://truetechteamcomponents.netlify.app/index.json"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/logo/*"
+  to = "https://truetechteamcomponents.netlify.app/logo/:splat"
+  status = 200
+  force = true
+
 # Headers for security
 [[headers]]
   for = "/*"
