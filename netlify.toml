@@ -1,45 +1,45 @@
-# Netlify configuration for True Tech Team landing app + Storybook
+# Netlify configuration for True Tech Team landing app
+# Using Next.js runtime for server-side features (authentication, API routes)
 
 [build]
-  # Build command that builds both landing app and storybook, then combines them
-  command = "npm run build:netlify"
+  # Base directory for the Next.js app in monorepo
+  base = "libs/landing-app"
 
-  # Output directory where the combined build will be
-  publish = "dist/netlify"
+  # Build command - runs from the base directory
+  command = "cd ../.. && npx nx build landing-app"
+
+  # Publish directory relative to base - Netlify's Next.js runtime handles this
+  publish = ".next"
 
 # Environment variables for the build
 [build.environment]
-  # Node version
   NODE_VERSION = "20"
-  # Storybook URL - points to /storybook path on the same domain
-  NEXT_PUBLIC_STORYBOOK_URL = "/storybook"
 
-# Redirects and rewrites
+# Next.js plugin for Netlify
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Proxy /storybook to separate Storybook deployment
+# Replace YOUR_STORYBOOK_SITE with your actual Storybook Netlify URL (e.g., your-storybook.netlify.app)
 [[redirects]]
-  # Serve storybook at /storybook path
   from = "/storybook/*"
-  to = "/storybook/:splat"
+  to = "https://YOUR_STORYBOOK_SITE.netlify.app/:splat"
   status = 200
+  force = true
 
 [[redirects]]
-  # Handle Next.js dynamic routes - send all non-file requests to index.html
-  from = "/*"
-  to = "/index.html"
+  from = "/storybook"
+  to = "https://YOUR_STORYBOOK_SITE.netlify.app/"
   status = 200
-  conditions = {Role = ["admin", "visitor"]}
+  force = true
 
-# Headers for security and caching
+# Headers for security
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
-
-[[headers]]
-  for = "/storybook/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
   for = "/_next/static/*"
