@@ -99,12 +99,9 @@ export default function SignupForm() {
           label="Password"
           placeholder="At least 8 characters"
           value={formData.password}
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           showPasswordToggle
           required
-          minLength={8}
         />
 
         <Input
@@ -112,20 +109,12 @@ export default function SignupForm() {
           label="Confirm Password"
           placeholder="Re-enter your password"
           value={formData.confirmPassword}
-          onChange={(e) =>
-            setFormData({ ...formData, confirmPassword: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
           showPasswordToggle
           required
         />
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="md"
-          fullWidth
-          disabled={loading}
-        >
+        <Button type="submit" variant="primary" size="md" fullWidth disabled={loading}>
           {loading ? 'Creating account...' : 'Create Account'}
         </Button>
       </form>
@@ -139,3 +128,4 @@ export default function SignupForm() {
     </div>
   );
 }
+
