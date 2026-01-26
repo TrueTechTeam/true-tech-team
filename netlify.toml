@@ -20,16 +20,15 @@
   package = "@netlify/plugin-nextjs"
 
 # Proxy /storybook to separate Storybook deployment
-# Replace YOUR_STORYBOOK_SITE with your actual Storybook Netlify URL (e.g., your-storybook.netlify.app)
 [[redirects]]
   from = "/storybook/*"
-  to = "https://YOUR_STORYBOOK_SITE.netlify.app/:splat"
+  to = "https://truetechteamcomponents.netlify.app/:splat"
   status = 200
   force = true
 
 [[redirects]]
   from = "/storybook"
-  to = "https://YOUR_STORYBOOK_SITE.netlify.app/"
+  to = "https://truetechteamcomponents.netlify.app/"
   status = 200
   force = true
 
