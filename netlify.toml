@@ -72,6 +72,12 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/assets/*"
+  to = "https://truetechteamcomponents.netlify.app/assets/:splat"
+  status = 200
+  force = true
+
 # Headers for security (exclude Storybook paths which need iframes)
 [[headers]]
   for = "/*"
