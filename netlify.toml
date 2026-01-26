@@ -29,6 +29,31 @@
   status = 200
   force = true
 
+# Proxy Storybook internal paths (referenced as absolute URLs in Storybook HTML)
+[[redirects]]
+  from = "/sb-addons/*"
+  to = "https://truetechteamcomponents.netlify.app/sb-addons/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/sb-manager/*"
+  to = "https://truetechteamcomponents.netlify.app/sb-manager/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/sb-common-assets/*"
+  to = "https://truetechteamcomponents.netlify.app/sb-common-assets/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/sb-preview/*"
+  to = "https://truetechteamcomponents.netlify.app/sb-preview/:splat"
+  status = 200
+  force = true
+
 # Headers for security
 [[headers]]
   for = "/*"
