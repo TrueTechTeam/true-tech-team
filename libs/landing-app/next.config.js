@@ -16,9 +16,6 @@ const nextConfig = {
     unoptimized: true,
   },
 
-  nx: {
-    svgr: false,
-  },
   // Disable Turbopack to use webpack (required for SVG ?react imports)
   turbo: {
     rules: {
