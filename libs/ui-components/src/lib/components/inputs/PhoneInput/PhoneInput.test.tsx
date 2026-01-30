@@ -80,6 +80,7 @@ describe('PhoneInput', () => {
       expect(screen.getByText('+49')).toBeInTheDocument();
       // US dial code +1 should not be in menu items (only in trigger)
       const dialCodes = screen.getAllByText('+1');
+      console.log(dialCodes);
       // Only one +1 should exist (the one in the select trigger), not in the filtered menu
       expect(dialCodes.length).toBe(1);
     });

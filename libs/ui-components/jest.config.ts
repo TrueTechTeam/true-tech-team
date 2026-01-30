@@ -12,7 +12,6 @@ export default {
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   moduleNameMapper: {
     '\\.(css|scss)$': 'identity-obj-proxy',
-    '\\.svg\\?react$': '<rootDir>/__mocks__/svgr.tsx',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
