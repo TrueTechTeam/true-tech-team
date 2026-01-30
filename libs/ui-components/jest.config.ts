@@ -2,11 +2,7 @@ export default {
   displayName: 'ui-components',
   preset: '../../jest.preset.js',
   testEnvironment: 'jsdom',
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/.claude/',
-    '\\.template\\.',
-  ],
+  testPathIgnorePatterns: ['/node_modules/', '/.claude/', '\\.template\\.'],
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
     '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }],

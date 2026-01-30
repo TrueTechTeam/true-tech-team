@@ -36,13 +36,13 @@ function getThemeVariables(themePath) {
   try {
     const files = fs.readdirSync(themePath);
 
-    files.forEach(file => {
+    files.forEach((file) => {
       if (file.endsWith('.scss')) {
         const filePath = path.join(themePath, file);
         const content = fs.readFileSync(filePath, 'utf8');
         const variables = extractCSSVariables(content);
 
-        variables.forEach(v => allVariables.add(v));
+        variables.forEach((v) => allVariables.add(v));
       }
     });
   } catch (error) {
@@ -54,5 +54,5 @@ function getThemeVariables(themePath) {
 
 module.exports = {
   extractCSSVariables,
-  getThemeVariables
+  getThemeVariables,
 };

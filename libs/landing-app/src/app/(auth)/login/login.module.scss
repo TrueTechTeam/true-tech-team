@@ -4,7 +4,11 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-lg);
-  background: linear-gradient(135deg, var(--theme-background-primary) 0%, var(--theme-background-secondary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--theme-background-primary) 0%,
+    var(--theme-background-secondary) 100%
+  );
 }
 
 .formWrapper {
@@ -54,4 +58,3 @@
   margin-bottom: var(--spacing-xl);
   text-align: center;
 }
-

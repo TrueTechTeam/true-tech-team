@@ -84,6 +84,8 @@ export default [
             // React Hooks rules
             "react-hooks/rules-of-hooks": "error",
             "react-hooks/exhaustive-deps": "warn",
+            "react-hooks/set-state-in-effect": "off",
+            "react-hooks/refs": "off",
 
             // Accessibility rules
             "jsx-a11y/alt-text": "warn",
@@ -156,9 +158,9 @@ export default [
           "@typescript-eslint/consistent-type-definitions": ["warn", "interface"],
           "@typescript-eslint/array-type": ["warn", { default: "array-simple" }],
           "@typescript-eslint/prefer-as-const": "warn",
-          "@typescript-eslint/ban-ts-comment": ["error", {
+          "@typescript-eslint/ban-ts-comment": ["warn", {
             "ts-expect-error": "allow-with-description",
-            "ts-ignore": true,
+            "ts-ignore": "allow-with-description",
             "ts-nocheck": true,
             "ts-check": false
           }],
@@ -209,6 +211,17 @@ export default [
         rules: {
           "@typescript-eslint/no-explicit-any": "off",
           "@typescript-eslint/no-non-null-assertion": "off",
+          "no-console": "off",
+          "no-alert": "off",
+          "react/no-unescaped-entities": "off",
+          "react/no-array-index-key": "off",
+          "react-hooks/set-state-in-effect": "off",
+          "require-await": "off"
+        }
+    },
+    {
+        files: ["scripts/**/*.js"],
+        rules: {
           "no-console": "off"
         }
     }

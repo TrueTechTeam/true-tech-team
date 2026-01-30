@@ -1,6 +1,5 @@
 //@ts-check
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require('@nx/next');
 const path = require('path');
 
@@ -13,11 +12,8 @@ const nextConfig = {
 
   // SCSS configuration
   sassOptions: {
-    includePaths: [
-      path.join(__dirname, '../../libs/ui-components/src/lib/styles'),
-    ],
+    includePaths: [path.join(__dirname, '../../libs/ui-components/src/lib/styles')],
   },
-
 };
 
 const plugins = [

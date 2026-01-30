@@ -47,9 +47,7 @@ export default function LoginForm() {
           label="Email"
           placeholder="you@example.com"
           value={formData.email}
-          onChange={(e) =>
-            setFormData({ ...formData, email: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
         />
 
@@ -58,20 +56,12 @@ export default function LoginForm() {
           label="Password"
           placeholder="Enter your password"
           value={formData.password}
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           showPasswordToggle
           required
         />
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="md"
-          fullWidth
-          disabled={loading}
-        >
+        <Button type="submit" variant="primary" size="md" fullWidth disabled={loading}>
           {loading ? 'Signing in...' : 'Sign In'}
         </Button>
       </form>

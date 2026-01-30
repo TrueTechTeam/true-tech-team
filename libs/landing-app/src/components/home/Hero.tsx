@@ -13,9 +13,8 @@ export default function Hero() {
           <span className={styles.highlight}> Tech Solutions</span>
         </h1>
         <p className={styles.subtitle}>
-          A showcase of innovative projects and cutting-edge technology from the
-          True Tech Team. Explore our portfolio of modern web applications and
-          component libraries.
+          A showcase of innovative projects and cutting-edge technology from the True Tech Team.
+          Explore our portfolio of modern web applications and component libraries.
         </p>
         <div className={styles.actions}>
           <a href="#projects">

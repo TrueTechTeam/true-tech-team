@@ -90,12 +90,12 @@ npx nx build landing-app --configuration=production
 
 ## Pages
 
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page with hero, projects, features, and team sections |
-| `/login` | User login page |
-| `/signup` | User registration page |
-| `/dashboard` | Protected dashboard (requires authentication) |
+| Route        | Description                                                   |
+| ------------ | ------------------------------------------------------------- |
+| `/`          | Landing page with hero, projects, features, and team sections |
+| `/login`     | User login page                                               |
+| `/signup`    | User registration page                                        |
+| `/dashboard` | Protected dashboard (requires authentication)                 |
 
 ## Authentication
 

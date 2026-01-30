@@ -11,6 +11,7 @@ A comprehensive, themeable React component library with TypeScript and SCSS Modu
 **Location:** `libs/ui-components`
 
 **Features:**
+
 - 🎨 37 color families (370+ colors)
 - 🌓 Dark/light mode theming
 - 📏 4px grid spacing system

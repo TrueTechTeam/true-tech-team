@@ -31,10 +31,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        const isValid = await bcrypt.compare(credentials.password, user.password);
 
         if (!isValid) {
           return null;
@@ -73,11 +70,7 @@ export const authOptions: NextAuthOptions = {
 };
 
 // Helper function to register new users (for signup)
-export async function registerUser(
-  email: string,
-  password: string,
-  name: string
-) {
+export async function registerUser(email: string, password: string, name: string) {
   if (users.has(email)) {
     throw new Error('User already exists');
   }

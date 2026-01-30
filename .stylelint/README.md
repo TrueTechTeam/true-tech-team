@@ -5,6 +5,7 @@ This directory contains a custom Stylelint plugin that validates CSS variable us
 ## Overview
 
 The `css-variables-in-theme` rule ensures that all CSS variables used in style files (`.scss`, `.css`) are either:
+
 1. Defined in the theme files located at `libs/ui-components/src/lib/styles/theme/`, **OR**
 2. Defined locally within the same file where they're being used
 
@@ -40,7 +41,7 @@ If you use a CSS variable that doesn't exist in the theme or current file:
 
 ```scss
 .my-class {
-  color: var(--undefined-variable);  // ❌ Error
+  color: var(--undefined-variable); // ❌ Error
 }
 ```
 
@@ -63,9 +64,9 @@ CSS variables from these theme files are always valid:
 
 ```scss
 .my-class {
-  color: var(--theme-primary);          // ✅ Defined in theme
-  padding: var(--spacing-md);           // ✅ Defined in theme
-  border-radius: var(--radius-sm);      // ✅ Defined in theme
+  color: var(--theme-primary); // ✅ Defined in theme
+  padding: var(--spacing-md); // ✅ Defined in theme
+  border-radius: var(--radius-sm); // ✅ Defined in theme
 }
 ```
 
@@ -78,17 +79,17 @@ You can also define CSS variables within your component's style file:
   /* Define local CSS variables */
   --component-gap: 12px;
   --component-padding: 16px;
-  --component-bg: var(--theme-surface-primary);  // ✅ Can reference theme vars
+  --component-bg: var(--theme-surface-primary); // ✅ Can reference theme vars
 
   /* Use them in the same file */
-  gap: var(--component-gap);              // ✅ Defined locally
-  padding: var(--component-padding);      // ✅ Defined locally
-  background: var(--component-bg);        // ✅ Defined locally
+  gap: var(--component-gap); // ✅ Defined locally
+  padding: var(--component-padding); // ✅ Defined locally
+  background: var(--component-bg); // ✅ Defined locally
 }
 
 .my-component-child {
   /* Can use variables defined anywhere in the same file */
-  gap: var(--component-gap);              // ✅ Defined earlier in this file
+  gap: var(--component-gap); // ✅ Defined earlier in this file
 }
 ```
 
@@ -105,9 +106,7 @@ The rule is configured in `.stylelintrc.json`:
 
 ```json
 {
-  "plugins": [
-    "./.stylelint/css-variables-plugin.js"
-  ],
+  "plugins": ["./.stylelint/css-variables-plugin.js"],
   "rules": {
     "true-tech/css-variables-in-theme": true
   }
