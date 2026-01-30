@@ -8,7 +8,8 @@ const { getThemeVariables } = require('./extract-theme-vars');
 
 const ruleName = 'true-tech/css-variables-in-theme';
 const messages = stylelint.utils.ruleMessages(ruleName, {
-  rejected: (varName) => `CSS variable "${varName}" is not defined in the theme files (libs/ui-components/src/lib/styles/theme/) or in the current file`,
+  rejected: (varName) =>
+    `CSS variable "${varName}" is not defined in the theme files (libs/ui-components/src/lib/styles/theme/) or in the current file`,
 });
 
 const meta = {
@@ -28,10 +29,7 @@ const ruleFunction = (primary, secondaryOptions, context) => {
     }
 
     // Get the path to the theme directory
-    const themePath = path.resolve(
-      process.cwd(),
-      'libs/ui-components/src/lib/styles/theme'
-    );
+    const themePath = path.resolve(process.cwd(), 'libs/ui-components/src/lib/styles/theme');
 
     // Extract all valid CSS variables from theme files
     const themeVariables = getThemeVariables(themePath);

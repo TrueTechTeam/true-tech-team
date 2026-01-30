@@ -30,4 +30,3 @@ export const projects: Project[] = [
   },
   // Add more projects as they are created
 ];
-

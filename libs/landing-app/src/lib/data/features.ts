@@ -49,4 +49,3 @@ export const features: Feature[] = [
     icon: 'check',
   },
 ];
-

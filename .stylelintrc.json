@@ -1,10 +1,6 @@
 {
-  "plugins": [
-    "./.stylelint/css-variables-plugin.js"
-  ],
-  "extends": [
-    "stylelint-config-standard-scss"
-  ],
+  "plugins": ["./.stylelint/css-variables-plugin.js"],
+  "extends": ["stylelint-config-standard-scss"],
   "rules": {
     "true-tech/css-variables-in-theme": true,
     "selector-class-pattern": null,

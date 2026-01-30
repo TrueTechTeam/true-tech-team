@@ -10,20 +10,13 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "esnext",
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
+    "lib": ["ES2022", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@true-tech-team/ui-components": [
-        "libs/ui-components/src/index.ts"
-      ],
-      "@landing-app/*": [
-        "libs/landing-app/src/*"
-      ]
+      "@true-tech-team/ui-components": ["libs/ui-components/src/index.ts"],
+      "@landing-app/*": ["libs/landing-app/src/*"]
     },
     "jsx": "react-jsx",
     "allowJs": false,
@@ -36,8 +29,5 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

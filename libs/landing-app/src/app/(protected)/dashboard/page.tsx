@@ -18,7 +18,7 @@ export default function DashboardPage() {
   if (status === 'loading') {
     return (
       <div className={styles.loading}>
-        <div className={styles.spinner}></div>
+        <div className={styles.spinner} />
         <p>Loading...</p>
       </div>
     );
@@ -70,4 +70,3 @@ export default function DashboardPage() {
     </>
   );
 }
-

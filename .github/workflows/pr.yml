@@ -1,10 +1,7 @@
-name: CI
+name: PR
 
 on:
   pull_request:
-    branches:
-      - master
-  push:
     branches:
       - master
 
@@ -121,3 +118,4 @@ jobs:
             exit 1
           fi
           echo "All CI checks passed!"
+

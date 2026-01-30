@@ -67,3 +67,7 @@ vitest.config.*.timestamp*
 out
 
 .claude/
+
+.eslintcache
+
+.stylelintcache

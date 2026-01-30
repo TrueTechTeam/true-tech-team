@@ -1,0 +1,55 @@
+name: Publish ui-components on push
+
+on:
+  push:
+    paths:
+      - 'libs/ui-components/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-publish:
+    name: Build and publish ui-components
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build ui-components
+        run: npm run build:ui-components
+
+      - name: Copy README and CHANGELOG into dist
+        run: |
+          mkdir -p dist/libs/ui-components
+          cp libs/ui-components/README.md dist/libs/ui-components/README.md
+          cp libs/ui-components/CHANGELOG.md dist/libs/ui-components/CHANGELOG.md
+
+      - name: List dist contents
+        run: ls -la dist/libs/ui-components || true
+
+      - name: Skip publish when NPM token is missing ⚠️
+        if: ${{ secrets.NPM_TOKEN == '' }}
+        run: |
+          echo "NPM_TOKEN secret not set — skipping publish."
+
+      - name: Configure npm auth
+        if: ${{ secrets.NPM_TOKEN != '' }}
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Publish to npm
+        if: ${{ secrets.NPM_TOKEN != '' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish dist/libs/ui-components --access public

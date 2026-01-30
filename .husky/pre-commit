@@ -1,0 +1,4 @@
+npx lint-staged
+
+echo "Running TypeScript type check..."
+npx nx affected -t typecheck --base=origin/master --head=HEAD

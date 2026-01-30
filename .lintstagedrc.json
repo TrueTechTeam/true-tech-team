@@ -1,0 +1,12 @@
+{
+  "libs/**/*.{ts,tsx}": [
+    "prettier --write --cache",
+    "eslint --fix --max-warnings=0 --cache --no-warn-ignored"
+  ],
+  "libs/**/*.{js,jsx}": [
+    "prettier --write --cache",
+    "eslint --fix --max-warnings=0 --cache --no-warn-ignored"
+  ],
+  "libs/**/*.{json,md}": ["prettier --write --cache"],
+  "libs/**/*.{css,scss}": ["prettier --write --cache", "stylelint --fix --cache"]
+}
