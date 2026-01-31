@@ -96,12 +96,8 @@
     }
   },
   "release": {
-    "version": {
-      "generatorOptions": {
-        "packageRoot": "dist/{projectRoot}",
-        "currentVersionResolver": "git-tag",
-        "fallbackCurrentVersionResolver": "disk"
-      }
+    "changelog": {
+      "file": "libs/ui-components/CHANGELOG.md"
     }
   }
 }

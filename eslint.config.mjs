@@ -68,7 +68,7 @@ export default [
       'react/jsx-curly-brace-presence': ['warn', { props: 'never', children: 'never' }],
       'react/jsx-fragments': ['warn', 'syntax'],
       'react/jsx-no-useless-fragment': 'warn',
-      'react/button-has-type': 'warn',
+      'react/button-has-type': 'off',
       'react/no-array-index-key': 'warn',
       'react/void-dom-elements-no-children': 'error',
 

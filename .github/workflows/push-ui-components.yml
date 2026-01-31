@@ -2,11 +2,14 @@ name: Publish ui-components on push
 
 on:
   push:
+    branches:
+      - master
     paths:
       - 'libs/ui-components/**'
 
 permissions:
-  contents: read
+  id-token: write
+  contents: write
 
 jobs:
   build-and-publish:
@@ -16,6 +19,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -39,17 +44,5 @@ jobs:
       - name: List dist contents
         run: ls -la dist/libs/ui-components || true
 
-      - name: Skip publish when NPM token is missing ⚠️
-        if: ${{ secrets.NPM_TOKEN == '' }}
-        run: |
-          echo "NPM_TOKEN secret not set — skipping publish."
-
-      - name: Configure npm auth
-        if: ${{ secrets.NPM_TOKEN != '' }}
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
       - name: Publish to npm
-        if: ${{ secrets.NPM_TOKEN != '' }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish dist/libs/ui-components --access public
+        run: npx nx release publish
