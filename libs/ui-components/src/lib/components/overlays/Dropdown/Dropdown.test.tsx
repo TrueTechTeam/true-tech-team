@@ -358,7 +358,9 @@ describe('Dropdown', () => {
 
       fireEvent.click(screen.getByText('With Disabled'));
 
-      const disabledItem = screen.getByText('Disabled Item').closest('[data-component="menu-item"]');
+      const disabledItem = screen
+        .getByText('Disabled Item')
+        .closest('[data-component="menu-item"]');
       expect(disabledItem).toHaveAttribute('data-disabled', 'true');
     });
 
@@ -378,9 +380,7 @@ describe('Dropdown', () => {
 
     it('should call onClick handler for items', () => {
       const onItemClick = jest.fn();
-      const items: DropdownItem[] = [
-        { itemKey: '1', label: 'Click Me', onClick: onItemClick },
-      ];
+      const items: DropdownItem[] = [{ itemKey: '1', label: 'Click Me', onClick: onItemClick }];
 
       render(<Dropdown label="Clickable" items={items} />);
 
@@ -633,11 +633,7 @@ describe('Dropdown', () => {
     it('should forward selectionMode to Menu', () => {
       const onSelectionChange = jest.fn();
       render(
-        <Dropdown
-          label="Multi Select"
-          selectionMode="multi"
-          onSelectionChange={onSelectionChange}
-        >
+        <Dropdown label="Multi Select" selectionMode="multi" onSelectionChange={onSelectionChange}>
           <MenuList>
             <MenuItem itemKey="1">Item 1</MenuItem>
             <MenuItem itemKey="2">Item 2</MenuItem>

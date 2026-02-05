@@ -315,19 +315,25 @@ describe('CircularProgress', () => {
   describe('CSS custom properties', () => {
     it('sets --circle-size custom property for small size', () => {
       const { container } = render(<CircularProgress size="sm" />);
-      const progress = container.querySelector('[data-component="circular-progress"]') as HTMLElement;
+      const progress = container.querySelector(
+        '[data-component="circular-progress"]'
+      ) as HTMLElement;
       expect(progress.style.getPropertyValue('--circle-size')).toBe('64px');
     });
 
     it('sets --circle-size custom property for medium size', () => {
       const { container } = render(<CircularProgress size="md" />);
-      const progress = container.querySelector('[data-component="circular-progress"]') as HTMLElement;
+      const progress = container.querySelector(
+        '[data-component="circular-progress"]'
+      ) as HTMLElement;
       expect(progress.style.getPropertyValue('--circle-size')).toBe('96px');
     });
 
     it('sets --circle-size custom property for large size', () => {
       const { container } = render(<CircularProgress size="lg" />);
-      const progress = container.querySelector('[data-component="circular-progress"]') as HTMLElement;
+      const progress = container.querySelector(
+        '[data-component="circular-progress"]'
+      ) as HTMLElement;
       expect(progress.style.getPropertyValue('--circle-size')).toBe('128px');
     });
   });

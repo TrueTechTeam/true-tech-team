@@ -94,7 +94,9 @@ describe('OverflowText', () => {
 
     it('sets CSS variable for lines', () => {
       render(<OverflowText lines={4}>Test</OverflowText>);
-      const element = screen.getByText('Test').closest('[data-component="overflow-text"]') as HTMLElement;
+      const element = screen
+        .getByText('Test')
+        .closest('[data-component="overflow-text"]') as HTMLElement;
       expect(element.style.getPropertyValue('--overflow-text-lines')).toBe('4');
     });
   });
@@ -105,11 +107,7 @@ describe('OverflowText', () => {
       const user = userEvent.setup();
       const longText = 'This is a very long text that should overflow and show tooltip';
 
-      render(
-        <OverflowText tooltipDelay={0}>
-          {longText}
-        </OverflowText>
-      );
+      render(<OverflowText tooltipDelay={0}>{longText}</OverflowText>);
 
       const textElement = screen.getByText(longText);
       await user.hover(textElement);
@@ -120,11 +118,7 @@ describe('OverflowText', () => {
     });
 
     it('does not wrap with tooltip when disableTooltip is true', () => {
-      render(
-        <OverflowText disableTooltip>
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText disableTooltip>Test text</OverflowText>);
 
       const element = screen.getByText('Test text').closest('[data-component="overflow-text"]');
       expect(element).toHaveAttribute('title', 'Test text');
@@ -134,11 +128,7 @@ describe('OverflowText', () => {
       const user = userEvent.setup();
       const text = 'Hover text';
 
-      render(
-        <OverflowText tooltipDelay={0}>
-          {text}
-        </OverflowText>
-      );
+      render(<OverflowText tooltipDelay={0}>{text}</OverflowText>);
 
       const textElement = screen.getByText(text);
       await user.hover(textElement);
@@ -169,11 +159,7 @@ describe('OverflowText', () => {
     });
 
     it('sets title attribute when tooltip is disabled', () => {
-      render(
-        <OverflowText disableTooltip>
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText disableTooltip>Test text</OverflowText>);
 
       const element = screen.getByText('Test text').closest('[data-component="overflow-text"]');
       expect(element).toHaveAttribute('title', 'Test text');
@@ -183,52 +169,32 @@ describe('OverflowText', () => {
   // 5. Tooltip position tests
   describe('tooltip position', () => {
     it('uses bottom position by default', async () => {
-      render(
-        <OverflowText tooltipDelay={0}>
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText tooltipDelay={0}>Test text</OverflowText>);
 
       // Tooltip component should render with default position
       expect(screen.getByText('Test text')).toBeInTheDocument();
     });
 
     it('accepts top position', () => {
-      render(
-        <OverflowText tooltipPosition="top">
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText tooltipPosition="top">Test text</OverflowText>);
 
       expect(screen.getByText('Test text')).toBeInTheDocument();
     });
 
     it('accepts bottom position', () => {
-      render(
-        <OverflowText tooltipPosition="bottom">
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText tooltipPosition="bottom">Test text</OverflowText>);
 
       expect(screen.getByText('Test text')).toBeInTheDocument();
     });
 
     it('accepts left position', () => {
-      render(
-        <OverflowText tooltipPosition="left">
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText tooltipPosition="left">Test text</OverflowText>);
 
       expect(screen.getByText('Test text')).toBeInTheDocument();
     });
 
     it('accepts right position', () => {
-      render(
-        <OverflowText tooltipPosition="right">
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText tooltipPosition="right">Test text</OverflowText>);
 
       expect(screen.getByText('Test text')).toBeInTheDocument();
     });
@@ -237,21 +203,13 @@ describe('OverflowText', () => {
   // 6. Tooltip delay tests
   describe('tooltip delay', () => {
     it('uses 200ms delay by default', () => {
-      render(
-        <OverflowText>
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText>Test text</OverflowText>);
 
       expect(screen.getByText('Test text')).toBeInTheDocument();
     });
 
     it('accepts custom delay', () => {
-      render(
-        <OverflowText tooltipDelay={500}>
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText tooltipDelay={500}>Test text</OverflowText>);
 
       expect(screen.getByText('Test text')).toBeInTheDocument();
     });
@@ -259,11 +217,7 @@ describe('OverflowText', () => {
     it('accepts zero delay', async () => {
       const user = userEvent.setup();
 
-      render(
-        <OverflowText tooltipDelay={0}>
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText tooltipDelay={0}>Test text</OverflowText>);
 
       const textElement = screen.getByText('Test text');
       await user.hover(textElement);
@@ -279,19 +233,25 @@ describe('OverflowText', () => {
   describe('tooltip max width', () => {
     it('uses 300px max width by default', () => {
       render(<OverflowText>Test</OverflowText>);
-      const element = screen.getByText('Test').closest('[data-component="overflow-text"]') as HTMLElement;
+      const element = screen
+        .getByText('Test')
+        .closest('[data-component="overflow-text"]') as HTMLElement;
       expect(element.style.getPropertyValue('--overflow-text-tooltip-max-width')).toBe('300px');
     });
 
     it('accepts custom max width', () => {
       render(<OverflowText tooltipMaxWidth={500}>Test</OverflowText>);
-      const element = screen.getByText('Test').closest('[data-component="overflow-text"]') as HTMLElement;
+      const element = screen
+        .getByText('Test')
+        .closest('[data-component="overflow-text"]') as HTMLElement;
       expect(element.style.getPropertyValue('--overflow-text-tooltip-max-width')).toBe('500px');
     });
 
     it('accepts zero max width', () => {
       render(<OverflowText tooltipMaxWidth={0}>Test</OverflowText>);
-      const element = screen.getByText('Test').closest('[data-component="overflow-text"]') as HTMLElement;
+      const element = screen
+        .getByText('Test')
+        .closest('[data-component="overflow-text"]') as HTMLElement;
       expect(element.style.getPropertyValue('--overflow-text-tooltip-max-width')).toBe('0px');
     });
   });
@@ -299,28 +259,32 @@ describe('OverflowText', () => {
   // 8. Multi-line support tests
   describe('multi-line support', () => {
     it('supports single line truncation', () => {
-      const longText = 'This is a very long text that will be truncated with ellipsis on a single line';
+      const longText =
+        'This is a very long text that will be truncated with ellipsis on a single line';
       render(<OverflowText lines={1}>{longText}</OverflowText>);
       const element = screen.getByText(longText).closest('[data-component="overflow-text"]');
       expect(element).toHaveAttribute('data-lines', '1');
     });
 
     it('supports two line truncation', () => {
-      const longText = 'This is a very long text that will be truncated with ellipsis after two lines';
+      const longText =
+        'This is a very long text that will be truncated with ellipsis after two lines';
       render(<OverflowText lines={2}>{longText}</OverflowText>);
       const element = screen.getByText(longText).closest('[data-component="overflow-text"]');
       expect(element).toHaveAttribute('data-lines', '2');
     });
 
     it('supports three line truncation', () => {
-      const longText = 'This is a very long text that will be truncated with ellipsis after three lines';
+      const longText =
+        'This is a very long text that will be truncated with ellipsis after three lines';
       render(<OverflowText lines={3}>{longText}</OverflowText>);
       const element = screen.getByText(longText).closest('[data-component="overflow-text"]');
       expect(element).toHaveAttribute('data-lines', '3');
     });
 
     it('supports many lines truncation', () => {
-      const longText = 'This is a very long text that will be truncated with ellipsis after many lines';
+      const longText =
+        'This is a very long text that will be truncated with ellipsis after many lines';
       render(<OverflowText lines={10}>{longText}</OverflowText>);
       const element = screen.getByText(longText).closest('[data-component="overflow-text"]');
       expect(element).toHaveAttribute('data-lines', '10');
@@ -328,7 +292,8 @@ describe('OverflowText', () => {
 
     it('shows full text in tooltip for multi-line overflow', async () => {
       const user = userEvent.setup();
-      const longText = 'This is a very long text that spans multiple lines and should show in tooltip';
+      const longText =
+        'This is a very long text that spans multiple lines and should show in tooltip';
 
       render(
         <OverflowText lines={2} tooltipDelay={0}>
@@ -383,14 +348,22 @@ describe('OverflowText', () => {
 
     it('forwards ref to p element', () => {
       const ref = React.createRef<HTMLElement>();
-      render(<OverflowText ref={ref} as="p">Test</OverflowText>);
+      render(
+        <OverflowText ref={ref} as="p">
+          Test
+        </OverflowText>
+      );
       expect(ref.current).toBeInstanceOf(HTMLParagraphElement);
       expect(ref.current).toHaveTextContent('Test');
     });
 
     it('forwards ref to div element', () => {
       const ref = React.createRef<HTMLElement>();
-      render(<OverflowText ref={ref} as="div">Test</OverflowText>);
+      render(
+        <OverflowText ref={ref} as="div">
+          Test
+        </OverflowText>
+      );
       expect(ref.current).toBeInstanceOf(HTMLDivElement);
       expect(ref.current).toHaveTextContent('Test');
     });
@@ -514,12 +487,7 @@ describe('OverflowText', () => {
       const user = userEvent.setup();
 
       render(
-        <OverflowText
-          as="p"
-          lines={3}
-          tooltipPosition="top"
-          tooltipDelay={0}
-        >
+        <OverflowText as="p" lines={3} tooltipPosition="top" tooltipDelay={0}>
           Long text content
         </OverflowText>
       );
@@ -539,7 +507,8 @@ describe('OverflowText', () => {
   // 14. Edge cases
   describe('edge cases', () => {
     it('renders with long text content', () => {
-      const longText = 'This is a very long text content that should be truncated with ellipsis when it exceeds the available width or specified number of lines';
+      const longText =
+        'This is a very long text content that should be truncated with ellipsis when it exceeds the available width or specified number of lines';
       render(<OverflowText>{longText}</OverflowText>);
       expect(screen.getByText(longText)).toBeInTheDocument();
     });
@@ -632,11 +601,7 @@ describe('OverflowText', () => {
   describe('onOverflowChange callback', () => {
     it('accepts onOverflowChange callback', () => {
       const handleOverflowChange = jest.fn();
-      render(
-        <OverflowText onOverflowChange={handleOverflowChange}>
-          Test text
-        </OverflowText>
-      );
+      render(<OverflowText onOverflowChange={handleOverflowChange}>Test text</OverflowText>);
       expect(screen.getByText('Test text')).toBeInTheDocument();
     });
 
@@ -660,11 +625,7 @@ describe('OverflowText', () => {
       const user = userEvent.setup();
       const text = 'Test text';
 
-      render(
-        <OverflowText tooltipDelay={0}>
-          {text}
-        </OverflowText>
-      );
+      render(<OverflowText tooltipDelay={0}>{text}</OverflowText>);
 
       const textElement = screen.getByText(text);
 
@@ -677,10 +638,13 @@ describe('OverflowText', () => {
       await user.unhover(textElement);
 
       // After unhover, tooltip should eventually disappear
-      await waitFor(() => {
-        const tooltips = screen.queryAllByText(text);
-        expect(tooltips.length).toBeLessThanOrEqual(1);
-      }, { timeout: 500 });
+      await waitFor(
+        () => {
+          const tooltips = screen.queryAllByText(text);
+          expect(tooltips.length).toBeLessThanOrEqual(1);
+        },
+        { timeout: 500 }
+      );
     });
 
     it('shows tooltip with custom content on hover', async () => {
@@ -717,11 +681,7 @@ describe('OverflowText', () => {
 
     it('merges CSS variables with custom styles', () => {
       render(
-        <OverflowText
-          lines={2}
-          tooltipMaxWidth={400}
-          style={{ fontSize: '16px', color: 'red' }}
-        >
+        <OverflowText lines={2} tooltipMaxWidth={400} style={{ fontSize: '16px', color: 'red' }}>
           Test
         </OverflowText>
       );

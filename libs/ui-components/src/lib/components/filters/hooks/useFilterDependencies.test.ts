@@ -11,9 +11,7 @@ describe('useFilterDependencies', () => {
         label: 'Test Filter',
       };
 
-      const { result } = renderHook(() =>
-        useFilterDependencies({ filter, allValues: {} })
-      );
+      const { result } = renderHook(() => useFilterDependencies({ filter, allValues: {} }));
 
       expect(result.current.isVisible).toBe(true);
       expect(result.current.isEnabled).toBe(true);
@@ -29,9 +27,7 @@ describe('useFilterDependencies', () => {
         disabled: true,
       };
 
-      const { result } = renderHook(() =>
-        useFilterDependencies({ filter, allValues: {} })
-      );
+      const { result } = renderHook(() => useFilterDependencies({ filter, allValues: {} }));
 
       expect(result.current.isVisible).toBe(false);
       expect(result.current.isEnabled).toBe(false);
@@ -161,8 +157,7 @@ describe('useFilterDependencies', () => {
       };
 
       const { rerender } = renderHook(
-        ({ allValues }) =>
-          useFilterDependencies({ filter, allValues, onReloadOptions }),
+        ({ allValues }) => useFilterDependencies({ filter, allValues, onReloadOptions }),
         { initialProps: { allValues: { country: 'USA' } } }
       );
 
@@ -208,14 +203,11 @@ describe('useFilterDependencies', () => {
         id: 'subcategory',
         type: 'select',
         label: 'Subcategory',
-        dependencies: [
-          { dependsOn: 'category', action: 'show', resetOnChange: true },
-        ],
+        dependencies: [{ dependsOn: 'category', action: 'show', resetOnChange: true }],
       };
 
       const { rerender } = renderHook(
-        ({ allValues }) =>
-          useFilterDependencies({ filter, allValues, onResetValue }),
+        ({ allValues }) => useFilterDependencies({ filter, allValues, onResetValue }),
         { initialProps: { allValues: { category: 'electronics' } } }
       );
 

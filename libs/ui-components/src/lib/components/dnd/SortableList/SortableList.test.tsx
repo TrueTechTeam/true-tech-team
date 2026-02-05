@@ -89,7 +89,7 @@ describe('SortableList', () => {
     it('renders empty list', () => {
       render(
         <SortableList
-          items={[]}
+          items={[] as Array<{ id: string; name: string }>}
           renderItem={(item) => <div>{item.name}</div>}
           data-testid="empty-list"
         />
@@ -326,7 +326,7 @@ describe('SortableList', () => {
     });
 
     it('provides dragHandleProps in render function when useDragHandle is true', () => {
-      const renderItem = jest.fn((item, { dragHandleProps }) => <div>{item.name}</div>);
+      const renderItem = jest.fn((item) => <div>{item.name}</div>);
 
       render(<SortableList items={mockItems} useDragHandle renderItem={renderItem} />);
 
@@ -345,7 +345,7 @@ describe('SortableList', () => {
     });
 
     it('does not provide dragHandleProps when useDragHandle is false', () => {
-      const renderItem = jest.fn((item, { dragHandleProps }) => <div>{item.name}</div>);
+      const renderItem = jest.fn((item) => <div>{item.name}</div>);
 
       render(<SortableList items={mockItems} useDragHandle={false} renderItem={renderItem} />);
 
@@ -501,7 +501,7 @@ describe('SortableList', () => {
     });
 
     it('provides all render props correctly', () => {
-      const renderItem = jest.fn((item, props) => <div>{item.name}</div>);
+      const renderItem = jest.fn((item) => <div>{item.name}</div>);
 
       render(<SortableList items={mockItems} renderItem={renderItem} useDragHandle />);
 
@@ -912,7 +912,7 @@ describe('SortableList', () => {
     });
 
     it('provides drag context to items', () => {
-      const renderItem = jest.fn((item, props) => <div>{item.name}</div>);
+      const renderItem = jest.fn((item) => <div>{item.name}</div>);
 
       render(<SortableList items={mockItems} renderItem={renderItem} />);
 
@@ -1010,9 +1010,7 @@ describe('SortableList', () => {
         name: `Item ${i}`,
       }));
 
-      render(
-        <SortableList items={largeItemList} renderItem={(item) => <div>{item.name}</div>} />
-      );
+      render(<SortableList items={largeItemList} renderItem={(item) => <div>{item.name}</div>} />);
 
       expect(screen.getByText('Item 0')).toBeInTheDocument();
       expect(screen.getByText('Item 99')).toBeInTheDocument();

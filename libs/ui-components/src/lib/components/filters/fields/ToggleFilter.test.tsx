@@ -6,7 +6,17 @@ import type { FilterContextValue, FilterDefinition } from '../types';
 
 // Mock the Toggle component
 jest.mock('../../inputs/Toggle', () => ({
-  Toggle: ({ checked, onChange, label, disabled, error, errorMessage, helperText, size, ...props }: any) => (
+  Toggle: ({
+    checked,
+    onChange,
+    label,
+    disabled,
+    error,
+    errorMessage,
+    helperText,
+    size,
+    ...props
+  }: any) => (
     <div data-testid={`toggle-${label}`}>
       <input
         type="checkbox"
@@ -53,7 +63,13 @@ const createMockContext = (
   getUngroupedFilters: () => filters,
   isFilterVisible: () => true,
   isFilterEnabled: () => true,
-  getFilterOptions: () => ({ options: [], loading: false, error: null, hasMore: false, loadMore: jest.fn() }),
+  getFilterOptions: () => ({
+    options: [],
+    loading: false,
+    error: null,
+    hasMore: false,
+    loadMore: jest.fn(),
+  }),
   reloadFilterOptions: jest.fn(),
   setFilterValue: jest.fn(),
   setFilterValues: jest.fn(),
@@ -73,7 +89,11 @@ const createMockContext = (
 });
 
 // Helper function to create a boolean filter definition
-const createBooleanFilter = (id: string, label: string, helperText?: string): FilterDefinition<boolean> => ({
+const createBooleanFilter = (
+  id: string,
+  label: string,
+  helperText?: string
+): FilterDefinition<boolean> => ({
   id,
   type: 'toggle',
   label,
@@ -81,15 +101,8 @@ const createBooleanFilter = (id: string, label: string, helperText?: string): Fi
 });
 
 // Helper to render with context
-const renderWithContext = (
-  ui: React.ReactElement,
-  context: FilterContextValue
-) => {
-  return render(
-    <FilterContext.Provider value={context}>
-      {ui}
-    </FilterContext.Provider>
-  );
+const renderWithContext = (ui: React.ReactElement, context: FilterContextValue) => {
+  return render(<FilterContext.Provider value={context}>{ui}</FilterContext.Provider>);
 };
 
 describe('ToggleFilter', () => {
@@ -139,10 +152,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('test', 'Test');
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <ToggleFilter filterId="test" />,
-        context
-      );
+      const { container } = renderWithContext(<ToggleFilter filterId="test" />, context);
 
       const wrapper = container.firstChild;
       expect(wrapper?.nodeName).toBe('DIV');
@@ -166,11 +176,7 @@ describe('ToggleFilter', () => {
       const context = createMockContext([filter]);
 
       const { container } = renderWithContext(
-        <ToggleFilter
-          filterId="test"
-          data-custom="value"
-          id="custom-id"
-        />,
+        <ToggleFilter filterId="test" data-custom="value" id="custom-id" />,
         context
       );
 
@@ -185,10 +191,7 @@ describe('ToggleFilter', () => {
     it('returns null when filter is not found', () => {
       const context = createMockContext([]);
 
-      const { container } = renderWithContext(
-        <ToggleFilter filterId="nonexistent" />,
-        context
-      );
+      const { container } = renderWithContext(<ToggleFilter filterId="nonexistent" />, context);
 
       expect(container.firstChild).toBeNull();
     });
@@ -199,9 +202,7 @@ describe('ToggleFilter', () => {
 
       renderWithContext(<ToggleFilter filterId="missing" />, context);
 
-      expect(warnSpy).toHaveBeenCalledWith(
-        'ToggleFilter: Filter "missing" not found'
-      );
+      expect(warnSpy).toHaveBeenCalledWith('ToggleFilter: Filter "missing" not found');
     });
 
     it('does not render Toggle when filter not found', () => {
@@ -228,10 +229,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('active', 'Active Status');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <ToggleFilter filterId="active" label="Custom Label" />,
-        context
-      );
+      renderWithContext(<ToggleFilter filterId="active" label="Custom Label" />, context);
 
       expect(screen.getByText('Custom Label')).toBeInTheDocument();
       expect(screen.queryByText('Active Status')).not.toBeInTheDocument();
@@ -241,10 +239,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('enabled', 'Enabled');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <ToggleFilter filterId="enabled" label="Is Enabled" />,
-        context
-      );
+      renderWithContext(<ToggleFilter filterId="enabled" label="Is Enabled" />, context);
 
       const toggle = screen.getByRole('checkbox');
       expect(toggle).toHaveAttribute('aria-label', 'Is Enabled');
@@ -254,10 +249,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('active', 'Active');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <ToggleFilter filterId="active" label="" />,
-        context
-      );
+      renderWithContext(<ToggleFilter filterId="active" label="" />, context);
 
       expect(screen.queryByText('Active')).not.toBeInTheDocument();
     });
@@ -384,10 +376,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('active', 'Active');
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <ToggleFilter filterId="active" />,
-        context
-      );
+      const { container } = renderWithContext(<ToggleFilter filterId="active" />, context);
 
       const toggle = container.querySelector('[data-size="md"]');
       expect(toggle).toBeInTheDocument();
@@ -437,9 +426,13 @@ describe('ToggleFilter', () => {
   describe('disabled state', () => {
     it('is enabled when isEnabled returns true', () => {
       const filter = createBooleanFilter('active', 'Active');
-      const context = createMockContext([filter], {}, {
-        isFilterEnabled: jest.fn(() => true),
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          isFilterEnabled: jest.fn(() => true),
+        }
+      );
 
       renderWithContext(<ToggleFilter filterId="active" />, context);
 
@@ -449,9 +442,13 @@ describe('ToggleFilter', () => {
 
     it('is disabled when isEnabled returns false', () => {
       const filter = createBooleanFilter('active', 'Active');
-      const context = createMockContext([filter], {}, {
-        isFilterEnabled: jest.fn(() => false),
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          isFilterEnabled: jest.fn(() => false),
+        }
+      );
 
       renderWithContext(<ToggleFilter filterId="active" />, context);
 
@@ -462,10 +459,14 @@ describe('ToggleFilter', () => {
     it('does not call setFilterValue when disabled', () => {
       const filter = createBooleanFilter('active', 'Active');
       const setFilterValue = jest.fn();
-      const context = createMockContext([filter], {}, {
-        isFilterEnabled: jest.fn(() => false),
-        setFilterValue,
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          isFilterEnabled: jest.fn(() => false),
+          setFilterValue,
+        }
+      );
 
       renderWithContext(<ToggleFilter filterId="active" />, context);
 
@@ -492,10 +493,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('active', 'Active');
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <ToggleFilter filterId="active" />,
-        context
-      );
+      const { container } = renderWithContext(<ToggleFilter filterId="active" />, context);
 
       const toggle = container.querySelector('[data-error="true"]');
       expect(toggle).not.toBeInTheDocument();
@@ -503,14 +501,15 @@ describe('ToggleFilter', () => {
 
     it('shows error when error exists in context', () => {
       const filter = createBooleanFilter('active', 'Active');
-      const context = createMockContext([filter], {}, {
-        errors: { active: 'This field is required' },
-      });
-
-      const { container } = renderWithContext(
-        <ToggleFilter filterId="active" />,
-        context
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          errors: { active: 'This field is required' },
+        }
       );
+
+      const { container } = renderWithContext(<ToggleFilter filterId="active" />, context);
 
       const toggle = container.querySelector('[data-error="true"]');
       expect(toggle).toBeInTheDocument();
@@ -518,9 +517,13 @@ describe('ToggleFilter', () => {
 
     it('passes error message to Toggle', () => {
       const filter = createBooleanFilter('active', 'Active');
-      const context = createMockContext([filter], {}, {
-        errors: { active: 'This field is required' },
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          errors: { active: 'This field is required' },
+        }
+      );
 
       renderWithContext(<ToggleFilter filterId="active" />, context);
 
@@ -529,14 +532,15 @@ describe('ToggleFilter', () => {
 
     it('handles empty string error', () => {
       const filter = createBooleanFilter('active', 'Active');
-      const context = createMockContext([filter], {}, {
-        errors: { active: '' },
-      });
-
-      const { container } = renderWithContext(
-        <ToggleFilter filterId="active" />,
-        context
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          errors: { active: '' },
+        }
       );
+
+      const { container } = renderWithContext(<ToggleFilter filterId="active" />, context);
 
       const toggle = container.querySelector('[data-error="true"]');
       expect(toggle).not.toBeInTheDocument();
@@ -544,14 +548,15 @@ describe('ToggleFilter', () => {
 
     it('handles null error', () => {
       const filter = createBooleanFilter('active', 'Active');
-      const context = createMockContext([filter], {}, {
-        errors: { active: null },
-      });
-
-      const { container } = renderWithContext(
-        <ToggleFilter filterId="active" />,
-        context
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          errors: { active: null },
+        }
       );
+
+      const { container } = renderWithContext(<ToggleFilter filterId="active" />, context);
 
       const toggle = container.querySelector('[data-error="true"]');
       expect(toggle).not.toBeInTheDocument();
@@ -573,10 +578,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('enabled', 'Enabled', 'Enable this feature');
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <ToggleFilter filterId="enabled" />,
-        context
-      );
+      const { container } = renderWithContext(<ToggleFilter filterId="enabled" />, context);
 
       const helperText = container.querySelector('[data-helper-text="Enable this feature"]');
       expect(helperText).toBeInTheDocument();
@@ -594,9 +596,13 @@ describe('ToggleFilter', () => {
 
     it('shows error message instead of helper text when error exists', () => {
       const filter = createBooleanFilter('active', 'Active', 'Helper text');
-      const context = createMockContext([filter], {}, {
-        errors: { active: 'Error message' },
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          errors: { active: 'Error message' },
+        }
+      );
 
       renderWithContext(<ToggleFilter filterId="active" />, context);
 
@@ -612,10 +618,7 @@ describe('ToggleFilter', () => {
       const context = createMockContext([filter]);
 
       const { container } = renderWithContext(
-        <ToggleFilter
-          filterId="active"
-          toggleProps={{ 'data-custom': 'value' }}
-        />,
+        <ToggleFilter filterId="active" toggleProps={{ 'data-custom': 'value' }} />,
         context
       );
 
@@ -628,11 +631,7 @@ describe('ToggleFilter', () => {
       const context = createMockContext([filter]);
 
       const { container } = renderWithContext(
-        <ToggleFilter
-          filterId="active"
-          size="lg"
-          toggleProps={{ 'data-extra': 'prop' }}
-        />,
+        <ToggleFilter filterId="active" size="lg" toggleProps={{ 'data-extra': 'prop' }} />,
         context
       );
 
@@ -644,10 +643,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('active', 'Active');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <ToggleFilter filterId="active" toggleProps={{}} />,
-        context
-      );
+      renderWithContext(<ToggleFilter filterId="active" toggleProps={{}} />, context);
 
       expect(screen.getByRole('checkbox')).toBeInTheDocument();
     });
@@ -656,10 +652,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('active', 'Active');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <ToggleFilter filterId="active" toggleProps={undefined} />,
-        context
-      );
+      renderWithContext(<ToggleFilter filterId="active" toggleProps={undefined} />, context);
 
       expect(screen.getByRole('checkbox')).toBeInTheDocument();
     });
@@ -672,10 +665,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('active', 'Active');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <ToggleFilter ref={ref} filterId="active" />,
-        context
-      );
+      renderWithContext(<ToggleFilter ref={ref} filterId="active" />, context);
 
       expect(ref.current).toBeInstanceOf(HTMLDivElement);
     });
@@ -685,10 +675,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('active', 'Active');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <ToggleFilter ref={ref} filterId="active" className="custom" />,
-        context
-      );
+      renderWithContext(<ToggleFilter ref={ref} filterId="active" className="custom" />, context);
 
       expect(ref.current).toHaveClass('custom');
     });
@@ -698,10 +685,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('active', 'Active');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <ToggleFilter ref={refCallback} filterId="active" />,
-        context
-      );
+      renderWithContext(<ToggleFilter ref={refCallback} filterId="active" />, context);
 
       expect(refCallback).toHaveBeenCalledWith(expect.any(HTMLDivElement));
     });
@@ -746,10 +730,7 @@ describe('ToggleFilter', () => {
     it('handles empty filterId gracefully', () => {
       const context = createMockContext([]);
 
-      const { container } = renderWithContext(
-        <ToggleFilter filterId="" />,
-        context
-      );
+      const { container } = renderWithContext(<ToggleFilter filterId="" />, context);
 
       expect(container.firstChild).toBeNull();
     });
@@ -758,10 +739,7 @@ describe('ToggleFilter', () => {
       const filter = createBooleanFilter('filter-with-dashes_and_underscores', 'Special');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <ToggleFilter filterId="filter-with-dashes_and_underscores" />,
-        context
-      );
+      renderWithContext(<ToggleFilter filterId="filter-with-dashes_and_underscores" />, context);
 
       expect(screen.getByText('Special')).toBeInTheDocument();
     });
@@ -787,10 +765,14 @@ describe('ToggleFilter', () => {
   describe('combined props', () => {
     it('renders with all props and custom values', () => {
       const filter = createBooleanFilter('advanced', 'Advanced Filter', 'Helper text');
-      const context = createMockContext([filter], { advanced: true }, {
-        errors: { advanced: 'Error message' },
-        isFilterEnabled: jest.fn(() => false),
-      });
+      const context = createMockContext(
+        [filter],
+        { advanced: true },
+        {
+          errors: { advanced: 'Error message' },
+          isFilterEnabled: jest.fn(() => false),
+        }
+      );
 
       const { container } = renderWithContext(
         <ToggleFilter
@@ -817,11 +799,7 @@ describe('ToggleFilter', () => {
       const context = createMockContext([filter], { enabled: false });
 
       const { container } = renderWithContext(
-        <ToggleFilter
-          filterId="enabled"
-          label="Is Enabled"
-          size="sm"
-        />,
+        <ToggleFilter filterId="enabled" label="Is Enabled" size="sm" />,
         context
       );
 
@@ -832,10 +810,14 @@ describe('ToggleFilter', () => {
 
     it('renders with error and disabled state', () => {
       const filter = createBooleanFilter('active', 'Active');
-      const context = createMockContext([filter], {}, {
-        errors: { active: 'Required field' },
-        isFilterEnabled: jest.fn(() => false),
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          errors: { active: 'Required field' },
+          isFilterEnabled: jest.fn(() => false),
+        }
+      );
 
       renderWithContext(<ToggleFilter filterId="active" />, context);
 
@@ -886,9 +868,13 @@ describe('ToggleFilter', () => {
 
     it('retrieves error from context', () => {
       const filter = createBooleanFilter('active', 'Active');
-      const context = createMockContext([filter], {}, {
-        errors: { active: 'Error from context' },
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          errors: { active: 'Error from context' },
+        }
+      );
 
       renderWithContext(<ToggleFilter filterId="active" />, context);
 
@@ -916,11 +902,7 @@ describe('ToggleFilter', () => {
       const context = createMockContext([filter]);
 
       renderWithContext(
-        <ToggleFilter
-          filterId="active"
-          data-testid="test-filter"
-          data-custom="value"
-        />,
+        <ToggleFilter filterId="active" data-testid="test-filter" data-custom="value" />,
         context
       );
 

@@ -555,10 +555,9 @@ describe('useDialog', () => {
     });
 
     it('updates open function reference when defaultProps change', () => {
-      const { result, rerender } = renderHook(
-        ({ defaultProps }) => useDialog({ defaultProps }),
-        { initialProps: { defaultProps: { size: 'md' as const } } }
-      );
+      const { result, rerender } = renderHook(({ defaultProps }) => useDialog({ defaultProps }), {
+        initialProps: { defaultProps: { size: 'md' as const } },
+      });
 
       const firstOpen = result.current.open;
 

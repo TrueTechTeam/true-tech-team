@@ -212,11 +212,7 @@ describe('Badge', () => {
     });
 
     it('accepts custom style prop', () => {
-      render(
-        <Badge style={{ backgroundColor: 'red' }}>
-          Test
-        </Badge>
-      );
+      render(<Badge style={{ backgroundColor: 'red' }}>Test</Badge>);
       const element = screen.getByText('Test');
       expect(element).toHaveStyle({ backgroundColor: 'red' });
     });
@@ -258,15 +254,9 @@ describe('Badge', () => {
   // 9. Combined props tests
   describe('combined props', () => {
     it('renders with multiple variants and sizes', () => {
-      const variants: Array<'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = [
-        'primary',
-        'secondary',
-        'success',
-        'warning',
-        'danger',
-        'info',
-        'neutral',
-      ];
+      const variants: Array<
+        'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral'
+      > = ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'neutral'];
       const sizes: Array<'sm' | 'md' | 'lg'> = ['sm', 'md', 'lg'];
 
       variants.forEach((variant) => {
@@ -285,15 +275,9 @@ describe('Badge', () => {
     });
 
     it('renders disabled badge with all variants', () => {
-      const variants: Array<'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = [
-        'primary',
-        'secondary',
-        'success',
-        'warning',
-        'danger',
-        'info',
-        'neutral',
-      ];
+      const variants: Array<
+        'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral'
+      > = ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'neutral'];
 
       variants.forEach((variant) => {
         const { container } = render(

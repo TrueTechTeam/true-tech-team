@@ -39,9 +39,7 @@ describe('useIntersectionObserver', () => {
   });
 
   it('returns initial state with custom initialIsIntersecting', () => {
-    const { result } = renderHook(() =>
-      useIntersectionObserver({ initialIsIntersecting: true })
-    );
+    const { result } = renderHook(() => useIntersectionObserver({ initialIsIntersecting: true }));
 
     expect(result.current.isIntersecting).toBe(true);
     expect(result.current.entry).toBe(null);
@@ -249,9 +247,7 @@ describe('useIntersectionObserver', () => {
   });
 
   it('passes custom rootMargin option to IntersectionObserver', () => {
-    const { result } = renderHook(() =>
-      useIntersectionObserver({ rootMargin: '100px 50px' })
-    );
+    const { result } = renderHook(() => useIntersectionObserver({ rootMargin: '100px 50px' }));
 
     const element = document.createElement('div');
 
@@ -344,9 +340,7 @@ describe('useIntersectionObserver', () => {
   });
 
   it('does not recreate observer after triggerOnce fires', () => {
-    const { result, rerender } = renderHook(() =>
-      useIntersectionObserver({ triggerOnce: true })
-    );
+    const { result, rerender } = renderHook(() => useIntersectionObserver({ triggerOnce: true }));
 
     const element = document.createElement('div');
 
@@ -428,10 +422,9 @@ describe('useIntersectionObserver', () => {
     const root1 = document.createElement('div');
     const root2 = document.createElement('div');
 
-    const { result, rerender } = renderHook(
-      ({ root }) => useIntersectionObserver({ root }),
-      { initialProps: { root: root1 } }
-    );
+    const { result, rerender } = renderHook(({ root }) => useIntersectionObserver({ root }), {
+      initialProps: { root: root1 },
+    });
 
     const element = document.createElement('div');
 

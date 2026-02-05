@@ -17,10 +17,9 @@ describe('useDebounce', () => {
   });
 
   it('debounces string value changes', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'first', delay: 500 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 'first', delay: 500 },
+    });
 
     expect(result.current).toBe('first');
 
@@ -42,10 +41,9 @@ describe('useDebounce', () => {
   });
 
   it('debounces number value changes', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 0, delay: 300 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 0, delay: 300 },
+    });
 
     expect(result.current).toBe(0);
 
@@ -59,10 +57,9 @@ describe('useDebounce', () => {
   });
 
   it('debounces boolean value changes', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: false, delay: 200 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: false, delay: 200 },
+    });
 
     expect(result.current).toBe(false);
 
@@ -79,10 +76,9 @@ describe('useDebounce', () => {
     const obj1 = { name: 'Alice', age: 30 };
     const obj2 = { name: 'Bob', age: 25 };
 
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: obj1, delay: 400 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: obj1, delay: 400 },
+    });
 
     expect(result.current).toBe(obj1);
 
@@ -99,10 +95,9 @@ describe('useDebounce', () => {
     const arr1 = [1, 2, 3];
     const arr2 = [4, 5, 6];
 
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: arr1, delay: 250 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: arr1, delay: 250 },
+    });
 
     expect(result.current).toBe(arr1);
 
@@ -116,10 +111,9 @@ describe('useDebounce', () => {
   });
 
   it('resets timer on multiple rapid changes', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'first', delay: 500 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 'first', delay: 500 },
+    });
 
     expect(result.current).toBe('first');
 
@@ -152,10 +146,9 @@ describe('useDebounce', () => {
   });
 
   it('handles delay changes', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'initial', delay: 500 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 'initial', delay: 500 },
+    });
 
     expect(result.current).toBe('initial');
 
@@ -174,10 +167,9 @@ describe('useDebounce', () => {
   });
 
   it('works with zero delay', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'first', delay: 0 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 'first', delay: 0 },
+    });
 
     expect(result.current).toBe('first');
 
@@ -193,10 +185,9 @@ describe('useDebounce', () => {
   it('cleans up timeout on unmount', () => {
     const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
-    const { rerender, unmount } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'first', delay: 500 } }
-    );
+    const { rerender, unmount } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 'first', delay: 500 },
+    });
 
     rerender({ value: 'second', delay: 500 });
 
@@ -211,10 +202,9 @@ describe('useDebounce', () => {
   });
 
   it('handles null and undefined values', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: null as any, delay: 300 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: null as any, delay: 300 },
+    });
 
     expect(result.current).toBe(null);
 
@@ -232,10 +222,9 @@ describe('useDebounce', () => {
   });
 
   it('handles very long delays', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'first', delay: 10000 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 'first', delay: 10000 },
+    });
 
     expect(result.current).toBe('first');
 
@@ -252,10 +241,9 @@ describe('useDebounce', () => {
   });
 
   it('debounces multiple sequential value changes independently', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 1, delay: 300 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 1, delay: 300 },
+    });
 
     expect(result.current).toBe(1);
 
@@ -282,10 +270,9 @@ describe('useDebounce', () => {
   });
 
   it('handles same value updates', () => {
-    const { result, rerender } = renderHook(
-      ({ value, delay }) => useDebounce(value, delay),
-      { initialProps: { value: 'same', delay: 500 } }
-    );
+    const { result, rerender } = renderHook(({ value, delay }) => useDebounce(value, delay), {
+      initialProps: { value: 'same', delay: 500 },
+    });
 
     expect(result.current).toBe('same');
 

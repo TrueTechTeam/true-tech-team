@@ -115,7 +115,6 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
         {...restProps}
       >
         {showImage && (
-           
           <img src={src} alt={alt} className={styles.avatarImage} onError={handleImageError} />
         )}
         {showInitials && <span className={styles.avatarInitials}>{initials}</span>}

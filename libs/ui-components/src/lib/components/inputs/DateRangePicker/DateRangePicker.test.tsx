@@ -578,9 +578,7 @@ describe('DateRangePicker', () => {
     });
 
     it('should prioritize error message over helper text', () => {
-      render(
-        <DateRangePicker error helperText="Helper text" errorMessage="Error message" />
-      );
+      render(<DateRangePicker error helperText="Helper text" errorMessage="Error message" />);
       expect(screen.getByText('Error message')).toBeInTheDocument();
       expect(screen.queryByText('Helper text')).not.toBeInTheDocument();
     });

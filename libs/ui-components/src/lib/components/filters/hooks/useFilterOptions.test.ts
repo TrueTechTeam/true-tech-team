@@ -37,9 +37,7 @@ describe('useFilterOptions', () => {
 
   describe('async options loading', () => {
     it('loads async options on mount', async () => {
-      const options: FilterOption[] = [
-        { value: 'option1', label: 'Option 1' },
-      ];
+      const options: FilterOption[] = [{ value: 'option1', label: 'Option 1' }];
 
       const loader: FilterOptionsLoader = {
         load: jest.fn().mockResolvedValue({ options, hasMore: false }),
@@ -62,9 +60,7 @@ describe('useFilterOptions', () => {
         load: jest.fn().mockResolvedValue({ options: [], hasMore: false }),
       };
 
-      const { result } = renderHook(() =>
-        useFilterOptions({ loader, loadOnMount: false })
-      );
+      const { result } = renderHook(() => useFilterOptions({ loader, loadOnMount: false }));
 
       expect(result.current.loading).toBe(false);
       expect(loader.load).not.toHaveBeenCalled();
@@ -135,10 +131,7 @@ describe('useFilterOptions', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.options).toEqual([
-        ...firstPageOptions,
-        ...secondPageOptions,
-      ]);
+      expect(result.current.options).toEqual([...firstPageOptions, ...secondPageOptions]);
       expect(result.current.hasMore).toBe(false);
     });
 
@@ -236,8 +229,7 @@ describe('useFilterOptions', () => {
       };
 
       const { rerender } = renderHook(
-        ({ dependencyValues }) =>
-          useFilterOptions({ loader, dependencyValues }),
+        ({ dependencyValues }) => useFilterOptions({ loader, dependencyValues }),
         { initialProps: { dependencyValues: { dep1: 'value1' } } }
       );
 
@@ -260,12 +252,12 @@ describe('useFilterOptions', () => {
   describe('clearOptionsCache', () => {
     it('clears cache for specific filter ID', async () => {
       const loader: FilterOptionsLoader = {
-        load: jest.fn().mockResolvedValue({ options: [{ value: '1', label: 'One' }], hasMore: false }),
+        load: jest
+          .fn()
+          .mockResolvedValue({ options: [{ value: '1', label: 'One' }], hasMore: false }),
       };
 
-      const { unmount } = renderHook(() =>
-        useFilterOptions({ loader, filterId: 'test-filter' })
-      );
+      const { unmount } = renderHook(() => useFilterOptions({ loader, filterId: 'test-filter' }));
 
       await waitFor(() => {
         expect(loader.load).toHaveBeenCalledTimes(1);

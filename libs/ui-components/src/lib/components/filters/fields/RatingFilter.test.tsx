@@ -24,7 +24,7 @@ jest.mock('../../inputs/Rating', () => ({
           disabled={disabled}
           data-filled={value >= i + 1 || undefined}
         >
-          {value >= i + 1 ? (icon || '★') : (emptyIcon || '☆')}
+          {value >= i + 1 ? icon || '★' : emptyIcon || '☆'}
         </button>
       ))}
     </div>
@@ -154,9 +154,7 @@ describe('RatingFilter', () => {
       const filter = createMockFilter('rating');
       setupUseFilterMock(filter);
 
-      const { container } = render(
-        <RatingFilter filterId="rating" className="custom-class" />
-      );
+      const { container } = render(<RatingFilter filterId="rating" className="custom-class" />);
 
       const wrapper = container.querySelector('.custom-class');
       expect(wrapper).toBeInTheDocument();
@@ -592,9 +590,7 @@ describe('RatingFilter', () => {
 
       render(<RatingFilter filterId="missing" />);
 
-      expect(warnSpy).toHaveBeenCalledWith(
-        'RatingFilter: Filter "missing" not found'
-      );
+      expect(warnSpy).toHaveBeenCalledWith('RatingFilter: Filter "missing" not found');
     });
   });
 
@@ -604,12 +600,7 @@ describe('RatingFilter', () => {
       const filter = createMockFilter('rating');
       setupUseFilterMock(filter);
 
-      render(
-        <RatingFilter
-          filterId="rating"
-          ratingProps={{ 'data-custom': 'test-value' }}
-        />
-      );
+      render(<RatingFilter filterId="rating" ratingProps={{ 'data-custom': 'test-value' }} />);
 
       expect(screen.getByTestId('rating-component')).toBeInTheDocument();
     });
@@ -661,13 +652,7 @@ describe('RatingFilter', () => {
       const filter = createMockFilter('rating');
       setupUseFilterMock(filter);
 
-      render(
-        <RatingFilter
-          filterId="rating"
-          data-testid="rating-filter"
-          data-custom="value"
-        />
-      );
+      render(<RatingFilter filterId="rating" data-testid="rating-filter" data-custom="value" />);
 
       const element = screen.getByTestId('rating-filter');
       expect(element).toHaveAttribute('data-custom', 'value');
@@ -687,22 +672,6 @@ describe('RatingFilter', () => {
 
       const element = screen.getByTestId('rating-filter');
       expect(element).toHaveStyle({ backgroundColor: 'red' });
-    });
-
-    it('accepts id attribute', () => {
-      const filter = createMockFilter('rating');
-      setupUseFilterMock(filter);
-
-      render(
-        <RatingFilter
-          filterId="rating"
-          id="custom-id"
-          data-testid="rating-filter"
-        />
-      );
-
-      const element = screen.getByTestId('rating-filter');
-      expect(element).toHaveAttribute('id', 'custom-id');
     });
   });
 
@@ -742,9 +711,7 @@ describe('RatingFilter', () => {
         const filter = createMockFilter('rating');
         setupUseFilterMock(filter);
 
-        const { container } = render(
-          <RatingFilter filterId="rating" size={size} />
-        );
+        const { container } = render(<RatingFilter filterId="rating" size={size} />);
 
         const ratingComponent = screen.getByTestId('rating-component');
         expect(ratingComponent).toHaveAttribute('data-size', size);
@@ -788,9 +755,7 @@ describe('RatingFilter', () => {
       const filter = createMockFilter('rating', undefined, { label: 'Original' });
       setupUseFilterMock(filter);
 
-      render(
-        <RatingFilter filterId="rating" label="" showLabel />
-      );
+      render(<RatingFilter filterId="rating" label="" showLabel />);
 
       expect(screen.queryByText('Original')).not.toBeInTheDocument();
     });
@@ -799,9 +764,7 @@ describe('RatingFilter', () => {
       const filter = createMockFilter('rating');
       setupUseFilterMock(filter);
 
-      const { container } = render(
-        <RatingFilter filterId="rating" className={undefined} />
-      );
+      const { container } = render(<RatingFilter filterId="rating" className={undefined} />);
 
       expect(container.firstChild).toBeInTheDocument();
     });

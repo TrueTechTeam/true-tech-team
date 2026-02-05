@@ -6,7 +6,9 @@ jest.mock('../../components/overlays/Alert', () => ({
   useAlertContextStrict: jest.fn(),
 }));
 
-const mockUseAlertContextStrict = useAlertContextStrict as jest.MockedFunction<typeof useAlertContextStrict>;
+const mockUseAlertContextStrict = useAlertContextStrict as jest.MockedFunction<
+  typeof useAlertContextStrict
+>;
 
 describe('useAlert', () => {
   let mockContext: ReturnType<typeof useAlertContextStrict>;

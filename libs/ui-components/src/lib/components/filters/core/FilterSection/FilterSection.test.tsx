@@ -676,9 +676,7 @@ describe('FilterSection', () => {
     });
 
     it('renders with empty string content', () => {
-      render(
-        <FilterSection title="Section" data-testid="section" />
-      );
+      render(<FilterSection title="Section" data-testid="section" />);
       expect(screen.getByTestId('section')).toBeInTheDocument();
     });
 

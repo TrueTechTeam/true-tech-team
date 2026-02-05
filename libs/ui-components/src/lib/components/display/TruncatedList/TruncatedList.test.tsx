@@ -6,12 +6,7 @@ describe('TruncatedList', () => {
   describe('rendering', () => {
     it('renders items', () => {
       const items = ['Item 1', 'Item 2', 'Item 3'];
-      render(
-        <TruncatedList
-          items={items}
-          renderItem={(item) => <span>{item}</span>}
-        />
-      );
+      render(<TruncatedList items={items} renderItem={(item) => <span>{item}</span>} />);
       expect(screen.getByText('Item 1')).toBeInTheDocument();
       expect(screen.getByText('Item 2')).toBeInTheDocument();
       expect(screen.getByText('Item 3')).toBeInTheDocument();
@@ -34,11 +29,7 @@ describe('TruncatedList', () => {
     it('shows all items when count is less than maxVisible', () => {
       const items = ['Item 1', 'Item 2'];
       render(
-        <TruncatedList
-          items={items}
-          maxVisible={3}
-          renderItem={(item) => <span>{item}</span>}
-        />
+        <TruncatedList items={items} maxVisible={3} renderItem={(item) => <span>{item}</span>} />
       );
       expect(screen.getByText('Item 1')).toBeInTheDocument();
       expect(screen.getByText('Item 2')).toBeInTheDocument();
@@ -48,11 +39,7 @@ describe('TruncatedList', () => {
     it('truncates items when count exceeds maxVisible', () => {
       const items = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
       render(
-        <TruncatedList
-          items={items}
-          maxVisible={3}
-          renderItem={(item) => <span>{item}</span>}
-        />
+        <TruncatedList items={items} maxVisible={3} renderItem={(item) => <span>{item}</span>} />
       );
       expect(screen.getByText('Item 1')).toBeInTheDocument();
       expect(screen.getByText('Item 2')).toBeInTheDocument();
@@ -64,11 +51,7 @@ describe('TruncatedList', () => {
     it('shows more indicator when items are truncated', () => {
       const items = ['Item 1', 'Item 2', 'Item 3', 'Item 4'];
       render(
-        <TruncatedList
-          items={items}
-          maxVisible={2}
-          renderItem={(item) => <span>{item}</span>}
-        />
+        <TruncatedList items={items} maxVisible={2} renderItem={(item) => <span>{item}</span>} />
       );
       expect(screen.getByText('+2 more')).toBeInTheDocument();
     });
@@ -108,10 +91,7 @@ describe('TruncatedList', () => {
   describe('direction', () => {
     it('uses horizontal direction by default', () => {
       const { container } = render(
-        <TruncatedList
-          items={['Item 1']}
-          renderItem={(item) => <span>{item}</span>}
-        />
+        <TruncatedList items={['Item 1']} renderItem={(item) => <span>{item}</span>} />
       );
       const element = container.querySelector('[data-component="truncated-list"]');
       expect(element).toHaveAttribute('data-direction', 'horizontal');
@@ -134,11 +114,7 @@ describe('TruncatedList', () => {
     it('forwards ref correctly', () => {
       const ref = React.createRef<HTMLDivElement>();
       render(
-        <TruncatedList
-          ref={ref}
-          items={['Item 1']}
-          renderItem={(item) => <span>{item}</span>}
-        />
+        <TruncatedList ref={ref} items={['Item 1']} renderItem={(item) => <span>{item}</span>} />
       );
       expect(ref.current).toBeInstanceOf(HTMLDivElement);
     });
@@ -147,22 +123,13 @@ describe('TruncatedList', () => {
   describe('edge cases', () => {
     it('renders with empty items array', () => {
       render(
-        <TruncatedList
-          items={[]}
-          renderItem={(item) => <span>{item}</span>}
-          data-testid="list"
-        />
+        <TruncatedList items={[]} renderItem={(item) => <span>{item}</span>} data-testid="list" />
       );
       expect(screen.getByTestId('list')).toBeInTheDocument();
     });
 
     it('renders with single item', () => {
-      render(
-        <TruncatedList
-          items={['Only Item']}
-          renderItem={(item) => <span>{item}</span>}
-        />
-      );
+      render(<TruncatedList items={['Only Item']} renderItem={(item) => <span>{item}</span>} />);
       expect(screen.getByText('Only Item')).toBeInTheDocument();
       expect(screen.queryByText(/more/)).not.toBeInTheDocument();
     });

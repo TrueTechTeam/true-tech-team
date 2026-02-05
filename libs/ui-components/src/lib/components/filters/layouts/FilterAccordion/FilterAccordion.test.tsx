@@ -45,7 +45,12 @@ jest.mock('../../core/FilterField', () => ({
 
 jest.mock('../../core/ActiveFilters', () => ({
   ActiveFilters: ({ maxVisible, showClearAll, ...props }: any) => (
-    <div data-testid="active-filters" data-max-visible={maxVisible} data-show-clear-all={showClearAll} {...props}>
+    <div
+      data-testid="active-filters"
+      data-max-visible={maxVisible}
+      data-show-clear-all={showClearAll}
+      {...props}
+    >
       ActiveFilters
     </div>
   ),
@@ -176,15 +181,11 @@ describe('FilterAccordion', () => {
         { id: 'filter1', type: 'text', label: 'Filter 1', group: 'group1' },
         { id: 'filter2', type: 'select', label: 'Filter 2', group: 'group1' },
       ];
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         filters,
         groups,
-        getFiltersByGroup: jest.fn((groupId) =>
-          filters.filter((f) => f.group === groupId)
-        ),
+        getFiltersByGroup: jest.fn((groupId) => filters.filter((f) => f.group === groupId)),
       });
 
       render(
@@ -198,9 +199,7 @@ describe('FilterAccordion', () => {
     });
 
     it('renders ungrouped filters in "General" section', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'filter1', type: 'text', label: 'Filter 1' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'filter1', type: 'text', label: 'Filter 1' }];
       const mockContext = createMockContext({
         filters,
         groups: [],
@@ -222,15 +221,11 @@ describe('FilterAccordion', () => {
         { id: 'filter1', type: 'text', label: 'Filter 1', group: 'group1' },
         { id: 'filter2', type: 'select', label: 'Filter 2', group: 'group1' },
       ];
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         filters,
         groups,
-        getFiltersByGroup: jest.fn((groupId) =>
-          filters.filter((f) => f.group === groupId)
-        ),
+        getFiltersByGroup: jest.fn((groupId) => filters.filter((f) => f.group === groupId)),
       });
 
       render(
@@ -254,9 +249,7 @@ describe('FilterAccordion', () => {
       const mockContext = createMockContext({
         filters,
         groups,
-        getFiltersByGroup: jest.fn((groupId) =>
-          filters.filter((f) => f.group === groupId)
-        ),
+        getFiltersByGroup: jest.fn((groupId) => filters.filter((f) => f.group === groupId)),
         isFilterVisible: jest.fn(() => true),
       });
 
@@ -275,15 +268,11 @@ describe('FilterAccordion', () => {
         { id: 'filter1', type: 'text', label: 'Filter 1', group: 'group1' },
         { id: 'filter2', type: 'select', label: 'Filter 2', group: 'group1', hidden: true },
       ];
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         filters,
         groups,
-        getFiltersByGroup: jest.fn((groupId) =>
-          filters.filter((f) => f.group === groupId)
-        ),
+        getFiltersByGroup: jest.fn((groupId) => filters.filter((f) => f.group === groupId)),
         isFilterVisible: jest.fn((filterId) => filterId !== 'filter2'),
       });
 
@@ -301,9 +290,7 @@ describe('FilterAccordion', () => {
   // 4. Group expansion tests
   describe('group expansion', () => {
     it('uses defaultExpandedGroups for initial state', () => {
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
         getFiltersByGroup: jest.fn(() => [
@@ -322,9 +309,7 @@ describe('FilterAccordion', () => {
     });
 
     it('handles controlled expandedGroups', () => {
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
         getFiltersByGroup: jest.fn(() => [
@@ -344,9 +329,7 @@ describe('FilterAccordion', () => {
 
     it('calls onExpandedGroupsChange when group is toggled', () => {
       const handleChange = jest.fn();
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
         getFiltersByGroup: jest.fn(() => [
@@ -381,7 +364,11 @@ describe('FilterAccordion', () => {
 
       render(
         <FilterContext.Provider value={mockContext}>
-          <FilterAccordion mode="single" defaultExpandedGroups={['group1']} onExpandedGroupsChange={handleChange} />
+          <FilterAccordion
+            mode="single"
+            defaultExpandedGroups={['group1']}
+            onExpandedGroupsChange={handleChange}
+          />
         </FilterContext.Provider>
       );
 
@@ -407,7 +394,11 @@ describe('FilterAccordion', () => {
 
       render(
         <FilterContext.Provider value={mockContext}>
-          <FilterAccordion mode="multiple" defaultExpandedGroups={['group1']} onExpandedGroupsChange={handleChange} />
+          <FilterAccordion
+            mode="multiple"
+            defaultExpandedGroups={['group1']}
+            onExpandedGroupsChange={handleChange}
+          />
         </FilterContext.Provider>
       );
 
@@ -420,9 +411,7 @@ describe('FilterAccordion', () => {
 
     it('collapses group when clicking on open group', () => {
       const handleChange = jest.fn();
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
         getFiltersByGroup: jest.fn(() => [
@@ -432,7 +421,10 @@ describe('FilterAccordion', () => {
 
       render(
         <FilterContext.Provider value={mockContext}>
-          <FilterAccordion defaultExpandedGroups={['group1']} onExpandedGroupsChange={handleChange} />
+          <FilterAccordion
+            defaultExpandedGroups={['group1']}
+            onExpandedGroupsChange={handleChange}
+          />
         </FilterContext.Provider>
       );
 
@@ -446,9 +438,7 @@ describe('FilterAccordion', () => {
   // 5. Group counts and badges tests
   describe('group counts and badges', () => {
     it('shows active count badge when showGroupCounts is true', () => {
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
         getFiltersByGroup: jest.fn(() => [
@@ -468,9 +458,7 @@ describe('FilterAccordion', () => {
     });
 
     it('does not show badge when showGroupCounts is false', () => {
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
         getFiltersByGroup: jest.fn(() => [
@@ -489,9 +477,7 @@ describe('FilterAccordion', () => {
     });
 
     it('does not show badge when no active filters in group', () => {
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
         getFiltersByGroup: jest.fn(() => [
@@ -510,9 +496,7 @@ describe('FilterAccordion', () => {
     });
 
     it('shows correct count for multiple active filters', () => {
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
         getFiltersByGroup: jest.fn(() => [
@@ -556,9 +540,7 @@ describe('FilterAccordion', () => {
     });
 
     it('does not render icon when not provided', () => {
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
         getFiltersByGroup: jest.fn(() => [
@@ -599,9 +581,7 @@ describe('FilterAccordion', () => {
     });
 
     it('does not render description when not provided', () => {
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
         getFiltersByGroup: jest.fn(() => [
@@ -904,9 +884,7 @@ describe('FilterAccordion', () => {
       ];
       const mockContext = createMockContext({
         groups,
-        getFiltersByGroup: jest.fn(() => [
-          { id: 'filter1', type: 'text', label: 'Filter 1' },
-        ]),
+        getFiltersByGroup: jest.fn(() => [{ id: 'filter1', type: 'text', label: 'Filter 1' }]),
       });
 
       const { container } = render(
@@ -928,9 +906,7 @@ describe('FilterAccordion', () => {
       ];
       const mockContext = createMockContext({
         groups,
-        getFiltersByGroup: jest.fn(() => [
-          { id: 'filter1', type: 'text', label: 'Filter 1' },
-        ]),
+        getFiltersByGroup: jest.fn(() => [{ id: 'filter1', type: 'text', label: 'Filter 1' }]),
       });
 
       render(
@@ -970,9 +946,7 @@ describe('FilterAccordion', () => {
       const mockContext = createMockContext({
         filters: [{ id: 'filter1', type: 'text', label: 'Filter 1' }],
         groups: [],
-        getUngroupedFilters: jest.fn(() => [
-          { id: 'filter1', type: 'text', label: 'Filter 1' },
-        ]),
+        getUngroupedFilters: jest.fn(() => [{ id: 'filter1', type: 'text', label: 'Filter 1' }]),
       });
 
       render(
@@ -1008,9 +982,7 @@ describe('FilterAccordion', () => {
       ];
       const mockContext = createMockContext({
         groups,
-        getFiltersByGroup: jest.fn(() => [
-          { id: 'filter1', type: 'text', label: 'Filter 1' },
-        ]),
+        getFiltersByGroup: jest.fn(() => [{ id: 'filter1', type: 'text', label: 'Filter 1' }]),
       });
 
       render(
@@ -1025,14 +997,10 @@ describe('FilterAccordion', () => {
 
     it('handles rapid toggling of groups', () => {
       const handleChange = jest.fn();
-      const groups: FilterGroup[] = [
-        { id: 'group1', label: 'Group 1' },
-      ];
+      const groups: FilterGroup[] = [{ id: 'group1', label: 'Group 1' }];
       const mockContext = createMockContext({
         groups,
-        getFiltersByGroup: jest.fn(() => [
-          { id: 'filter1', type: 'text', label: 'Filter 1' },
-        ]),
+        getFiltersByGroup: jest.fn(() => [{ id: 'filter1', type: 'text', label: 'Filter 1' }]),
       });
 
       render(

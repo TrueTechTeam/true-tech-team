@@ -66,12 +66,20 @@ describe('Reveal', () => {
     });
 
     it('applies custom className', () => {
-      render(<Reveal className="custom-class" data-testid="reveal">Content</Reveal>);
+      render(
+        <Reveal className="custom-class" data-testid="reveal">
+          Content
+        </Reveal>
+      );
       expect(screen.getByTestId('reveal')).toHaveClass('custom-class');
     });
 
     it('renders with animation attribute', () => {
-      render(<Reveal animation="slideUp" data-testid="reveal">Content</Reveal>);
+      render(
+        <Reveal animation="slideUp" data-testid="reveal">
+          Content
+        </Reveal>
+      );
       expect(screen.getByTestId('reveal')).toHaveAttribute('data-animation', 'slideUp');
     });
   });
@@ -125,7 +133,11 @@ describe('Reveal', () => {
 
   describe('initiallyVisible', () => {
     it('sets revealed state immediately when true', () => {
-      render(<Reveal initiallyVisible data-testid="reveal">Test</Reveal>);
+      render(
+        <Reveal initiallyVisible data-testid="reveal">
+          Test
+        </Reveal>
+      );
       expect(screen.getByTestId('reveal')).toHaveAttribute('data-revealed', 'true');
     });
   });
@@ -140,12 +152,20 @@ describe('Reveal', () => {
 
   describe('CSS variables', () => {
     it('sets duration CSS variable', () => {
-      render(<Reveal duration={800} data-testid="reveal">Test</Reveal>);
+      render(
+        <Reveal duration={800} data-testid="reveal">
+          Test
+        </Reveal>
+      );
       expect(screen.getByTestId('reveal')).toHaveStyle({ '--reveal-duration': '800ms' });
     });
 
     it('sets delay CSS variable', () => {
-      render(<Reveal delay={200} data-testid="reveal">Test</Reveal>);
+      render(
+        <Reveal delay={200} data-testid="reveal">
+          Test
+        </Reveal>
+      );
       expect(screen.getByTestId('reveal')).toHaveStyle({ '--reveal-delay': '200ms' });
     });
   });

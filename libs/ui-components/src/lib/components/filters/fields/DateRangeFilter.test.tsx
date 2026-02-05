@@ -2,7 +2,12 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { DateRangeFilter } from './DateRangeFilter';
 import { FilterContext } from '../FilterContext';
-import type { FilterContextValue, FilterDefinition, DateRangeValue, DateRangeFilterConfig } from '../types';
+import type {
+  FilterContextValue,
+  FilterDefinition,
+  DateRangeValue,
+  DateRangeFilterConfig,
+} from '../types';
 
 // Mock DateRangePicker component - only extract props we need
 jest.mock('../../inputs/DateRangePicker', () => ({
@@ -135,9 +140,13 @@ describe('DateRangeFilter', () => {
   describe('disabled state', () => {
     it('disables picker when filter is not enabled', () => {
       const filter = createDateRangeFilter('dateRange', 'Date Range');
-      const context = createMockContext([filter], {}, {
-        isFilterEnabled: () => false,
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          isFilterEnabled: () => false,
+        }
+      );
       renderWithContext(<DateRangeFilter filterId="dateRange" />, context);
       expect(screen.getByTestId('date-range-picker')).toHaveAttribute('data-disabled', 'true');
     });
@@ -146,9 +155,13 @@ describe('DateRangeFilter', () => {
   describe('error state', () => {
     it('shows error state when filter has error', () => {
       const filter = createDateRangeFilter('dateRange', 'Date Range');
-      const context = createMockContext([filter], {}, {
-        errors: { dateRange: 'Invalid date range' },
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          errors: { dateRange: 'Invalid date range' },
+        }
+      );
       renderWithContext(<DateRangeFilter filterId="dateRange" />, context);
       expect(screen.getByTestId('date-range-picker')).toHaveAttribute('data-error', 'true');
     });

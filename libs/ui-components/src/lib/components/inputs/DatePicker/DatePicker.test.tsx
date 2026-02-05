@@ -563,7 +563,9 @@ describe('DatePicker', () => {
       const input = screen.getByRole('textbox');
       fireEvent.change(input, { target: { value: 'not a date' } });
 
-      const validCalls = handleChange.mock.calls.filter((call) => call[0] !== null && call[0] !== undefined);
+      const validCalls = handleChange.mock.calls.filter(
+        (call) => call[0] !== null && call[0] !== undefined
+      );
       expect(validCalls.length).toBe(0);
     });
 
@@ -574,7 +576,9 @@ describe('DatePicker', () => {
       const input = screen.getByRole('textbox');
       fireEvent.change(input, { target: { value: '06/15/' } });
 
-      const validCalls = handleChange.mock.calls.filter((call) => call[0] !== null && call[0] !== undefined);
+      const validCalls = handleChange.mock.calls.filter(
+        (call) => call[0] !== null && call[0] !== undefined
+      );
       expect(validCalls.length).toBe(0);
     });
   });
@@ -593,7 +597,9 @@ describe('DatePicker', () => {
       });
 
       const dayButtons = screen.getAllByRole('button');
-      const lateDays = dayButtons.filter((btn) => btn.textContent && parseInt(btn.textContent) > 15);
+      const lateDays = dayButtons.filter(
+        (btn) => btn.textContent && parseInt(btn.textContent) > 15
+      );
 
       expect(lateDays.some((btn) => btn.disabled)).toBeTruthy();
     });

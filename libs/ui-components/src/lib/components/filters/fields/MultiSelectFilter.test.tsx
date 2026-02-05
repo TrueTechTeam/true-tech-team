@@ -22,7 +22,11 @@ jest.mock('../../inputs/CheckboxGroup', () => ({
 
 jest.mock('../../inputs/Checkbox', () => ({
   Checkbox: ({ checked, onChange, label, disabled }: any) => (
-    <div data-testid="checkbox" data-checked={checked || undefined} data-disabled={disabled || undefined}>
+    <div
+      data-testid="checkbox"
+      data-checked={checked || undefined}
+      data-disabled={disabled || undefined}
+    >
       <input
         type="checkbox"
         checked={checked}
@@ -127,7 +131,10 @@ describe('MultiSelectFilter', () => {
 
     it('returns null when filter not found', () => {
       const context = createMockContext([]);
-      const { container } = renderWithContext(<MultiSelectFilter filterId="nonexistent" />, context);
+      const { container } = renderWithContext(
+        <MultiSelectFilter filterId="nonexistent" />,
+        context
+      );
       expect(container.firstChild).toBeNull();
     });
   });

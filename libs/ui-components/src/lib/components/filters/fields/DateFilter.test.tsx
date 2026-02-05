@@ -7,7 +7,9 @@ import type { FilterDefinition } from '../types';
 jest.mock('../hooks/useFilter');
 const mockUseFilter = useFilter as jest.MockedFunction<typeof useFilter>;
 
-const createMockFilter = (overrides?: Partial<FilterDefinition>): FilterDefinition<Date | null> => ({
+const createMockFilter = (
+  overrides?: Partial<FilterDefinition>
+): FilterDefinition<Date | null> => ({
   id: 'date',
   type: 'date',
   label: 'Date',
@@ -100,7 +102,6 @@ describe('DateFilter', () => {
       fireEvent.change(input, { target: { value: '2024-06-15' } });
       expect(setValue).toHaveBeenCalled();
     });
-
   });
 
   describe('ref forwarding', () => {
