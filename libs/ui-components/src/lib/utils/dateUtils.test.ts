@@ -88,9 +88,7 @@ describe('dateUtils', () => {
 
     it('should include days from next month', () => {
       const days = getCalendarDays(2024, 5); // June 2024
-      const nextMonthDays = days.filter(
-        (day) => !day.isCurrentMonth && day.date.getMonth() === 6
-      );
+      const nextMonthDays = days.filter((day) => !day.isCurrentMonth && day.date.getMonth() === 6);
       expect(nextMonthDays.length).toBeGreaterThan(0);
     });
 
@@ -111,9 +109,7 @@ describe('dateUtils', () => {
     it('should handle year transitions', () => {
       const days = getCalendarDays(2024, 0); // January 2024
       // Should include some days from December 2023
-      const prevMonthDays = days.filter(
-        (day) => !day.isCurrentMonth && day.date.getMonth() === 11
-      );
+      const prevMonthDays = days.filter((day) => !day.isCurrentMonth && day.date.getMonth() === 11);
       expect(prevMonthDays.length).toBeGreaterThan(0);
       expect(prevMonthDays[0].date.getFullYear()).toBe(2023);
     });

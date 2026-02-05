@@ -116,7 +116,9 @@ describe('FilterModal', () => {
     it('renders custom trigger via renderTrigger', () => {
       render(
         <FilterModalWithContext>
-          <FilterModal renderTrigger={({ onClick }) => <button onClick={onClick}>Custom Trigger</button>}>
+          <FilterModal
+            renderTrigger={({ onClick }) => <button onClick={onClick}>Custom Trigger</button>}
+          >
             Filter Content
           </FilterModal>
         </FilterModalWithContext>
@@ -768,7 +770,9 @@ describe('FilterModal', () => {
       const resetFilters = jest.fn();
 
       render(
-        <FilterModalWithContext contextValue={{ activeCount: 5, applyFilters, clearAllFilters, resetFilters }}>
+        <FilterModalWithContext
+          contextValue={{ activeCount: 5, applyFilters, clearAllFilters, resetFilters }}
+        >
           <FilterModal
             title="Custom Filters"
             size="lg"

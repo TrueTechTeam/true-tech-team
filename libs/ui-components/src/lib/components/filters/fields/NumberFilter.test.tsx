@@ -61,7 +61,13 @@ const createMockContext = (
   getUngroupedFilters: () => filters,
   isFilterVisible: () => true,
   isFilterEnabled: () => true,
-  getFilterOptions: () => ({ options: [], loading: false, error: null, hasMore: false, loadMore: jest.fn() }),
+  getFilterOptions: () => ({
+    options: [],
+    loading: false,
+    error: null,
+    hasMore: false,
+    loadMore: jest.fn(),
+  }),
   reloadFilterOptions: jest.fn(),
   setFilterValue: jest.fn(),
   setFilterValues: jest.fn(),
@@ -81,15 +87,8 @@ const createMockContext = (
 });
 
 // Helper to render with context
-const renderWithContext = (
-  ui: React.ReactElement,
-  context: FilterContextValue
-) => {
-  return render(
-    <FilterContext.Provider value={context}>
-      {ui}
-    </FilterContext.Provider>
-  );
+const renderWithContext = (ui: React.ReactElement, context: FilterContextValue) => {
+  return render(<FilterContext.Provider value={context}>{ui}</FilterContext.Provider>);
 };
 
 // Helper to create a number filter definition
@@ -160,10 +159,7 @@ describe('NumberFilter', () => {
       const filter = createNumberFilter('test', 'Test');
       const context = createMockContext([filter], { test: 0 });
 
-      const { container } = renderWithContext(
-        <NumberFilter filterId="test" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberFilter filterId="test" />, context);
 
       expect(container.firstChild?.nodeName).toBe('DIV');
     });
@@ -174,10 +170,7 @@ describe('NumberFilter', () => {
     it('returns null when filter is not found', () => {
       const context = createMockContext([]);
 
-      const { container } = renderWithContext(
-        <NumberFilter filterId="nonexistent" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberFilter filterId="nonexistent" />, context);
 
       expect(container.firstChild).toBeNull();
     });
@@ -215,10 +208,7 @@ describe('NumberFilter', () => {
       const filter = createNumberFilter('age', 'Age Label');
       const context = createMockContext([filter], { age: 25 });
 
-      renderWithContext(
-        <NumberFilter filterId="age" label="Custom Age" />,
-        context
-      );
+      renderWithContext(<NumberFilter filterId="age" label="Custom Age" />, context);
 
       expect(screen.getByText('Custom Age')).toBeInTheDocument();
       expect(screen.queryByText('Age Label')).not.toBeInTheDocument();
@@ -228,10 +218,7 @@ describe('NumberFilter', () => {
       const filter = createNumberFilter('age', 'Age');
       const context = createMockContext([filter], { age: 30 });
 
-      renderWithContext(
-        <NumberFilter filterId="age" showLabel />,
-        context
-      );
+      renderWithContext(<NumberFilter filterId="age" showLabel />, context);
 
       expect(screen.getByText('Age')).toBeInTheDocument();
     });
@@ -240,10 +227,7 @@ describe('NumberFilter', () => {
       const filter = createNumberFilter('age', 'Age');
       const context = createMockContext([filter], { age: 30 });
 
-      renderWithContext(
-        <NumberFilter filterId="age" showLabel={false} />,
-        context
-      );
+      renderWithContext(<NumberFilter filterId="age" showLabel={false} />, context);
 
       expect(screen.queryByText('Age')).not.toBeInTheDocument();
     });
@@ -252,10 +236,7 @@ describe('NumberFilter', () => {
       const filter = createNumberFilter('quantity', 'Quantity');
       const context = createMockContext([filter], { quantity: 10 });
 
-      renderWithContext(
-        <NumberFilter filterId="quantity" label="Item Count" />,
-        context
-      );
+      renderWithContext(<NumberFilter filterId="quantity" label="Item Count" />, context);
 
       expect(screen.getByText('Item Count')).toBeInTheDocument();
     });
@@ -530,11 +511,7 @@ describe('NumberFilter', () => {
 
     it('sets error prop on NumberInput when error exists', () => {
       const filter = createNumberFilter('age', 'Age');
-      const context = createMockContext(
-        [filter],
-        { age: 5 },
-        { errors: { age: 'Invalid' } }
-      );
+      const context = createMockContext([filter], { age: 5 }, { errors: { age: 'Invalid' } });
 
       renderWithContext(<NumberFilter filterId="age" />, context);
 
@@ -558,11 +535,7 @@ describe('NumberFilter', () => {
         ...createNumberFilter('age', 'Age'),
         helperText: 'Enter your age',
       };
-      const context = createMockContext(
-        [filter],
-        { age: 5 },
-        { errors: { age: 'Too young' } }
-      );
+      const context = createMockContext([filter], { age: 5 }, { errors: { age: 'Too young' } });
 
       renderWithContext(<NumberFilter filterId="age" />, context);
 
@@ -668,10 +641,7 @@ describe('NumberFilter', () => {
       const context = createMockContext([filter], { age: 25 });
 
       renderWithContext(
-        <NumberFilter
-          filterId="age"
-          numberInputProps={{ 'data-custom': 'value', width: 200 }}
-        />,
+        <NumberFilter filterId="age" numberInputProps={{ 'data-custom': 'value', width: 200 }} />,
         context
       );
 
@@ -768,11 +738,7 @@ describe('NumberFilter', () => {
       const context = createMockContext([filter], { age: 25 });
 
       renderWithContext(
-        <NumberFilter
-          filterId="age"
-          data-testid="test-filter"
-          data-custom="value"
-        />,
+        <NumberFilter filterId="age" data-testid="test-filter" data-custom="value" />,
         context
       );
 
@@ -798,11 +764,7 @@ describe('NumberFilter', () => {
       const context = createMockContext([filter], { age: 25 });
 
       const { container } = renderWithContext(
-        <NumberFilter
-          filterId="age"
-          data-custom="value"
-          id="custom-id"
-        />,
+        <NumberFilter filterId="age" data-custom="value" id="custom-id" />,
         context
       );
 
@@ -819,10 +781,7 @@ describe('NumberFilter', () => {
       const filter = createNumberFilter('age', 'Age');
       const context = createMockContext([filter], { age: 25 });
 
-      renderWithContext(
-        <NumberFilter ref={ref} filterId="age" />,
-        context
-      );
+      renderWithContext(<NumberFilter ref={ref} filterId="age" />, context);
 
       expect(ref.current).toBeInstanceOf(HTMLDivElement);
     });
@@ -832,10 +791,7 @@ describe('NumberFilter', () => {
       const filter = createNumberFilter('age', 'Age');
       const context = createMockContext([filter], { age: 25 });
 
-      renderWithContext(
-        <NumberFilter ref={refCallback} filterId="age" />,
-        context
-      );
+      renderWithContext(<NumberFilter ref={refCallback} filterId="age" />, context);
 
       expect(refCallback).toHaveBeenCalledWith(expect.any(HTMLDivElement));
     });
@@ -844,10 +800,7 @@ describe('NumberFilter', () => {
       const ref = React.createRef<HTMLDivElement>();
       const context = createMockContext([]);
 
-      renderWithContext(
-        <NumberFilter ref={ref} filterId="missing" />,
-        context
-      );
+      renderWithContext(<NumberFilter ref={ref} filterId="missing" />, context);
 
       expect(ref.current).toBeNull();
     });
@@ -868,10 +821,7 @@ describe('NumberFilter', () => {
       const filter = createNumberFilter('age', 'Age');
       const context = createMockContext([filter], { age: 25 });
 
-      renderWithContext(
-        <NumberFilter filterId="age" label="" showLabel />,
-        context
-      );
+      renderWithContext(<NumberFilter filterId="age" label="" showLabel />, context);
 
       expect(screen.queryByText('Age')).not.toBeInTheDocument();
     });
@@ -880,10 +830,7 @@ describe('NumberFilter', () => {
       const filter = createNumberFilter('filter-with-dashes_and_underscores', 'Special');
       const context = createMockContext([filter], { 'filter-with-dashes_and_underscores': 42 });
 
-      renderWithContext(
-        <NumberFilter filterId="filter-with-dashes_and_underscores" />,
-        context
-      );
+      renderWithContext(<NumberFilter filterId="filter-with-dashes_and_underscores" />, context);
 
       expect(screen.getByTestId('number-input')).toBeInTheDocument();
     });
@@ -891,10 +838,7 @@ describe('NumberFilter', () => {
     it('handles empty filterId gracefully', () => {
       const context = createMockContext([]);
 
-      const { container } = renderWithContext(
-        <NumberFilter filterId="" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberFilter filterId="" />, context);
 
       expect(container.firstChild).toBeNull();
     });
@@ -997,11 +941,7 @@ describe('NumberFilter', () => {
       const context = createMockContext([filter], { quantity: 5 });
 
       const { container } = renderWithContext(
-        <NumberFilter
-          filterId="quantity"
-          showLabel={false}
-          className="hidden-label"
-        />,
+        <NumberFilter filterId="quantity" showLabel={false} className="hidden-label" />,
         context
       );
 

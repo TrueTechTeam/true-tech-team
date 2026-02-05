@@ -100,13 +100,7 @@ describe('Table', () => {
 
   describe('selection', () => {
     it('renders with multiple selection mode', () => {
-      render(
-        <Table
-          data={sampleUsers}
-          columns={basicColumns}
-          selectionMode="multiple"
-        />
-      );
+      render(<Table data={sampleUsers} columns={basicColumns} selectionMode="multiple" />);
       const checkboxes = screen.getAllByRole('checkbox');
       expect(checkboxes.length).toBeGreaterThan(0);
     });
@@ -167,26 +161,14 @@ describe('Table', () => {
     });
 
     it('renders custom empty content', () => {
-      render(
-        <Table
-          data={[]}
-          columns={basicColumns}
-          emptyContent="No users found"
-        />
-      );
+      render(<Table data={[]} columns={basicColumns} emptyContent="No users found" />);
       expect(screen.getByText('No users found')).toBeInTheDocument();
     });
   });
 
   describe('sticky header', () => {
     it('sets sticky header attribute when stickyHeader is true', () => {
-      render(
-        <Table
-          data={sampleUsers}
-          columns={basicColumns}
-          stickyHeader
-        />
-      );
+      render(<Table data={sampleUsers} columns={basicColumns} stickyHeader />);
       expect(screen.getByRole('table')).toHaveAttribute('data-sticky-header', 'true');
     });
   });
@@ -198,7 +180,7 @@ describe('Table', () => {
         {
           key: 'status',
           header: 'Status',
-          render: (value, row) => <span data-testid="custom-status">Status: {String(value)}</span>,
+          render: (value) => <span data-testid="custom-status">Status: {String(value)}</span>,
         },
       ];
 

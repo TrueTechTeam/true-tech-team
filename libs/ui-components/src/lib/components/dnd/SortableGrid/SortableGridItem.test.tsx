@@ -1338,4 +1338,3 @@ describe('SortableGridItem', () => {
     });
   });
 });
-

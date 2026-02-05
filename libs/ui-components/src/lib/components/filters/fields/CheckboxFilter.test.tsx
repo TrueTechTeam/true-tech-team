@@ -80,9 +80,7 @@ describe('CheckboxFilter', () => {
     it('renders wrapper div with className', () => {
       mockUseFilter.mockReturnValue(createMockUseFilterReturn());
 
-      const { container } = render(
-        <CheckboxFilter filterId="active" className="custom-class" />
-      );
+      const { container } = render(<CheckboxFilter filterId="active" className="custom-class" />);
 
       const wrapper = container.querySelector('.custom-class');
       expect(wrapper).toBeInTheDocument();
@@ -317,9 +315,7 @@ describe('CheckboxFilter', () => {
 
     it('does not call setValue when disabled', () => {
       const setValue = jest.fn();
-      mockUseFilter.mockReturnValue(
-        createMockUseFilterReturn({ isEnabled: false, setValue })
-      );
+      mockUseFilter.mockReturnValue(createMockUseFilterReturn({ isEnabled: false, setValue }));
 
       render(<CheckboxFilter filterId="active" />);
 
@@ -350,9 +346,7 @@ describe('CheckboxFilter', () => {
     });
 
     it('displays error message', () => {
-      mockUseFilter.mockReturnValue(
-        createMockUseFilterReturn({ error: 'This field is required' })
-      );
+      mockUseFilter.mockReturnValue(createMockUseFilterReturn({ error: 'This field is required' }));
 
       render(<CheckboxFilter filterId="active" />);
 
@@ -415,10 +409,7 @@ describe('CheckboxFilter', () => {
       mockUseFilter.mockReturnValue(createMockUseFilterReturn({ value: true }));
 
       render(
-        <CheckboxFilter
-          filterId="active"
-          checkboxProps={{ 'data-testid': 'custom-checkbox' }}
-        />
+        <CheckboxFilter filterId="active" checkboxProps={{ 'data-testid': 'custom-checkbox' }} />
       );
 
       const checkbox = screen.getByTestId('custom-checkbox');
@@ -479,9 +470,7 @@ describe('CheckboxFilter', () => {
     it('accepts custom className', () => {
       mockUseFilter.mockReturnValue(createMockUseFilterReturn());
 
-      const { container } = render(
-        <CheckboxFilter filterId="active" className="custom-filter" />
-      );
+      const { container } = render(<CheckboxFilter filterId="active" className="custom-filter" />);
 
       const wrapper = container.querySelector('.custom-filter');
       expect(wrapper).toBeInTheDocument();
@@ -501,9 +490,7 @@ describe('CheckboxFilter', () => {
     it('accepts id attribute', () => {
       mockUseFilter.mockReturnValue(createMockUseFilterReturn());
 
-      const { container } = render(
-        <CheckboxFilter filterId="active" id="custom-id" />
-      );
+      const { container } = render(<CheckboxFilter filterId="active" id="custom-id" />);
 
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper).toHaveAttribute('id', 'custom-id');
@@ -512,13 +499,7 @@ describe('CheckboxFilter', () => {
     it('accepts data attributes', () => {
       mockUseFilter.mockReturnValue(createMockUseFilterReturn());
 
-      render(
-        <CheckboxFilter
-          filterId="active"
-          data-testid="test-filter"
-          data-custom="value"
-        />
-      );
+      render(<CheckboxFilter filterId="active" data-testid="test-filter" data-custom="value" />);
 
       const wrapper = screen.getByTestId('test-filter');
       expect(wrapper).toHaveAttribute('data-custom', 'value');
@@ -561,9 +542,7 @@ describe('CheckboxFilter', () => {
     });
 
     it('uses error from hook', () => {
-      mockUseFilter.mockReturnValue(
-        createMockUseFilterReturn({ error: 'Validation error' })
-      );
+      mockUseFilter.mockReturnValue(createMockUseFilterReturn({ error: 'Validation error' }));
 
       render(<CheckboxFilter filterId="active" />);
 
@@ -620,9 +599,7 @@ describe('CheckboxFilter', () => {
     it('handles undefined className gracefully', () => {
       mockUseFilter.mockReturnValue(createMockUseFilterReturn());
 
-      const { container } = render(
-        <CheckboxFilter filterId="active" className={undefined} />
-      );
+      const { container } = render(<CheckboxFilter filterId="active" className={undefined} />);
 
       expect(container.firstChild).toBeInTheDocument();
     });

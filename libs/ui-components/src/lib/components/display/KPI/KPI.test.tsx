@@ -119,7 +119,9 @@ describe('KPI', () => {
     });
 
     it('renders trend when provided', () => {
-      render(<KPI title="Users" value="1,234" trend={<div data-testid="trend-chart">Chart</div>} />);
+      render(
+        <KPI title="Users" value="1,234" trend={<div data-testid="trend-chart">Chart</div>} />
+      );
       expect(screen.getByTestId('trend-chart')).toBeInTheDocument();
     });
 
@@ -315,27 +317,13 @@ describe('KPI', () => {
     });
 
     it('accepts custom style prop', () => {
-      render(
-        <KPI
-          title="Test"
-          value="123"
-          style={{ backgroundColor: 'red' }}
-          data-testid="kpi"
-        />
-      );
+      render(<KPI title="Test" value="123" style={{ backgroundColor: 'red' }} data-testid="kpi" />);
       const element = screen.getByTestId('kpi');
       expect(element).toHaveStyle({ backgroundColor: 'red' });
     });
 
     it('accepts additional data attributes', () => {
-      render(
-        <KPI
-          title="Test"
-          value="123"
-          data-testid="kpi"
-          data-custom-attr="custom-value"
-        />
-      );
+      render(<KPI title="Test" value="123" data-testid="kpi" data-custom-attr="custom-value" />);
       const element = screen.getByTestId('kpi');
       expect(element).toHaveAttribute('data-custom-attr', 'custom-value');
     });

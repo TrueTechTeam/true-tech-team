@@ -8,10 +8,9 @@ describe('usePrevious', () => {
   });
 
   it('returns previous value after rerender', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: 'first' } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: 'first' },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -20,10 +19,9 @@ describe('usePrevious', () => {
   });
 
   it('tracks multiple value changes correctly', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: 1 } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: 1 },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -38,10 +36,9 @@ describe('usePrevious', () => {
   });
 
   it('works with string values', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: 'hello' } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: 'hello' },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -53,10 +50,9 @@ describe('usePrevious', () => {
   });
 
   it('works with number values', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: 0 } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: 0 },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -68,10 +64,9 @@ describe('usePrevious', () => {
   });
 
   it('works with boolean values', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: false } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: false },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -87,10 +82,9 @@ describe('usePrevious', () => {
     const obj2 = { name: 'Bob', age: 25 };
     const obj3 = { name: 'Charlie', age: 35 };
 
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: obj1 } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: obj1 },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -106,10 +100,9 @@ describe('usePrevious', () => {
     const arr2 = [4, 5, 6];
     const arr3 = [7, 8, 9];
 
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: arr1 } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: arr1 },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -121,10 +114,9 @@ describe('usePrevious', () => {
   });
 
   it('handles null values', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: null as any } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: null as any },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -136,10 +128,9 @@ describe('usePrevious', () => {
   });
 
   it('handles undefined values', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: undefined as any } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: undefined as any },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -151,10 +142,9 @@ describe('usePrevious', () => {
   });
 
   it('handles same value updates', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: 'same' } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: 'same' },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -171,10 +161,9 @@ describe('usePrevious', () => {
   it('handles same object reference updates', () => {
     const obj = { name: 'Alice' };
 
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: obj } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: obj },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -187,20 +176,18 @@ describe('usePrevious', () => {
   });
 
   it('returns previous value immediately after change', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: 'initial' } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: 'initial' },
+    });
 
     rerender({ value: 'changed' });
     expect(result.current).toBe('initial');
   });
 
   it('handles zero values correctly', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: 0 } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: 0 },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -212,10 +199,9 @@ describe('usePrevious', () => {
   });
 
   it('handles empty string values correctly', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: '' } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: '' },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -227,10 +213,9 @@ describe('usePrevious', () => {
   });
 
   it('handles NaN values', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: NaN } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: NaN },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -245,10 +230,9 @@ describe('usePrevious', () => {
     const obj1 = { user: { name: 'Alice', address: { city: 'NYC' } } };
     const obj2 = { user: { name: 'Bob', address: { city: 'LA' } } };
 
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: obj1 } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: obj1 },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -261,10 +245,9 @@ describe('usePrevious', () => {
     const fn1 = () => 'first';
     const fn2 = () => 'second';
 
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: fn1 } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: fn1 },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -274,10 +257,9 @@ describe('usePrevious', () => {
   });
 
   it('tracks changes between different types', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: 'string' as any } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: 'string' as any },
+    });
 
     expect(result.current).toBe(undefined);
 
@@ -300,10 +282,9 @@ describe('usePrevious', () => {
   });
 
   it('handles rapid sequential changes', () => {
-    const { result, rerender } = renderHook(
-      ({ value }) => usePrevious(value),
-      { initialProps: { value: 1 } }
-    );
+    const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
+      initialProps: { value: 1 },
+    });
 
     for (let i = 2; i <= 10; i++) {
       rerender({ value: i });

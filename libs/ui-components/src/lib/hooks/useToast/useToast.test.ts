@@ -6,7 +6,9 @@ jest.mock('../../components/overlays/Toast', () => ({
   useToastContextStrict: jest.fn(),
 }));
 
-const mockUseToastContextStrict = useToastContextStrict as jest.MockedFunction<typeof useToastContextStrict>;
+const mockUseToastContextStrict = useToastContextStrict as jest.MockedFunction<
+  typeof useToastContextStrict
+>;
 
 describe('useToast', () => {
   let mockContext: ReturnType<typeof useToastContextStrict>;

@@ -355,13 +355,7 @@ describe('DragHandle', () => {
 
     it('renders with variant, size, disabled, and custom className', () => {
       render(
-        <DragHandle
-          variant="grip"
-          size="sm"
-          disabled
-          className="custom"
-          data-testid="handle"
-        />
+        <DragHandle variant="grip" size="sm" disabled className="custom" data-testid="handle" />
       );
       const element = screen.getByTestId('handle');
       expect(element).toHaveAttribute('data-variant', 'grip');

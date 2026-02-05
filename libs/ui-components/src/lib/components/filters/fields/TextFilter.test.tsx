@@ -7,7 +7,22 @@ import type { FilterContextValue, FilterDefinition, TextFilterConfig } from '../
 
 // Mock the Input component
 jest.mock('../../inputs/Input', () => ({
-  Input: ({ value, onChange, onClear, label, placeholder, disabled, error, errorMessage, helperText, maxLength, showClearButton, startIcon, type, ...props }: any) => (
+  Input: ({
+    value,
+    onChange,
+    onClear,
+    label,
+    placeholder,
+    disabled,
+    error,
+    errorMessage,
+    helperText,
+    maxLength,
+    showClearButton,
+    startIcon,
+    type,
+    ...props
+  }: any) => (
     <div data-testid="mock-input">
       {label && <label>{label}</label>}
       <input
@@ -56,7 +71,13 @@ const createMockContext = (
   getUngroupedFilters: () => filters,
   isFilterVisible: () => true,
   isFilterEnabled: () => true,
-  getFilterOptions: () => ({ options: [], loading: false, error: null, hasMore: false, loadMore: jest.fn() }),
+  getFilterOptions: () => ({
+    options: [],
+    loading: false,
+    error: null,
+    hasMore: false,
+    loadMore: jest.fn(),
+  }),
   reloadFilterOptions: jest.fn(),
   setFilterValue: jest.fn(),
   setFilterValues: jest.fn(),
@@ -76,15 +97,8 @@ const createMockContext = (
 });
 
 // Helper to render with context
-const renderWithContext = (
-  ui: React.ReactElement,
-  context: FilterContextValue
-) => {
-  return render(
-    <FilterContext.Provider value={context}>
-      {ui}
-    </FilterContext.Provider>
-  );
+const renderWithContext = (ui: React.ReactElement, context: FilterContextValue) => {
+  return render(<FilterContext.Provider value={context}>{ui}</FilterContext.Provider>);
 };
 
 // Helper to create a text filter definition
@@ -737,10 +751,7 @@ describe('TextFilter', () => {
       const context = createMockContext([filter]);
 
       renderWithContext(
-        <TextFilter
-          filterId="search"
-          inputProps={{ autoComplete: 'off', 'data-test': 'value' }}
-        />,
+        <TextFilter filterId="search" inputProps={{ autoComplete: 'off', 'data-test': 'value' }} />,
         context
       );
 

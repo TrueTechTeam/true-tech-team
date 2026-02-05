@@ -341,11 +341,7 @@ describe('Skeleton', () => {
 
     it('merges custom styles with component styles', () => {
       const { container } = render(
-        <Skeleton
-          width="200px"
-          height="100px"
-          style={{ margin: '10px', padding: '5px' }}
-        />
+        <Skeleton width="200px" height="100px" style={{ margin: '10px', padding: '5px' }} />
       );
       const skeleton = container.querySelector('[data-component="skeleton"]') as HTMLElement;
       expect(skeleton).toHaveStyle({
@@ -358,11 +354,7 @@ describe('Skeleton', () => {
 
     it('custom style overrides width and height props', () => {
       const { container } = render(
-        <Skeleton
-          width="200px"
-          height="100px"
-          style={{ width: '300px', height: '150px' }}
-        />
+        <Skeleton width="200px" height="100px" style={{ width: '300px', height: '150px' }} />
       );
       const skeleton = container.querySelector('[data-component="skeleton"]') as HTMLElement;
       expect(skeleton).toHaveStyle({ width: '300px', height: '150px' });

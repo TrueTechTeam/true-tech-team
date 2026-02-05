@@ -620,4 +620,3 @@ describe('useLocalStorage', () => {
     expect(result.current[0]).toEqual({ count: 42 });
   });
 });
-

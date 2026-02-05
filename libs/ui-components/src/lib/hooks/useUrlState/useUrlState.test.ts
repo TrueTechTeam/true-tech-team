@@ -50,9 +50,7 @@ describe('useUrlState', () => {
 
   describe('basic functionality', () => {
     it('returns default value when param not in URL', () => {
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: 'default' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: 'default' }));
 
       expect(result.current[0]).toBe('default');
     });
@@ -60,36 +58,26 @@ describe('useUrlState', () => {
     it('returns deserialized value from URL', () => {
       window.location.search = '?query=test-value';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       expect(result.current[0]).toBe('test-value');
     });
 
     it('setValue updates both state and URL', () => {
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       act(() => {
         result.current[1]('new-value');
       });
 
       expect(result.current[0]).toBe('new-value');
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?query=new-value'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?query=new-value');
     });
 
     it('setValue with function updater', () => {
       window.location.search = '?query=initial';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       expect(result.current[0]).toBe('initial');
 
@@ -108,9 +96,7 @@ describe('useUrlState', () => {
     it('clear() removes param from URL', () => {
       window.location.search = '?query=test';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       expect(result.current[0]).toBe('test');
 
@@ -125,9 +111,7 @@ describe('useUrlState', () => {
     it('removes param when value equals default', () => {
       window.location.search = '?query=test';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: 'default' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: 'default' }));
 
       act(() => {
         result.current[1]('default');
@@ -152,11 +136,7 @@ describe('useUrlState', () => {
       });
 
       expect(result.current[0]).toBe('hello world');
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?text=hello+world'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?text=hello+world');
     });
 
     it('number serializer', () => {
@@ -172,11 +152,7 @@ describe('useUrlState', () => {
       });
 
       expect(result.current[0]).toBe(42);
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?page=42'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?page=42');
     });
 
     it('number serializer handles NaN values', () => {
@@ -205,11 +181,7 @@ describe('useUrlState', () => {
       });
 
       expect(result.current[0]).toBe(true);
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?active=true'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?active=true');
 
       act(() => {
         result.current[1](false);
@@ -375,9 +347,7 @@ describe('useUrlState', () => {
     it('infers string serializer from string default', () => {
       window.location.search = '?text=hello';
 
-      const { result } = renderHook(() =>
-        useUrlState('text', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('text', { defaultValue: '' }));
 
       expect(result.current[0]).toBe('hello');
 
@@ -386,19 +356,13 @@ describe('useUrlState', () => {
       });
 
       expect(result.current[0]).toBe('world');
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?text=world'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?text=world');
     });
 
     it('infers number serializer from number default', () => {
       window.location.search = '?count=42';
 
-      const { result } = renderHook(() =>
-        useUrlState('count', { defaultValue: 0 })
-      );
+      const { result } = renderHook(() => useUrlState('count', { defaultValue: 0 }));
 
       expect(result.current[0]).toBe(42);
 
@@ -407,19 +371,13 @@ describe('useUrlState', () => {
       });
 
       expect(result.current[0]).toBe(100);
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?count=100'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?count=100');
     });
 
     it('infers boolean serializer from boolean default', () => {
       window.location.search = '?enabled=true';
 
-      const { result } = renderHook(() =>
-        useUrlState('enabled', { defaultValue: false })
-      );
+      const { result } = renderHook(() => useUrlState('enabled', { defaultValue: false }));
 
       expect(result.current[0]).toBe(true);
 
@@ -434,9 +392,7 @@ describe('useUrlState', () => {
     it('infers array serializer from string array default', () => {
       window.location.search = '?tags=a,b,c';
 
-      const { result } = renderHook(() =>
-        useUrlState('tags', { defaultValue: [] as string[] })
-      );
+      const { result } = renderHook(() => useUrlState('tags', { defaultValue: [] as string[] }));
 
       expect(result.current[0]).toEqual(['a', 'b', 'c']);
 
@@ -450,9 +406,7 @@ describe('useUrlState', () => {
     it('infers numberArray serializer from number array default', () => {
       window.location.search = '?nums=1,2,3';
 
-      const { result } = renderHook(() =>
-        useUrlState('nums', { defaultValue: [0] })
-      );
+      const { result } = renderHook(() => useUrlState('nums', { defaultValue: [0] }));
 
       expect(result.current[0]).toEqual([1, 2, 3]);
 
@@ -466,9 +420,7 @@ describe('useUrlState', () => {
     it('infers json serializer from object default', () => {
       window.location.search = '?obj=%7B%22key%22%3A%22value%22%7D';
 
-      const { result } = renderHook(() =>
-        useUrlState('obj', { defaultValue: {} })
-      );
+      const { result } = renderHook(() => useUrlState('obj', { defaultValue: {} }));
 
       expect(result.current[0]).toEqual({ key: 'value' });
 
@@ -490,11 +442,7 @@ describe('useUrlState', () => {
         result.current[1]('test');
       });
 
-      expect(window.history.replaceState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?query=test'
-      );
+      expect(window.history.replaceState).toHaveBeenCalledWith(null, '', '/test?query=test');
       expect(window.history.pushState).not.toHaveBeenCalled();
     });
 
@@ -507,28 +455,18 @@ describe('useUrlState', () => {
         result.current[1]('test');
       });
 
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?query=test'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?query=test');
       expect(window.history.replaceState).not.toHaveBeenCalled();
     });
 
     it('uses pushState by default when replace is not specified', () => {
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       act(() => {
         result.current[1]('test');
       });
 
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?query=test'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?query=test');
       expect(window.history.replaceState).not.toHaveBeenCalled();
     });
   });
@@ -561,11 +499,7 @@ describe('useUrlState', () => {
         jest.advanceTimersByTime(200);
       });
 
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?query=test'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?query=test');
     });
 
     it('resets debounce timer on rapid changes', () => {
@@ -601,28 +535,18 @@ describe('useUrlState', () => {
 
       // Should only update with the last value
       expect(window.history.pushState).toHaveBeenCalledTimes(1);
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?query=third'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?query=third');
     });
 
     it('updates URL immediately when debounce is 0', () => {
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '', debounce: 0 })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '', debounce: 0 }));
 
       act(() => {
         result.current[1]('test');
       });
 
       expect(result.current[0]).toBe('test');
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?query=test'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?query=test');
     });
 
     it('cleans up debounce timeout on unmount', () => {
@@ -650,9 +574,7 @@ describe('useUrlState', () => {
     it('updates state when popstate event is triggered', () => {
       window.location.search = '?query=initial';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       expect(result.current[0]).toBe('initial');
 
@@ -669,9 +591,7 @@ describe('useUrlState', () => {
     it('updates state to default when param is removed via popstate', () => {
       window.location.search = '?query=test';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: 'default' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: 'default' }));
 
       expect(result.current[0]).toBe('test');
 
@@ -688,16 +608,11 @@ describe('useUrlState', () => {
     it('cleans up popstate listener on unmount', () => {
       const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
 
-      const { unmount } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { unmount } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       unmount();
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'popstate',
-        expect.any(Function)
-      );
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('popstate', expect.any(Function));
 
       removeEventListenerSpy.mockRestore();
     });
@@ -707,9 +622,7 @@ describe('useUrlState', () => {
     it('preserves other URL parameters when updating', () => {
       window.location.search = '?other=value&query=test';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       act(() => {
         result.current[1]('updated');
@@ -725,19 +638,13 @@ describe('useUrlState', () => {
     it('preserves other parameters when clearing', () => {
       window.location.search = '?other=value&query=test';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       act(() => {
         result.current[2]();
       });
 
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?other=value'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?other=value');
     });
   });
 
@@ -745,17 +652,13 @@ describe('useUrlState', () => {
     it('handles null URL value', () => {
       window.location.search = '';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: 'default' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: 'default' }));
 
       expect(result.current[0]).toBe('default');
     });
 
     it('handles special characters in values', () => {
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       act(() => {
         result.current[1]('hello&world=test');
@@ -765,9 +668,7 @@ describe('useUrlState', () => {
     });
 
     it('handles empty string values', () => {
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: 'default' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: 'default' }));
 
       act(() => {
         result.current[1]('');
@@ -777,9 +678,7 @@ describe('useUrlState', () => {
     });
 
     it('handles function updater with debounce', () => {
-      const { result } = renderHook(() =>
-        useUrlState('count', { defaultValue: 0, debounce: 500 })
-      );
+      const { result } = renderHook(() => useUrlState('count', { defaultValue: 0, debounce: 500 }));
 
       act(() => {
         result.current[1]((prev) => prev + 1);
@@ -797,11 +696,7 @@ describe('useUrlState', () => {
         jest.advanceTimersByTime(500);
       });
 
-      expect(window.history.pushState).toHaveBeenCalledWith(
-        null,
-        '',
-        '/test?count=2'
-      );
+      expect(window.history.pushState).toHaveBeenCalledWith(null, '', '/test?count=2');
     });
 
     it('updates defaultValue ref when defaultValue changes', () => {
@@ -828,9 +723,7 @@ describe('useUrlState', () => {
     });
 
     it('handles empty array default value', () => {
-      const { result } = renderHook(() =>
-        useUrlState('tags', { defaultValue: [] as string[] })
-      );
+      const { result } = renderHook(() => useUrlState('tags', { defaultValue: [] as string[] }));
 
       expect(result.current[0]).toEqual([]);
 
@@ -864,9 +757,7 @@ describe('useUrlState', () => {
     it('works correctly when setting value equal to current value', () => {
       window.location.search = '?query=test';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: '' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: '' }));
 
       expect(result.current[0]).toBe('test');
 
@@ -888,9 +779,7 @@ describe('useUrlState', () => {
       // Clear the URL search to ensure default is used
       window.location.search = '';
 
-      const { result } = renderHook(() =>
-        useUrlState('query', { defaultValue: 'default' })
-      );
+      const { result } = renderHook(() => useUrlState('query', { defaultValue: 'default' }));
 
       // In a browser environment, should return default when no URL param exists
       expect(result.current[0]).toBe('default');

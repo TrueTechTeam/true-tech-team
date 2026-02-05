@@ -80,10 +80,9 @@ describe('useTimeout', () => {
   it('uses latest callback when executing', () => {
     const callback1 = jest.fn();
     const callback2 = jest.fn();
-    const { rerender } = renderHook(
-      ({ callback }) => useTimeout({ callback, delay: 1000 }),
-      { initialProps: { callback: callback1 } }
-    );
+    const { rerender } = renderHook(({ callback }) => useTimeout({ callback, delay: 1000 }), {
+      initialProps: { callback: callback1 },
+    });
 
     act(() => {
       jest.advanceTimersByTime(500);

@@ -709,7 +709,11 @@ describe('Card', () => {
   // 17. Combined props tests
   describe('combined props', () => {
     it('renders with multiple variants and sizes', () => {
-      const variants: Array<'outlined' | 'elevated' | 'filled'> = ['outlined', 'elevated', 'filled'];
+      const variants: Array<'outlined' | 'elevated' | 'filled'> = [
+        'outlined',
+        'elevated',
+        'filled',
+      ];
       const sizes: Array<'sm' | 'md' | 'lg'> = ['sm', 'md', 'lg'];
 
       variants.forEach((variant) => {
@@ -728,7 +732,11 @@ describe('Card', () => {
     });
 
     it('renders interactive card with all variants', () => {
-      const variants: Array<'outlined' | 'elevated' | 'filled'> = ['outlined', 'elevated', 'filled'];
+      const variants: Array<'outlined' | 'elevated' | 'filled'> = [
+        'outlined',
+        'elevated',
+        'filled',
+      ];
 
       variants.forEach((variant) => {
         const { container } = render(
@@ -816,7 +824,8 @@ describe('Card', () => {
     });
 
     it('renders with long text content', () => {
-      const longText = 'This is a very long text content for the card component that should still render correctly';
+      const longText =
+        'This is a very long text content for the card component that should still render correctly';
       render(<Card>{longText}</Card>);
       expect(screen.getByText(longText)).toBeInTheDocument();
     });

@@ -61,7 +61,13 @@ const createMockContext = (overrides?: Partial<FilterContextValue>): FilterConte
   getFilter: jest.fn(),
   getFiltersByGroup: jest.fn(),
   getUngroupedFilters: jest.fn(),
-  getFilterOptions: jest.fn(() => ({ options: [], loading: false, error: null, hasMore: false, loadMore: jest.fn() })),
+  getFilterOptions: jest.fn(() => ({
+    options: [],
+    loading: false,
+    error: null,
+    hasMore: false,
+    loadMore: jest.fn(),
+  })),
   reloadFilterOptions: jest.fn(),
   applyFilters: jest.fn(),
   ...overrides,
@@ -97,7 +103,13 @@ describe('ListSelectFilter', () => {
       const context = createMockContext({
         filters: [filter],
         getFilter: () => filter,
-        getFilterOptions: () => ({ options: createOptions(3), loading: false, error: null, hasMore: false, loadMore: jest.fn() }),
+        getFilterOptions: () => ({
+          options: createOptions(3),
+          loading: false,
+          error: null,
+          hasMore: false,
+          loadMore: jest.fn(),
+        }),
       });
       renderWithContext(<ListSelectFilter filterId="test" />, context);
       expect(screen.getByText('Test Filter')).toBeInTheDocument();
@@ -108,7 +120,13 @@ describe('ListSelectFilter', () => {
       const context = createMockContext({
         filters: [filter],
         getFilter: () => filter,
-        getFilterOptions: () => ({ options: createOptions(3), loading: false, error: null, hasMore: false, loadMore: jest.fn() }),
+        getFilterOptions: () => ({
+          options: createOptions(3),
+          loading: false,
+          error: null,
+          hasMore: false,
+          loadMore: jest.fn(),
+        }),
       });
       renderWithContext(<ListSelectFilter filterId="test" />, context);
       expect(screen.getAllByTestId('checkbox')).toHaveLength(3);
@@ -130,7 +148,13 @@ describe('ListSelectFilter', () => {
       const context = createMockContext({
         filters: [filter],
         getFilter: () => filter,
-        getFilterOptions: () => ({ options: createOptions(3), loading: false, error: null, hasMore: false, loadMore: jest.fn() }),
+        getFilterOptions: () => ({
+          options: createOptions(3),
+          loading: false,
+          error: null,
+          hasMore: false,
+          loadMore: jest.fn(),
+        }),
         setFilterValue,
       });
       renderWithContext(<ListSelectFilter filterId="test" />, context);
@@ -146,7 +170,13 @@ describe('ListSelectFilter', () => {
       const context = createMockContext({
         filters: [filter],
         getFilter: () => filter,
-        getFilterOptions: () => ({ options: createOptions(2), loading: false, error: null, hasMore: false, loadMore: jest.fn() }),
+        getFilterOptions: () => ({
+          options: createOptions(2),
+          loading: false,
+          error: null,
+          hasMore: false,
+          loadMore: jest.fn(),
+        }),
         isFilterEnabled: () => false,
       });
       renderWithContext(<ListSelectFilter filterId="test" />, context);

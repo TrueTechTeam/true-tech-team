@@ -31,7 +31,11 @@ jest.mock('../../../display/ScrollArea', () => ({
 
 jest.mock('../../core/ActiveFilters', () => ({
   ActiveFilters: ({ maxVisible, showClearAll }: any) => (
-    <div data-testid="active-filters" data-max-visible={maxVisible} data-show-clear-all={showClearAll}>
+    <div
+      data-testid="active-filters"
+      data-max-visible={maxVisible}
+      data-show-clear-all={showClearAll}
+    >
       Active Filters
     </div>
   ),
@@ -103,7 +107,9 @@ describe('FilterSidebar', () => {
     });
 
     it('renders with custom className', () => {
-      const { container } = renderWithContext(<FilterSidebar className="custom-class">Test</FilterSidebar>);
+      const { container } = renderWithContext(
+        <FilterSidebar className="custom-class">Test</FilterSidebar>
+      );
       const aside = container.querySelector('aside');
       expect(aside).toHaveClass('custom-class');
     });
@@ -336,7 +342,9 @@ describe('FilterSidebar', () => {
     });
 
     it('renders footer when provided', () => {
-      renderWithContext(<FilterSidebar footer={<button>Footer Action</button>}>Test</FilterSidebar>);
+      renderWithContext(
+        <FilterSidebar footer={<button>Footer Action</button>}>Test</FilterSidebar>
+      );
       expect(screen.getByText('Footer Action')).toBeInTheDocument();
     });
 
@@ -396,7 +404,12 @@ describe('FilterSidebar', () => {
 
     it('hides footer but shows header when collapsed', () => {
       renderWithContext(
-        <FilterSidebar collapsible defaultCollapsed header={<h3>Header</h3>} footer={<div>Footer</div>}>
+        <FilterSidebar
+          collapsible
+          defaultCollapsed
+          header={<h3>Header</h3>}
+          footer={<div>Footer</div>}
+        >
           Body
         </FilterSidebar>
       );
@@ -427,7 +440,9 @@ describe('FilterSidebar', () => {
       const activeFiltersContainerIndex = children.findIndex((child) =>
         child.classList.contains('activeFiltersContainer')
       );
-      const scrollAreaIndex = children.findIndex((child) => child.getAttribute('data-component') === 'scroll-area');
+      const scrollAreaIndex = children.findIndex(
+        (child) => child.getAttribute('data-component') === 'scroll-area'
+      );
 
       expect(activeFiltersContainerIndex).toBeGreaterThanOrEqual(0);
       expect(scrollAreaIndex).toBeGreaterThanOrEqual(0);
@@ -435,7 +450,9 @@ describe('FilterSidebar', () => {
     });
 
     it('shows active filters at bottom when activeFiltersPosition is bottom', () => {
-      const { container } = renderWithContext(<FilterSidebar activeFiltersPosition="bottom">Test</FilterSidebar>);
+      const { container } = renderWithContext(
+        <FilterSidebar activeFiltersPosition="bottom">Test</FilterSidebar>
+      );
       const activeFilters = screen.getByTestId('active-filters');
       const scrollArea = screen.getByTestId('scroll-area');
       const aside = container.querySelector('aside');
@@ -601,7 +618,9 @@ describe('FilterSidebar', () => {
     it('applies different widths', () => {
       const widths = [200, 280, 320, 400];
       widths.forEach((width) => {
-        const { container, unmount } = renderWithContext(<FilterSidebar width={width}>Test</FilterSidebar>);
+        const { container, unmount } = renderWithContext(
+          <FilterSidebar width={width}>Test</FilterSidebar>
+        );
         const aside = container.querySelector('aside');
         expect(aside).toHaveStyle({ '--sidebar-width': `${width}px` });
         unmount();
@@ -621,7 +640,10 @@ describe('FilterSidebar', () => {
       renderWithContext(<FilterSidebar collapsible>Test</FilterSidebar>);
       const collapseButton = screen.getByLabelText('Collapse filters');
       fireEvent.click(collapseButton);
-      expect(screen.getByLabelText('Expand filters')).toHaveAttribute('aria-label', 'Expand filters');
+      expect(screen.getByLabelText('Expand filters')).toHaveAttribute(
+        'aria-label',
+        'Expand filters'
+      );
     });
 
     it('collapse button is a button element', () => {
@@ -673,25 +695,33 @@ describe('FilterSidebar', () => {
   // 12. Custom styling
   describe('custom styling', () => {
     it('accepts custom className', () => {
-      const { container } = renderWithContext(<FilterSidebar className="custom-sidebar">Test</FilterSidebar>);
+      const { container } = renderWithContext(
+        <FilterSidebar className="custom-sidebar">Test</FilterSidebar>
+      );
       const aside = container.querySelector('aside');
       expect(aside).toHaveClass('custom-sidebar');
     });
 
     it('accepts custom style prop', () => {
-      const { container } = renderWithContext(<FilterSidebar style={{ backgroundColor: 'red' }}>Test</FilterSidebar>);
+      const { container } = renderWithContext(
+        <FilterSidebar style={{ backgroundColor: 'red' }}>Test</FilterSidebar>
+      );
       const aside = container.querySelector('aside');
       expect(aside).toHaveStyle({ backgroundColor: 'red' });
     });
 
     it('accepts id attribute', () => {
-      const { container } = renderWithContext(<FilterSidebar id="filter-sidebar-1">Test</FilterSidebar>);
+      const { container } = renderWithContext(
+        <FilterSidebar id="filter-sidebar-1">Test</FilterSidebar>
+      );
       const aside = container.querySelector('aside');
       expect(aside).toHaveAttribute('id', 'filter-sidebar-1');
     });
 
     it('handles undefined className gracefully', () => {
-      const { container } = renderWithContext(<FilterSidebar className={undefined}>Test</FilterSidebar>);
+      const { container } = renderWithContext(
+        <FilterSidebar className={undefined}>Test</FilterSidebar>
+      );
       const aside = container.querySelector('aside');
       expect(aside).toBeInTheDocument();
     });
@@ -711,7 +741,9 @@ describe('FilterSidebar', () => {
     });
 
     it('accepts and applies title attribute', () => {
-      const { container } = renderWithContext(<FilterSidebar title="Sidebar title">Test</FilterSidebar>);
+      const { container } = renderWithContext(
+        <FilterSidebar title="Sidebar title">Test</FilterSidebar>
+      );
       const aside = container.querySelector('aside');
       expect(aside).toHaveAttribute('title', 'Sidebar title');
     });
@@ -822,13 +854,17 @@ describe('FilterSidebar', () => {
   // 15. Edge cases
   describe('edge cases', () => {
     it('renders with null children', () => {
-      const { container } = renderWithContext(<FilterSidebar data-testid="sidebar">{null}</FilterSidebar>);
+      const { container } = renderWithContext(
+        <FilterSidebar data-testid="sidebar">{null}</FilterSidebar>
+      );
       const aside = container.querySelector('[data-testid="sidebar"]');
       expect(aside).toBeInTheDocument();
     });
 
     it('renders with undefined children', () => {
-      const { container } = renderWithContext(<FilterSidebar data-testid="sidebar">{undefined}</FilterSidebar>);
+      const { container } = renderWithContext(
+        <FilterSidebar data-testid="sidebar">{undefined}</FilterSidebar>
+      );
       const aside = container.querySelector('[data-testid="sidebar"]');
       expect(aside).toBeInTheDocument();
     });

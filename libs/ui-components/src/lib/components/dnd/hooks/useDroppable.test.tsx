@@ -4,17 +4,14 @@ import { useDroppable } from './useDroppable';
 import { DndProvider } from '../DndProvider';
 
 const createWrapper = () => {
-  return ({ children }: { children: React.ReactNode }) => (
-    <DndProvider>{children}</DndProvider>
-  );
+  return ({ children }: { children: React.ReactNode }) => <DndProvider>{children}</DndProvider>;
 };
 
 describe('useDroppable', () => {
   it('returns initial state', () => {
-    const { result } = renderHook(
-      () => useDroppable({ id: 'droppable-1' }),
-      { wrapper: createWrapper() }
-    );
+    const { result } = renderHook(() => useDroppable({ id: 'droppable-1' }), {
+      wrapper: createWrapper(),
+    });
 
     expect(result.current.isOver).toBe(false);
     expect(result.current.active).toBe(null);
@@ -23,20 +20,18 @@ describe('useDroppable', () => {
   });
 
   it('returns proper attributes', () => {
-    const { result } = renderHook(
-      () => useDroppable({ id: 'droppable-1' }),
-      { wrapper: createWrapper() }
-    );
+    const { result } = renderHook(() => useDroppable({ id: 'droppable-1' }), {
+      wrapper: createWrapper(),
+    });
 
     expect(result.current.attributes).toHaveProperty('aria-dropeffect');
     expect(result.current.attributes).toHaveProperty('data-over');
   });
 
   it('returns proper listeners', () => {
-    const { result } = renderHook(
-      () => useDroppable({ id: 'droppable-1' }),
-      { wrapper: createWrapper() }
-    );
+    const { result } = renderHook(() => useDroppable({ id: 'droppable-1' }), {
+      wrapper: createWrapper(),
+    });
 
     expect(typeof result.current.listeners.onDragEnter).toBe('function');
     expect(typeof result.current.listeners.onDragLeave).toBe('function');

@@ -47,11 +47,7 @@ const renderWithContext = (
 ) => {
   const mockContext = createMockContext(contextValue);
   return {
-    ...render(
-      <FilterContext.Provider value={mockContext}>
-        {ui}
-      </FilterContext.Provider>
-    ),
+    ...render(<FilterContext.Provider value={mockContext}>{ui}</FilterContext.Provider>),
     mockContext,
   };
 };
@@ -98,9 +94,7 @@ describe('ActiveFilters', () => {
     });
 
     it('renders with default props', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -113,19 +107,14 @@ describe('ActiveFilters', () => {
     });
 
     it('renders with custom className', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
-      renderWithContext(
-        <ActiveFilters className="custom-class" data-testid="active-filters" />,
-        {
-          filters,
-          values: { status: 'active' },
-          isFilterActive: jest.fn(() => true),
-          getFilterMeta: jest.fn(() => ({ value: 'active', displayValue: 'Active' })),
-        }
-      );
+      renderWithContext(<ActiveFilters className="custom-class" data-testid="active-filters" />, {
+        filters,
+        values: { status: 'active' },
+        isFilterActive: jest.fn(() => true),
+        getFilterMeta: jest.fn(() => ({ value: 'active', displayValue: 'Active' })),
+      });
 
       const element = screen.getByTestId('active-filters');
       expect(element).toHaveClass('custom-class');
@@ -148,9 +137,7 @@ describe('ActiveFilters', () => {
     });
 
     it('falls back to label when shortLabel not available', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -187,9 +174,7 @@ describe('ActiveFilters', () => {
   // 2. Chip removal tests
   describe('chip removal', () => {
     it('renders remove button on each chip', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -203,9 +188,7 @@ describe('ActiveFilters', () => {
     });
 
     it('calls clearFilter when chip remove button is clicked', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
       const clearFilter = jest.fn();
 
       renderWithContext(<ActiveFilters />, {
@@ -273,9 +256,7 @@ describe('ActiveFilters', () => {
     });
 
     it('does not render clear all button when only one filter', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -353,9 +334,7 @@ describe('ActiveFilters', () => {
   // 4. Chip variant and size tests
   describe('chip variant and size', () => {
     it('renders chips with secondary variant by default', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       const { container } = renderWithContext(<ActiveFilters />, {
         filters,
@@ -369,9 +348,7 @@ describe('ActiveFilters', () => {
     });
 
     it('renders chips with custom variant', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       const { container } = renderWithContext(<ActiveFilters chipVariant="primary" />, {
         filters,
@@ -385,9 +362,7 @@ describe('ActiveFilters', () => {
     });
 
     it('renders chips with sm size by default', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       const { container } = renderWithContext(<ActiveFilters />, {
         filters,
@@ -401,9 +376,7 @@ describe('ActiveFilters', () => {
     });
 
     it('renders chips with custom size', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       const { container } = renderWithContext(<ActiveFilters chipSize="md" />, {
         filters,
@@ -420,9 +393,7 @@ describe('ActiveFilters', () => {
   // 5. Custom chip rendering tests
   describe('custom chip rendering', () => {
     it('uses custom renderChip function when provided', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       const renderChip = jest.fn((filter, value, onRemove) => (
         <div key={filter.id} data-testid="custom-chip">
@@ -444,9 +415,7 @@ describe('ActiveFilters', () => {
     });
 
     it('custom renderChip receives correct parameters', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
       const clearFilter = jest.fn();
 
       const renderChip = jest.fn((filter, value, onRemove) => (
@@ -463,11 +432,7 @@ describe('ActiveFilters', () => {
         getFilterMeta: jest.fn(() => ({ value: 'active', displayValue: 'Active' })),
       });
 
-      expect(renderChip).toHaveBeenCalledWith(
-        filters[0],
-        'active',
-        expect.any(Function)
-      );
+      expect(renderChip).toHaveBeenCalledWith(filters[0], 'active', expect.any(Function));
 
       // Test that the onRemove callback works
       const onRemove = renderChip.mock.calls[0][2];
@@ -665,9 +630,7 @@ describe('ActiveFilters', () => {
     });
 
     it('does not show "show more" button when filters less than maxVisible', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'filter1', type: 'select', label: 'Filter 1' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'filter1', type: 'select', label: 'Filter 1' }];
 
       renderWithContext(<ActiveFilters maxVisible={2} />, {
         filters,
@@ -686,9 +649,7 @@ describe('ActiveFilters', () => {
   // 7. Display value handling tests
   describe('display value handling', () => {
     it('uses displayValue from getFilterMeta when available', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -704,9 +665,7 @@ describe('ActiveFilters', () => {
     });
 
     it('falls back to string value when displayValue not available', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -721,9 +680,7 @@ describe('ActiveFilters', () => {
     });
 
     it('handles boolean values', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'enabled', type: 'checkbox', label: 'Enabled' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'enabled', type: 'checkbox', label: 'Enabled' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -739,9 +696,7 @@ describe('ActiveFilters', () => {
     });
 
     it('handles number values', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'rating', type: 'number', label: 'Rating' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'rating', type: 'number', label: 'Rating' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -757,9 +712,7 @@ describe('ActiveFilters', () => {
     });
 
     it('handles array values', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'tags', type: 'multi-select', label: 'Tags' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'tags', type: 'multi-select', label: 'Tags' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -779,9 +732,7 @@ describe('ActiveFilters', () => {
   describe('ref forwarding', () => {
     it('forwards ref to element', () => {
       const ref = React.createRef<HTMLDivElement>();
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(<ActiveFilters ref={ref} />, {
         filters,
@@ -795,9 +746,7 @@ describe('ActiveFilters', () => {
 
     it('handles callback ref', () => {
       const refCallback = jest.fn();
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(<ActiveFilters ref={refCallback} />, {
         filters,
@@ -813,28 +762,21 @@ describe('ActiveFilters', () => {
   // 9. Props spreading tests
   describe('props spreading', () => {
     it('accepts and applies data attributes', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
-      renderWithContext(
-        <ActiveFilters data-testid="active-filters" data-custom="value" />,
-        {
-          filters,
-          values: { status: 'active' },
-          isFilterActive: jest.fn(() => true),
-          getFilterMeta: jest.fn(() => ({ value: 'active', displayValue: 'Active' })),
-        }
-      );
+      renderWithContext(<ActiveFilters data-testid="active-filters" data-custom="value" />, {
+        filters,
+        values: { status: 'active' },
+        isFilterActive: jest.fn(() => true),
+        getFilterMeta: jest.fn(() => ({ value: 'active', displayValue: 'Active' })),
+      });
 
       const element = screen.getByTestId('active-filters');
       expect(element).toHaveAttribute('data-custom', 'value');
     });
 
     it('accepts style prop', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(
         <ActiveFilters style={{ backgroundColor: 'red' }} data-testid="active-filters" />,
@@ -851,19 +793,14 @@ describe('ActiveFilters', () => {
     });
 
     it('accepts id attribute', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
-      renderWithContext(
-        <ActiveFilters id="custom-id" data-testid="active-filters" />,
-        {
-          filters,
-          values: { status: 'active' },
-          isFilterActive: jest.fn(() => true),
-          getFilterMeta: jest.fn(() => ({ value: 'active', displayValue: 'Active' })),
-        }
-      );
+      renderWithContext(<ActiveFilters id="custom-id" data-testid="active-filters" />, {
+        filters,
+        values: { status: 'active' },
+        isFilterActive: jest.fn(() => true),
+        getFilterMeta: jest.fn(() => ({ value: 'active', displayValue: 'Active' })),
+      });
 
       const element = screen.getByTestId('active-filters');
       expect(element).toHaveAttribute('id', 'custom-id');
@@ -873,9 +810,7 @@ describe('ActiveFilters', () => {
   // 10. Edge cases
   describe('edge cases', () => {
     it('handles undefined getFilterMeta gracefully', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -888,9 +823,7 @@ describe('ActiveFilters', () => {
     });
 
     it('handles empty string displayValue', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'status', type: 'select', label: 'Status' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'status', type: 'select', label: 'Status' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,
@@ -907,9 +840,7 @@ describe('ActiveFilters', () => {
     });
 
     it('handles null values', () => {
-      const filters: FilterDefinition[] = [
-        { id: 'date', type: 'date', label: 'Date' },
-      ];
+      const filters: FilterDefinition[] = [{ id: 'date', type: 'date', label: 'Date' }];
 
       renderWithContext(<ActiveFilters />, {
         filters,

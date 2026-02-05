@@ -206,9 +206,7 @@ describe('useClipboard', () => {
       expect(removeChildSpy).toHaveBeenCalled();
 
       // Find the textarea element among all appendChild calls
-      const textareaCall = appendChildSpy.mock.calls.find(
-        (call) => call[0].tagName === 'TEXTAREA'
-      );
+      const textareaCall = appendChildSpy.mock.calls.find((call) => call[0].tagName === 'TEXTAREA');
       expect(textareaCall).toBeDefined();
 
       const appendedElement = textareaCall![0] as HTMLTextAreaElement;
@@ -404,10 +402,9 @@ describe('useClipboard', () => {
       const onSuccess1 = jest.fn();
       const onSuccess2 = jest.fn();
 
-      const { result, rerender } = renderHook(
-        ({ onSuccess }) => useClipboard({ onSuccess }),
-        { initialProps: { onSuccess: onSuccess1 } }
-      );
+      const { result, rerender } = renderHook(({ onSuccess }) => useClipboard({ onSuccess }), {
+        initialProps: { onSuccess: onSuccess1 },
+      });
 
       await act(async () => {
         await result.current.copy('first');

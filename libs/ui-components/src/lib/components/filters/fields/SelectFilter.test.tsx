@@ -5,7 +5,16 @@ import { FilterContext } from '../FilterContext';
 import type { FilterContextValue, FilterDefinition } from '../types';
 
 jest.mock('../../inputs/Select', () => ({
-  Select: ({ value, onChange, options, label, placeholder, disabled, error, errorMessage }: any) => (
+  Select: ({
+    value,
+    onChange,
+    options,
+    label,
+    placeholder,
+    disabled,
+    error,
+    errorMessage,
+  }: any) => (
     <div data-testid="select-component">
       {label && <label>{label}</label>}
       <select

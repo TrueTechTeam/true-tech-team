@@ -4,9 +4,7 @@ import { DragOverlay } from './DragOverlay';
 import { DndContext, type DndContextValue, type ActiveDrag } from '../DndProvider';
 
 // Mock DnD context values
-const createMockDndContext = (
-  active: ActiveDrag | null = null
-): DndContextValue => ({
+const createMockDndContext = (active: ActiveDrag | null = null): DndContextValue => ({
   active,
   overId: null,
   overData: null,
@@ -18,10 +16,7 @@ const createMockDndContext = (
 });
 
 // Helper to render with DnD context
-const renderWithDndContext = (
-  ui: React.ReactElement,
-  contextValue: DndContextValue
-) => {
+const renderWithDndContext = (ui: React.ReactElement, contextValue: DndContextValue) => {
   return render(<DndContext.Provider value={contextValue}>{ui}</DndContext.Provider>);
 };
 
@@ -46,10 +41,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">Dragging</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">Dragging</DragOverlay>, context);
 
       expect(screen.getByTestId('drag-overlay')).toBeInTheDocument();
     });
@@ -104,10 +96,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">Content</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">Content</DragOverlay>, context);
 
       const element = screen.getByTestId('drag-overlay');
       expect(element).toHaveAttribute('aria-hidden', 'true');
@@ -166,10 +155,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">Content</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">Content</DragOverlay>, context);
 
       const element = screen.getByTestId('drag-overlay');
 
@@ -191,10 +177,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">Content</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">Content</DragOverlay>, context);
 
       const element = screen.getByTestId('drag-overlay');
 
@@ -217,7 +200,6 @@ describe('DragOverlay', () => {
       expect(element.style.left).toBe('200px');
       expect(element.style.top).toBe('300px');
     });
-
   });
 
   // 4. Drop animation tests
@@ -356,11 +338,7 @@ describe('DragOverlay', () => {
       const context = createMockDndContext(active);
 
       const { rerender } = renderWithDndContext(
-        <DragOverlay
-          data-testid="drag-overlay"
-          dropAnimationDuration={300}
-          adjustScale={false}
-        >
+        <DragOverlay data-testid="drag-overlay" dropAnimationDuration={300} adjustScale={false}>
           Content
         </DragOverlay>,
         context
@@ -370,11 +348,7 @@ describe('DragOverlay', () => {
       const updatedContext = createMockDndContext(null);
       rerender(
         <DndContext.Provider value={updatedContext}>
-          <DragOverlay
-            data-testid="drag-overlay"
-            dropAnimationDuration={300}
-            adjustScale={false}
-          >
+          <DragOverlay data-testid="drag-overlay" dropAnimationDuration={300} adjustScale={false}>
             Content
           </DragOverlay>
         </DndContext.Provider>
@@ -395,10 +369,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">Content</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">Content</DragOverlay>, context);
 
       const element = screen.getByTestId('drag-overlay');
       expect(element.style.zIndex).toBe('9999');
@@ -431,10 +402,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">Content</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">Content</DragOverlay>, context);
 
       const element = screen.getByTestId('drag-overlay');
       expect(element.style.position).toBe('fixed');
@@ -448,10 +416,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">Content</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">Content</DragOverlay>, context);
 
       const element = screen.getByTestId('drag-overlay');
       expect(element.style.transform).toBe('translate(-50%, -50%)');
@@ -465,10 +430,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">Content</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">Content</DragOverlay>, context);
 
       const element = screen.getByTestId('drag-overlay');
       expect(element.style.pointerEvents).toBe('none');
@@ -502,10 +464,7 @@ describe('DragOverlay', () => {
       const context = createMockDndContext(active);
 
       renderWithDndContext(
-        <DragOverlay
-          data-testid="drag-overlay"
-          style={{ backgroundColor: 'red', opacity: 0.5 }}
-        >
+        <DragOverlay data-testid="drag-overlay" style={{ backgroundColor: 'red', opacity: 0.5 }}>
           Content
         </DragOverlay>,
         context
@@ -524,10 +483,7 @@ describe('DragOverlay', () => {
       const context = createMockDndContext(active);
 
       renderWithDndContext(
-        <DragOverlay
-          data-testid="drag-overlay"
-          style={{ backgroundColor: 'red' }}
-        >
+        <DragOverlay data-testid="drag-overlay" style={{ backgroundColor: 'red' }}>
           Content
         </DragOverlay>,
         context
@@ -549,7 +505,7 @@ describe('DragOverlay', () => {
         element: null,
       };
       const context = createMockDndContext(active);
-      const renderFn = jest.fn((id, data) => <div>{id}</div>);
+      const renderFn = jest.fn((id) => <div>{id}</div>);
 
       renderWithDndContext(<DragOverlay>{renderFn}</DragOverlay>, context);
 
@@ -629,10 +585,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay" />,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay" />, context);
 
       const overlay = screen.getByTestId('drag-overlay');
       expect(overlay).toBeInTheDocument();
@@ -681,14 +634,8 @@ describe('DragOverlay', () => {
 
       unmount();
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'mousemove',
-        expect.any(Function)
-      );
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'dragover',
-        expect.any(Function)
-      );
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('mousemove', expect.any(Function));
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('dragover', expect.any(Function));
 
       removeEventListenerSpy.mockRestore();
     });
@@ -716,14 +663,8 @@ describe('DragOverlay', () => {
         </DndContext.Provider>
       );
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'mousemove',
-        expect.any(Function)
-      );
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'dragover',
-        expect.any(Function)
-      );
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('mousemove', expect.any(Function));
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('dragover', expect.any(Function));
 
       removeEventListenerSpy.mockRestore();
     });
@@ -838,10 +779,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="custom-testid">Content</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="custom-testid">Content</DragOverlay>, context);
 
       expect(screen.getByTestId('custom-testid')).toBeInTheDocument();
     });
@@ -857,10 +795,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">{null}</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">{null}</DragOverlay>, context);
 
       expect(screen.getByTestId('drag-overlay')).toBeInTheDocument();
     });
@@ -907,10 +842,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">Content</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">Content</DragOverlay>, context);
 
       const element = screen.getByTestId('drag-overlay');
 
@@ -930,10 +862,7 @@ describe('DragOverlay', () => {
       };
       const context = createMockDndContext(active);
 
-      renderWithDndContext(
-        <DragOverlay data-testid="drag-overlay">Content</DragOverlay>,
-        context
-      );
+      renderWithDndContext(<DragOverlay data-testid="drag-overlay">Content</DragOverlay>, context);
 
       const element = screen.getByTestId('drag-overlay');
 
@@ -983,7 +912,6 @@ describe('DragOverlay', () => {
 
       expect(screen.getByTestId('drag-overlay')).toBeInTheDocument();
     });
-
   });
 
   // 11. Display name

@@ -16,12 +16,7 @@ describe('FlipCard', () => {
 
     it('applies custom className', () => {
       render(
-        <FlipCard
-          front="Front"
-          back="Back"
-          className="custom-class"
-          data-testid="flip-card"
-        />
+        <FlipCard front="Front" back="Back" className="custom-class" data-testid="flip-card" />
       );
       expect(screen.getByTestId('flip-card')).toHaveClass('custom-class');
     });
@@ -65,7 +60,9 @@ describe('FlipCard', () => {
           onFlipChange={handleFlipChange}
         />
       );
-      const element = screen.getByText('Front').closest('[data-component="flip-card"]') as HTMLElement;
+      const element = screen
+        .getByText('Front')
+        .closest('[data-component="flip-card"]') as HTMLElement;
       fireEvent.click(element);
       expect(handleFlipChange).toHaveBeenCalledWith(true);
     });
@@ -83,7 +80,9 @@ describe('FlipCard', () => {
           onFlipChange={handleFlipChange}
         />
       );
-      const element = screen.getByText('Front').closest('[data-component="flip-card"]') as HTMLElement;
+      const element = screen
+        .getByText('Front')
+        .closest('[data-component="flip-card"]') as HTMLElement;
       fireEvent.click(element);
       expect(handleFlipChange).not.toHaveBeenCalled();
     });
@@ -99,7 +98,9 @@ describe('FlipCard', () => {
           onFlipChange={handleFlipChange}
         />
       );
-      const element = screen.getByText('Front').closest('[data-component="flip-card"]') as HTMLElement;
+      const element = screen
+        .getByText('Front')
+        .closest('[data-component="flip-card"]') as HTMLElement;
       fireEvent.mouseEnter(element);
       expect(handleFlipChange).not.toHaveBeenCalled();
     });
@@ -109,14 +110,11 @@ describe('FlipCard', () => {
     it('does not flip on click when trigger is manual', () => {
       const handleFlipChange = jest.fn();
       render(
-        <FlipCard
-          front="Front"
-          back="Back"
-          flipTrigger="manual"
-          onFlipChange={handleFlipChange}
-        />
+        <FlipCard front="Front" back="Back" flipTrigger="manual" onFlipChange={handleFlipChange} />
       );
-      const element = screen.getByText('Front').closest('[data-component="flip-card"]') as HTMLElement;
+      const element = screen
+        .getByText('Front')
+        .closest('[data-component="flip-card"]') as HTMLElement;
       fireEvent.click(element);
       expect(handleFlipChange).not.toHaveBeenCalled();
     });
@@ -126,14 +124,11 @@ describe('FlipCard', () => {
     it('calls onFlipChange on mouse enter', () => {
       const handleFlipChange = jest.fn();
       render(
-        <FlipCard
-          front="Front"
-          back="Back"
-          flipTrigger="hover"
-          onFlipChange={handleFlipChange}
-        />
+        <FlipCard front="Front" back="Back" flipTrigger="hover" onFlipChange={handleFlipChange} />
       );
-      const element = screen.getByText('Front').closest('[data-component="flip-card"]') as HTMLElement;
+      const element = screen
+        .getByText('Front')
+        .closest('[data-component="flip-card"]') as HTMLElement;
       fireEvent.mouseEnter(element);
       expect(handleFlipChange).toHaveBeenCalledWith(true);
     });
@@ -149,7 +144,9 @@ describe('FlipCard', () => {
           onFlipChange={handleFlipChange}
         />
       );
-      const element = screen.getByText('Back').closest('[data-component="flip-card"]') as HTMLElement;
+      const element = screen
+        .getByText('Back')
+        .closest('[data-component="flip-card"]') as HTMLElement;
       fireEvent.mouseLeave(element);
       expect(handleFlipChange).toHaveBeenCalledWith(false);
     });
@@ -158,7 +155,9 @@ describe('FlipCard', () => {
   describe('accessibility', () => {
     it('includes role and aria attributes', () => {
       render(<FlipCard front="Front" back="Back" flipTrigger="click" />);
-      const element = screen.getByText('Front').closest('[data-component="flip-card"]') as HTMLElement;
+      const element = screen
+        .getByText('Front')
+        .closest('[data-component="flip-card"]') as HTMLElement;
       expect(element).toHaveAttribute('role');
     });
   });

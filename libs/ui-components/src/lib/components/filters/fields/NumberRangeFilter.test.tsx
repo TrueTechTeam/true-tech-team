@@ -6,7 +6,18 @@ import type { FilterContextValue, FilterDefinition, NumberRangeFilterConfig } fr
 
 // Mock the Slider component
 jest.mock('../../inputs/Slider', () => ({
-  Slider: ({ value, onChange, min, max, step, disabled, showValue, valueLabelFormat, size, ...props }: any) => (
+  Slider: ({
+    value,
+    onChange,
+    min,
+    max,
+    step,
+    disabled,
+    showValue,
+    valueLabelFormat,
+    size,
+    ...props
+  }: any) => (
     <div data-testid="slider-mock">
       <input
         type="range"
@@ -45,7 +56,9 @@ jest.mock('../../inputs/Slider', () => ({
       )}
       {showValue && valueLabelFormat && (
         <div data-testid="slider-value-label">
-          {Array.isArray(value) ? `${valueLabelFormat(value[0])} - ${valueLabelFormat(value[1])}` : valueLabelFormat(value)}
+          {Array.isArray(value)
+            ? `${valueLabelFormat(value[0])} - ${valueLabelFormat(value[1])}`
+            : valueLabelFormat(value)}
         </div>
       )}
     </div>
@@ -90,7 +103,13 @@ const createMockContext = (
   getUngroupedFilters: () => filters,
   isFilterVisible: () => true,
   isFilterEnabled: () => true,
-  getFilterOptions: () => ({ options: [], loading: false, error: null, hasMore: false, loadMore: jest.fn() }),
+  getFilterOptions: () => ({
+    options: [],
+    loading: false,
+    error: null,
+    hasMore: false,
+    loadMore: jest.fn(),
+  }),
   reloadFilterOptions: jest.fn(),
   setFilterValue: jest.fn(),
   setFilterValues: jest.fn(),
@@ -122,15 +141,8 @@ const createNumberRangeFilter = (
 });
 
 // Helper to render with context
-const renderWithContext = (
-  ui: React.ReactElement,
-  context: FilterContextValue
-) => {
-  return render(
-    <FilterContext.Provider value={context}>
-      {ui}
-    </FilterContext.Provider>
-  );
+const renderWithContext = (ui: React.ReactElement, context: FilterContextValue) => {
+  return render(<FilterContext.Provider value={context}>{ui}</FilterContext.Provider>);
 };
 
 describe('NumberRangeFilter', () => {
@@ -180,10 +192,7 @@ describe('NumberRangeFilter', () => {
     it('returns null when filter not found', () => {
       const context = createMockContext([]);
 
-      const { container } = renderWithContext(
-        <NumberRangeFilter filterId="missing" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberRangeFilter filterId="missing" />, context);
 
       expect(container.firstChild).toBeNull();
     });
@@ -204,10 +213,7 @@ describe('NumberRangeFilter', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <NumberRangeFilter filterId="price" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
       expect(screen.getByTestId('slider-mock')).toBeInTheDocument();
       expect(screen.queryByTestId('number-input')).not.toBeInTheDocument();
@@ -220,10 +226,7 @@ describe('NumberRangeFilter', () => {
       });
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <NumberRangeFilter filterId="price" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
       expect(screen.queryByTestId('slider-mock')).not.toBeInTheDocument();
       expect(screen.getAllByTestId('number-input')).toHaveLength(2);
@@ -236,10 +239,7 @@ describe('NumberRangeFilter', () => {
       });
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <NumberRangeFilter filterId="price" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
       expect(screen.getByTestId('slider-mock')).toBeInTheDocument();
       expect(screen.getAllByTestId('number-input')).toHaveLength(2);
@@ -262,10 +262,7 @@ describe('NumberRangeFilter', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <NumberRangeFilter filterId="price" label="Custom Label" />,
-        context
-      );
+      renderWithContext(<NumberRangeFilter filterId="price" label="Custom Label" />, context);
 
       expect(screen.getByText('Custom Label')).toBeInTheDocument();
       expect(screen.queryByText('Price Range')).not.toBeInTheDocument();
@@ -275,10 +272,7 @@ describe('NumberRangeFilter', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <NumberRangeFilter filterId="price" showLabel />,
-        context
-      );
+      renderWithContext(<NumberRangeFilter filterId="price" showLabel />, context);
 
       expect(screen.getByText('Price Range')).toBeInTheDocument();
     });
@@ -287,10 +281,7 @@ describe('NumberRangeFilter', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <NumberRangeFilter filterId="price" showLabel={false} />,
-        context
-      );
+      renderWithContext(<NumberRangeFilter filterId="price" showLabel={false} />, context);
 
       expect(screen.queryByText('Price Range')).not.toBeInTheDocument();
     });
@@ -464,7 +455,11 @@ describe('NumberRangeFilter', () => {
         max: 100,
       });
       const setFilterValue = jest.fn();
-      const context = createMockContext([filter], { price: { min: 20, max: 80 } }, { setFilterValue });
+      const context = createMockContext(
+        [filter],
+        { price: { min: 20, max: 80 } },
+        { setFilterValue }
+      );
 
       renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
@@ -483,7 +478,11 @@ describe('NumberRangeFilter', () => {
         max: 100,
       });
       const setFilterValue = jest.fn();
-      const context = createMockContext([filter], { price: { min: 20, max: 80 } }, { setFilterValue });
+      const context = createMockContext(
+        [filter],
+        { price: { min: 20, max: 80 } },
+        { setFilterValue }
+      );
 
       renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
@@ -711,10 +710,7 @@ describe('NumberRangeFilter', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <NumberRangeFilter filterId="price" size="lg" />,
-        context
-      );
+      renderWithContext(<NumberRangeFilter filterId="price" size="lg" />, context);
 
       const sliderInput = screen.getByTestId('slider-input');
       expect(sliderInput).toHaveAttribute('data-size', 'lg');
@@ -724,10 +720,7 @@ describe('NumberRangeFilter', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <NumberRangeFilter filterId="price" size="sm" />,
-        context
-      );
+      renderWithContext(<NumberRangeFilter filterId="price" size="sm" />, context);
 
       const sliderInput = screen.getByTestId('slider-input');
       expect(sliderInput).toHaveAttribute('data-size', 'sm');
@@ -738,9 +731,13 @@ describe('NumberRangeFilter', () => {
   describe('disabled state', () => {
     it('disables slider when filter is not enabled', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
-      const context = createMockContext([filter], {}, {
-        isFilterEnabled: jest.fn(() => false),
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          isFilterEnabled: jest.fn(() => false),
+        }
+      );
 
       renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
@@ -750,9 +747,13 @@ describe('NumberRangeFilter', () => {
 
     it('enables slider when filter is enabled', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
-      const context = createMockContext([filter], {}, {
-        isFilterEnabled: jest.fn(() => true),
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          isFilterEnabled: jest.fn(() => true),
+        }
+      );
 
       renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
@@ -764,9 +765,13 @@ describe('NumberRangeFilter', () => {
       const filter = createNumberRangeFilter('price', 'Price Range', {
         displayMode: 'inputs',
       });
-      const context = createMockContext([filter], {}, {
-        isFilterEnabled: jest.fn(() => false),
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          isFilterEnabled: jest.fn(() => false),
+        }
+      );
 
       renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
@@ -791,9 +796,13 @@ describe('NumberRangeFilter', () => {
 
     it('displays error message', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
-      const context = createMockContext([filter], {}, {
-        errors: { price: 'Invalid range' },
-      });
+      const context = createMockContext(
+        [filter],
+        {},
+        {
+          errors: { price: 'Invalid range' },
+        }
+      );
 
       renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
@@ -873,10 +882,7 @@ describe('NumberRangeFilter', () => {
       const context = createMockContext([filter]);
 
       renderWithContext(
-        <NumberRangeFilter
-          filterId="price"
-          componentProps={{ 'aria-label': 'Custom slider' }}
-        />,
+        <NumberRangeFilter filterId="price" componentProps={{ 'aria-label': 'Custom slider' }} />,
         context
       );
 
@@ -892,10 +898,7 @@ describe('NumberRangeFilter', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <NumberRangeFilter ref={ref} filterId="price" />,
-        context
-      );
+      renderWithContext(<NumberRangeFilter ref={ref} filterId="price" />, context);
 
       expect(ref.current).toBeInstanceOf(HTMLDivElement);
       expect(ref.current).toHaveAttribute('data-mode', 'slider');
@@ -906,10 +909,7 @@ describe('NumberRangeFilter', () => {
       const filter = createNumberRangeFilter('price', 'Price Range');
       const context = createMockContext([filter]);
 
-      renderWithContext(
-        <NumberRangeFilter ref={refCallback} filterId="price" />,
-        context
-      );
+      renderWithContext(<NumberRangeFilter ref={refCallback} filterId="price" />, context);
 
       expect(refCallback).toHaveBeenCalledWith(expect.any(HTMLDivElement));
     });
@@ -941,10 +941,7 @@ describe('NumberRangeFilter', () => {
       });
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <NumberRangeFilter filterId="price" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
       const separator = container.querySelector('.separator');
       expect(separator).toHaveTextContent('-');
@@ -956,10 +953,7 @@ describe('NumberRangeFilter', () => {
       });
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <NumberRangeFilter filterId="price" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
       const separator = container.querySelector('.separator');
       expect(separator).toHaveTextContent('-');
@@ -971,10 +965,7 @@ describe('NumberRangeFilter', () => {
       });
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <NumberRangeFilter filterId="price" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
       const separator = container.querySelector('.separator');
       expect(separator).toBeNull();
@@ -996,10 +987,7 @@ describe('NumberRangeFilter', () => {
       });
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <NumberRangeFilter filterId="price" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
       const element = container.querySelector('[data-mode="slider"]');
       expect(element).toBeInTheDocument();
@@ -1011,10 +999,7 @@ describe('NumberRangeFilter', () => {
       });
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <NumberRangeFilter filterId="price" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
       const element = container.querySelector('[data-mode="inputs"]');
       expect(element).toBeInTheDocument();
@@ -1026,10 +1011,7 @@ describe('NumberRangeFilter', () => {
       });
       const context = createMockContext([filter]);
 
-      const { container } = renderWithContext(
-        <NumberRangeFilter filterId="price" />,
-        context
-      );
+      const { container } = renderWithContext(<NumberRangeFilter filterId="price" />, context);
 
       const element = container.querySelector('[data-mode="both"]');
       expect(element).toBeInTheDocument();
