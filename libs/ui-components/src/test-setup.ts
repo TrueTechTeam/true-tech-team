@@ -37,3 +37,19 @@ if (!HTMLCanvasElement.prototype.getContext) {
     clearRect: jest.fn(),
   }));
 }
+
+// Mock scrollIntoView for MenuItem component
+Element.prototype.scrollIntoView = jest.fn();
+
+// Provide a minimal IntersectionObserver implementation for tests
+class MockIntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return [];
+  }
+}
+
+// @ts-ignore - assign to global for test env
+global.IntersectionObserver = global.IntersectionObserver || (MockIntersectionObserver as any);
