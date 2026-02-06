@@ -32,17 +32,49 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Check for releasable changes
+        id: check
+        run: |
+          OUTPUT=$(npx nx release version --dry-run 2>&1) || true
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "No changes were detected"; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Version and Changelog
+        if: steps.check.outputs.skip == 'false'
+        run: npx nx release --skip-publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build ui-components
+        if: steps.check.outputs.skip == 'false'
         run: npm run build:ui-components
 
       - name: Copy README and CHANGELOG into dist
+        if: steps.check.outputs.skip == 'false'
         run: |
           mkdir -p dist/libs/ui-components
           cp libs/ui-components/README.md dist/libs/ui-components/README.md
           cp libs/ui-components/CHANGELOG.md dist/libs/ui-components/CHANGELOG.md
 
       - name: List dist contents
+        if: steps.check.outputs.skip == 'false'
         run: ls -la dist/libs/ui-components || true
 
       - name: Publish to npm
+        if: steps.check.outputs.skip == 'false'
         run: npx nx release publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Skip message
+        if: steps.check.outputs.skip == 'true'
+        run: echo "No releasable changes detected. Skipping release."
