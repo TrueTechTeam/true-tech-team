@@ -1,15 +1,15 @@
 {
   "libs/ui-components/**/*.{ts,tsx,js,jsx}": [
     "prettier --write --cache",
-    "eslint --config libs/ui-components/eslint.config.mjs --fix --max-warnings=0 --cache --no-warn-ignored"
+    "eslint --config libs/ui-components/eslint.config.mjs --max-warnings=0 --cache --no-warn-ignored"
   ],
   "libs/!(ui-components)/**/*.{ts,tsx}": [
     "prettier --write --cache",
-    "eslint --fix --max-warnings=0 --cache --no-warn-ignored"
+    "eslint --max-warnings=0 --cache --no-warn-ignored"
   ],
   "libs/!(ui-components)/**/*.{js,jsx}": [
     "prettier --write --cache",
-    "eslint --fix --max-warnings=0 --cache --no-warn-ignored"
+    "eslint --max-warnings=0 --cache --no-warn-ignored"
   ],
   "libs/**/*.{json,md}": ["prettier --write --cache"],
   "libs/**/*.{css,scss}": ["prettier --write --cache", "stylelint --fix --cache"]
