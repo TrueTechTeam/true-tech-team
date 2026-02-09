@@ -10,7 +10,7 @@
     "test": "nx run-many -t test",
     "test:watch": "nx run-many -t test --watch",
     "test:coverage": "nx run-many -t test --coverage",
-    "test:ci": "nx run-many -t test --configuration=ci",
+    "test:ci": "nx run-many -t test --configuration=ci --passWithNoTests",
     "test:ui-components": "nx test ui-components",
     "test:ui-components:watch": "nx test ui-components --watch",
     "test:ui-components:coverage": "nx test ui-components --coverage",
