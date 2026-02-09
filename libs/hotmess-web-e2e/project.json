@@ -1,0 +1,10 @@
+{
+  "name": "hotmess-web-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "libs/hotmess-web-e2e/src",
+  "implicitDependencies": ["hotmess-web"],
+  "tags": [],
+  "// targets": "to see all targets run: nx show project hotmess-web-e2e --web",
+  "targets": {}
+}

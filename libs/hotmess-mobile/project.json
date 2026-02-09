@@ -1,0 +1,43 @@
+{
+  "name": "hotmess-mobile",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/hotmess-mobile",
+  "projectType": "application",
+  "tags": ["scope:hotmess", "type:app", "platform:mobile"],
+  "targets": {
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx expo start",
+        "cwd": "libs/hotmess-mobile"
+      }
+    },
+    "android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx expo run:android",
+        "cwd": "libs/hotmess-mobile"
+      }
+    },
+    "ios": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx expo run:ios",
+        "cwd": "libs/hotmess-mobile"
+      }
+    },
+    "web": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx expo start --web",
+        "cwd": "libs/hotmess-mobile"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["libs/hotmess-mobile/**/*.{ts,tsx}"]
+      }
+    }
+  }
+}
