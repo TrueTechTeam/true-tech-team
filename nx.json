@@ -95,6 +95,12 @@
       },
       "component": {
         "style": "scss"
+      },
+      "application": {
+        "babel": true,
+        "style": "scss",
+        "linter": "none",
+        "bundler": "vite"
       }
     },
     "@nx/next": {
@@ -106,18 +112,14 @@
   },
   "release": {
     "projects": ["ui-components"],
-
     "projectsRelationship": "independent",
-
     "version": {
       "conventionalCommits": true
     },
-
     "changelog": {
       "projectChangelogs": true,
       "workspaceChangelog": false
     },
-
     "git": {
       "commit": true,
       "tag": true,

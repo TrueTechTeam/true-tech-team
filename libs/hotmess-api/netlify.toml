@@ -1,0 +1,15 @@
+[build]
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/auth/sports-engine/token"
+  to = "/.netlify/functions/sports-engine-token"
+  status = 200
+
+[[redirects]]
+  from = "/api/auth/sports-engine/refresh"
+  to = "/.netlify/functions/sports-engine-refresh"
+  status = 200
