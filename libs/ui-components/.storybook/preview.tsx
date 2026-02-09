@@ -1,7 +1,6 @@
-/* eslint-disable @nx/enforce-module-boundaries */
+import { DocsContainer } from '@storybook/addon-docs/blocks';
 import type { Preview } from '@storybook/react-vite';
 import React, { useEffect } from 'react';
-import { DocsContainer } from '@storybook/addon-docs/blocks';
 import { GlobalProvider } from '../src/lib/providers/GlobalProvider';
 import { create } from 'storybook/theming';
 import '../src/lib/styles/index.scss';

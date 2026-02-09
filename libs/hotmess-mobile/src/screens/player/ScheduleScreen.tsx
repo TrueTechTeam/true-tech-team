@@ -38,9 +38,15 @@ export function ScheduleScreen() {
     const month = now.getMonth();
     const year = now.getFullYear();
 
-    if (month >= 2 && month <= 4) return `Spring ${year}`;
-    if (month >= 5 && month <= 7) return `Summer ${year}`;
-    if (month >= 8 && month <= 10) return `Fall ${year}`;
+    if (month >= 2 && month <= 4) {
+      return `Spring ${year}`;
+    }
+    if (month >= 5 && month <= 7) {
+      return `Summer ${year}`;
+    }
+    if (month >= 8 && month <= 10) {
+      return `Fall ${year}`;
+    }
     return `Winter ${year}`;
   };
 
@@ -66,7 +72,7 @@ export function ScheduleScreen() {
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         ) : games && games.length > 0 ? (
-          games.map((game: any) => {
+          games.map((game) => {
             const isHome = game.home_team_id === user?.id;
             return (
               <View key={game.id} style={styles.gameCard}>

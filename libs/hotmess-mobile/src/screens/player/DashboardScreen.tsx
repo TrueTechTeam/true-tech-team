@@ -26,7 +26,6 @@ export function DashboardScreen() {
       <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
           <Text style={styles.greeting}>Hey, {displayName}!</Text>
-          <Text style={styles.subtitle}>Here's what's happening</Text>
         </View>
 
         {/* Next Game Card */}
@@ -72,7 +71,7 @@ export function DashboardScreen() {
             <ActivityIndicator color={colors.primary} />
           ) : myTeams && myTeams.length > 0 ? (
             <View style={styles.activityList}>
-              {myTeams.slice(0, 3).map((membership: any) => (
+              {myTeams.slice(0, 3).map((membership) => (
                 <View key={membership.id} style={styles.activityItem}>
                   <Text style={styles.activityIcon}>⚽</Text>
                   <View style={styles.activityContent}>
@@ -86,7 +85,7 @@ export function DashboardScreen() {
               ))}
             </View>
           ) : (
-            <Text style={styles.noData}>You're not on any teams yet</Text>
+            <Text style={styles.noData}>You are not on any teams yet</Text>
           )}
         </View>
 

@@ -47,6 +47,7 @@ export function ProfileScreen() {
             await signOut();
           } catch (error) {
             Alert.alert('Error', 'Failed to sign out. Please try again.');
+            console.error('Sign out error:', error);
           }
         },
       },

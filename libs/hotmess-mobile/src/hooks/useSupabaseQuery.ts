@@ -40,21 +40,16 @@ function useSupabaseQuery<T>(
 
       const { data: result, error: queryError } = await query;
 
-      if (queryError) throw queryError;
+      if (queryError) {
+        throw queryError;
+      }
       setData(result as T[]);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
     } finally {
       setLoading(false);
     }
-  }, [
-    tableName,
-    options?.select,
-    options?.filter?.column,
-    options?.filter?.value,
-    options?.orderBy?.column,
-    options?.orderBy?.ascending,
-  ]);
+  }, [tableName, options?.select, options?.filter, options?.orderBy]);
 
   useEffect(() => {
     fetchData();
@@ -119,7 +114,9 @@ export function useLeaguesByCity(cityId: string | undefined) {
         .select('*, sports(name)')
         .eq('city_id', cityId);
 
-      if (queryError) throw queryError;
+      if (queryError) {
+        throw queryError;
+      }
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -167,7 +164,9 @@ export function useActiveSeasons() {
         .in('status', ['registration', 'active'])
         .order('start_date');
 
-      if (queryError) throw queryError;
+      if (queryError) {
+        throw queryError;
+      }
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -251,7 +250,9 @@ export function useMyTeams(userId: string | undefined) {
         )
         .eq('user_id', userId);
 
-      if (queryError) throw queryError;
+      if (queryError) {
+        throw queryError;
+      }
       setData(result as TeamMembership[]);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -298,7 +299,9 @@ export function useUpcomingGames(userId: string | undefined) {
         .select('team_id')
         .eq('user_id', userId);
 
-      if (teamError) throw teamError;
+      if (teamError) {
+        throw teamError;
+      }
 
       const teamIds = teamMembers?.map((tm) => tm.team_id) || [];
 
@@ -323,7 +326,9 @@ export function useUpcomingGames(userId: string | undefined) {
         .gte('scheduled_at', new Date().toISOString())
         .order('scheduled_at');
 
-      if (gamesError) throw gamesError;
+      if (gamesError) {
+        throw gamesError;
+      }
       setData(games as Game[]);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));

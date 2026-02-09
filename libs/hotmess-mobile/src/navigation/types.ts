@@ -3,12 +3,14 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 
 // Auth Stack
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type AuthStackParamList = {
   Login: undefined;
   Welcome: undefined;
 };
 
 // Main Tab Navigator (Player role)
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type PlayerTabParamList = {
   Dashboard: undefined;
   Schedule: undefined;
@@ -18,6 +20,7 @@ export type PlayerTabParamList = {
 };
 
 // Captain Tab Navigator
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type CaptainTabParamList = {
   Dashboard: undefined;
   Schedule: undefined;
@@ -27,6 +30,7 @@ export type CaptainTabParamList = {
 };
 
 // Root Stack
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>;
   PlayerTabs: NavigatorScreenParams<PlayerTabParamList>;
@@ -56,7 +60,9 @@ export type PlayerTabScreenProps<T extends keyof PlayerTabParamList> = Composite
 >;
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace ReactNavigation {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface RootParamList extends RootStackParamList {}
   }
 }

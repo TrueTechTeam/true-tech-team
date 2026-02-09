@@ -37,7 +37,7 @@ export function WelcomeScreen() {
           </TouchableOpacity>
 
           <Text style={styles.signupText}>
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Text style={styles.signupLink}>Create one on Sports Engine</Text>
           </Text>
         </View>

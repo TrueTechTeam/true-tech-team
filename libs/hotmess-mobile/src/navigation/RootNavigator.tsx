@@ -42,13 +42,11 @@ export function RootNavigator() {
       }}
     >
       {user ? (
-        <>
-          <Stack.Screen
-            name="PlayerTabs"
-            component={PlayerTabNavigator}
-            options={{ headerShown: false }}
-          />
-        </>
+        <Stack.Screen
+          name="PlayerTabs"
+          component={PlayerTabNavigator}
+          options={{ headerShown: false }}
+        />
       ) : (
         <Stack.Screen name="Auth" component={AuthNavigator} options={{ headerShown: false }} />
       )}

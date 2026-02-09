@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import {
@@ -187,13 +187,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Get current access token (refreshes if needed)
   const getAccessToken = async (): Promise<string | null> => {
-    if (!tokens) return null;
+    if (!tokens) {
+      return null;
+    }
 
     // Check if token is about to expire (within 5 minutes)
     const expiresIn = tokens.expires_at * 1000 - Date.now();
     if (expiresIn < 5 * 60 * 1000 && tokens.refresh_token) {
       const success = await handleTokenRefresh(tokens.refresh_token);
-      if (!success) return null;
+      if (!success) {
+        return null;
+      }
     }
 
     return tokens?.access_token || null;
