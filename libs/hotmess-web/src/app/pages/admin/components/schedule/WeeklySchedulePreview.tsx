@@ -48,7 +48,9 @@ export function WeeklySchedulePreview({
   const previewData: PreviewRow[] = weekGames
     .sort((a, b) => {
       const timeCompare = a.timeSlot.localeCompare(b.timeSlot);
-      if (timeCompare !== 0) return timeCompare;
+      if (timeCompare !== 0) {
+        return timeCompare;
+      }
       return a.playArea.localeCompare(b.playArea);
     })
     .map((game) => ({
@@ -79,7 +81,14 @@ export function WeeklySchedulePreview({
 
   return (
     <div className={styles.configPanel}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1rem',
+        }}
+      >
         <h3 className={styles.sectionTitle} style={{ margin: 0 }}>
           Generated Schedule
         </h3>
@@ -103,7 +112,11 @@ export function WeeklySchedulePreview({
                 border: `1px solid ${isActive ? 'var(--logo-blue-50)' : 'var(--theme-border)'}`,
                 borderRadius: '4px',
                 background: isActive ? 'var(--logo-blue-50)' : 'var(--theme-bg-primary)',
-                color: isActive ? '#fff' : hasGames ? 'var(--theme-text-primary)' : 'var(--text-muted)',
+                color: isActive
+                  ? '#fff'
+                  : hasGames
+                    ? 'var(--theme-text-primary)'
+                    : 'var(--text-muted)',
                 fontSize: '0.8125rem',
                 fontWeight: isActive ? 600 : 400,
                 cursor: 'pointer',
@@ -125,7 +138,14 @@ export function WeeklySchedulePreview({
       {/* Week content */}
       {weekGames.length > 0 ? (
         <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.75rem',
+            }}
+          >
             <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>
               Week {activeWeek} — {weekGames.length} games
             </span>
@@ -133,16 +153,13 @@ export function WeeklySchedulePreview({
               Clear Week {activeWeek}
             </Button>
           </div>
-          <Table<PreviewRow>
-            data={previewData}
-            columns={columns}
-            rowKey="id"
-          />
+          <Table<PreviewRow> data={previewData} columns={columns} rowKey="id" />
         </>
       ) : (
         <p className={styles.emptyText}>
           No games generated for Week {activeWeek}.
-          {!generatedWeeks.has(activeWeek) && ' Use the generator above to create games for this week.'}
+          {!generatedWeeks.has(activeWeek) &&
+            ' Use the generator above to create games for this week.'}
         </p>
       )}
     </div>

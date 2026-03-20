@@ -70,8 +70,7 @@ export function UpcomingEventsSection({ games, registrationSeasons }: UpcomingEv
         title: `${game.home_team?.name} vs. ${game.away_team?.name}`,
         subtitle: game.venues?.name || game.venue?.name || 'TBD',
         date: game.scheduled_at,
-        onPress: () =>
-          navigation.navigate('GameDetails' as never, { gameId: game.id } as never),
+        onPress: () => navigation.navigate('GameDetails', { gameId: game.id }),
       });
     }
   }
@@ -89,18 +88,13 @@ export function UpcomingEventsSection({ games, registrationSeasons }: UpcomingEv
           subtitle: season.name,
           date: season.registration_end_date,
           onPress: () => {
-            Alert.alert(
-              'Register',
-              `Open registration for ${season.name}?`,
-              [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                  text: 'Register',
-                  onPress: () =>
-                    Linking.openURL('https://hotmesssports.com/register'),
-                },
-              ]
-            );
+            Alert.alert('Register', `Open registration for ${season.name}?`, [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Register',
+                onPress: () => Linking.openURL('https://hotmesssports.com/register'),
+              },
+            ]);
           },
         });
       }
@@ -110,7 +104,9 @@ export function UpcomingEventsSection({ games, registrationSeasons }: UpcomingEv
   // Sort all events by date
   events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  if (events.length === 0) return null;
+  if (events.length === 0) {
+    return null;
+  }
 
   return (
     <View style={styles.section}>

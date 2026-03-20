@@ -47,9 +47,10 @@ export function ScheduleConfigPanel({
   const [newMakeupDate, setNewMakeupDate] = useState('');
   const [newBlackoutDate, setNewBlackoutDate] = useState('');
 
-  const computedTimeSlots = config.firstGameTime && gameDurationMinutes > 0
-    ? computeTimeSlots(config.firstGameTime, gameDurationMinutes, 10, config.bufferMinutes)
-    : [];
+  const computedTimeSlots =
+    config.firstGameTime && gameDurationMinutes > 0
+      ? computeTimeSlots(config.firstGameTime, gameDurationMinutes, 10, config.bufferMinutes)
+      : [];
 
   const handleVenueChange = (venueId: string) => {
     const venue = venues.find((v) => v.id === venueId);
@@ -61,7 +62,9 @@ export function ScheduleConfigPanel({
   };
 
   const handleAddPlayArea = () => {
-    if (!newPlayArea.trim()) return;
+    if (!newPlayArea.trim()) {
+      return;
+    }
     onUpdate({
       ...config,
       selectedPlayAreas: [...config.selectedPlayAreas, newPlayArea.trim()],
@@ -89,7 +92,9 @@ export function ScheduleConfigPanel({
     field: 'backupTournamentDates' | 'makeupDates' | 'blackoutDates',
     clearFn: (val: string) => void
   ) => {
-    if (!newDate) return;
+    if (!newDate) {
+      return;
+    }
     onUpdate({ ...config, [field]: [...list, newDate] });
     clearFn('');
   };
@@ -225,9 +230,7 @@ export function ScheduleConfigPanel({
               type="number"
               label="Total Weeks"
               value={String(config.totalWeeks)}
-              onChange={(e) =>
-                onUpdate({ ...config, totalWeeks: parseInt(e.target.value) || 1 })
-              }
+              onChange={(e) => onUpdate({ ...config, totalWeeks: parseInt(e.target.value) || 1 })}
             />
             <Input
               type="number"
@@ -266,9 +269,7 @@ export function ScheduleConfigPanel({
                 </div>
               ))
             ) : (
-              <p className={styles.emptyText}>
-                Set first game time to compute time slots.
-              </p>
+              <p className={styles.emptyText}>Set first game time to compute time slots.</p>
             )}
           </div>
         </div>
@@ -294,7 +295,9 @@ export function ScheduleConfigPanel({
                 <button
                   type="button"
                   className={styles.removeBtn}
-                  onClick={() => removeDate(config.backupTournamentDates, index, 'backupTournamentDates')}
+                  onClick={() =>
+                    removeDate(config.backupTournamentDates, index, 'backupTournamentDates')
+                  }
                 >
                   ×
                 </button>
@@ -311,7 +314,12 @@ export function ScheduleConfigPanel({
               variant="outline"
               size="sm"
               onClick={() =>
-                addDate(config.backupTournamentDates, newBackupDate, 'backupTournamentDates', setNewBackupDate)
+                addDate(
+                  config.backupTournamentDates,
+                  newBackupDate,
+                  'backupTournamentDates',
+                  setNewBackupDate
+                )
               }
             >
               Add

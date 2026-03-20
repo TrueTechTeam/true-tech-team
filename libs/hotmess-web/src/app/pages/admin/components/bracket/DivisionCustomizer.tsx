@@ -23,7 +23,9 @@ interface DivisionCustomizerProps {
 
 function sortTeams(teams: DivisionTeam[]): DivisionTeam[] {
   return [...teams].sort((a, b) => {
-    if (b.wins !== a.wins) { return b.wins - a.wins; }
+    if (b.wins !== a.wins) {
+      return b.wins - a.wins;
+    }
     const aTotalGames = a.wins + a.losses + a.ties;
     const bTotalGames = b.wins + b.losses + b.ties;
     const aWinPct = aTotalGames > 0 ? a.wins / aTotalGames : 0;
@@ -33,7 +35,9 @@ function sortTeams(teams: DivisionTeam[]): DivisionTeam[] {
 }
 
 export function DivisionCustomizer({ divisions, onDivisionsChange }: DivisionCustomizerProps) {
-  const [movingTeam, setMovingTeam] = useState<{ teamId: string; fromDivisionId: string } | null>(null);
+  const [movingTeam, setMovingTeam] = useState<{ teamId: string; fromDivisionId: string } | null>(
+    null
+  );
   const totalBrackets = divisions.length;
   const totalTeams = divisions.reduce((sum, div) => sum + div.teams.length, 0);
 
@@ -57,7 +61,9 @@ export function DivisionCustomizer({ divisions, onDivisionsChange }: DivisionCus
 
   const handleSplitDivision = (divisionId: string) => {
     const division = divisions.find((d) => d.id === divisionId);
-    if (!division || division.teams.length < 2) { return; }
+    if (!division || division.teams.length < 2) {
+      return;
+    }
 
     const sorted = sortTeams(division.teams);
     const half1: DivisionTeam[] = [];
@@ -98,16 +104,14 @@ export function DivisionCustomizer({ divisions, onDivisionsChange }: DivisionCus
         <div>
           <h3 className={styles.title}>Divisions & Teams</h3>
           <p className={styles.description}>
-            Review and organize teams across divisions before generating brackets.
-            Move teams between divisions or split a division into groups.
+            Review and organize teams across divisions before generating brackets. Move teams
+            between divisions or split a division into groups.
           </p>
         </div>
         <div className={styles.stats}>
           <div className={styles.stat}>
             <span className={styles.statValue}>{totalBrackets}</span>
-            <span className={styles.statLabel}>
-              {totalBrackets === 1 ? 'Bracket' : 'Brackets'}
-            </span>
+            <span className={styles.statLabel}>{totalBrackets === 1 ? 'Bracket' : 'Brackets'}</span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statValue}>{totalTeams}</span>
@@ -177,7 +181,9 @@ export function DivisionCustomizer({ divisions, onDivisionsChange }: DivisionCus
                           <button
                             type="button"
                             className={styles.moveBtn}
-                            onClick={() => setMovingTeam({ teamId: team.id, fromDivisionId: division.id })}
+                            onClick={() =>
+                              setMovingTeam({ teamId: team.id, fromDivisionId: division.id })
+                            }
                             title="Move to another division"
                           >
                             Move

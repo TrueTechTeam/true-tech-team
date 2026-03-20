@@ -1,21 +1,75 @@
 import { mockDivisions } from './divisions';
 
 const TEAM_NAMES = [
-  'Ball Busters', 'Kick Tease', 'Sets on the Beach', 'Net Gains', 'The Underdodges',
-  'Pitch Please', 'Rumble in the Jungle', 'The Replacements', 'Balls of Fury', 'Inglorious Batters',
-  'One Hit Wonders', 'Gutter Done', 'Pin Pals', 'The Alley Cats', 'Turkey Lurkeys',
-  'Spiked Punch', 'Block Party', 'Ace Holes', 'Dink Dynasty', 'Kitchen Nightmares',
-  'Off the Wall', 'Bag Daddies', 'Corn Stars', 'Toss Bosses', 'Board Certified',
-  'Swish Kebabs', 'Air Balls', 'Hoop Dreams', 'Fast Break Fever', 'Nothing But Net',
-  'Flag Yeah', 'Touchdown Syndrome', 'Rush Hour', 'Blitz Kids', 'End Zone Dancers',
-  'Smash Bros', 'Love Means Nothing', 'Court Jesters', 'Volley Llamas', 'Grass Stains',
-  'Game of Throws', 'No Hit Sherlock', 'Cereal Killers', 'Mean Muggers', 'The Comebacks',
-  'Victorious Secret', 'Multiple Scoregasms', 'The Benchwarmers', 'Last Pick All Stars', 'Average Joes',
+  'Ball Busters',
+  'Kick Tease',
+  'Sets on the Beach',
+  'Net Gains',
+  'The Underdodges',
+  'Pitch Please',
+  'Rumble in the Jungle',
+  'The Replacements',
+  'Balls of Fury',
+  'Inglorious Batters',
+  'One Hit Wonders',
+  'Gutter Done',
+  'Pin Pals',
+  'The Alley Cats',
+  'Turkey Lurkeys',
+  'Spiked Punch',
+  'Block Party',
+  'Ace Holes',
+  'Dink Dynasty',
+  'Kitchen Nightmares',
+  'Off the Wall',
+  'Bag Daddies',
+  'Corn Stars',
+  'Toss Bosses',
+  'Board Certified',
+  'Swish Kebabs',
+  'Air Balls',
+  'Hoop Dreams',
+  'Fast Break Fever',
+  'Nothing But Net',
+  'Flag Yeah',
+  'Touchdown Syndrome',
+  'Rush Hour',
+  'Blitz Kids',
+  'End Zone Dancers',
+  'Smash Bros',
+  'Love Means Nothing',
+  'Court Jesters',
+  'Volley Llamas',
+  'Grass Stains',
+  'Game of Throws',
+  'No Hit Sherlock',
+  'Cereal Killers',
+  'Mean Muggers',
+  'The Comebacks',
+  'Victorious Secret',
+  'Multiple Scoregasms',
+  'The Benchwarmers',
+  'Last Pick All Stars',
+  'Average Joes',
 ];
 
 const SHIRT_COLORS = [
-  'Red', 'Blue', 'Green', 'Yellow', 'Orange', 'Purple', 'Black', 'White',
-  'Pink', 'Teal', 'Navy', 'Maroon', 'Lime', 'Coral', 'Slate', 'Gold',
+  'Red',
+  'Blue',
+  'Green',
+  'Yellow',
+  'Orange',
+  'Purple',
+  'Black',
+  'White',
+  'Pink',
+  'Teal',
+  'Navy',
+  'Maroon',
+  'Lime',
+  'Coral',
+  'Slate',
+  'Gold',
 ];
 
 function seededRandom(seed: number): number {
@@ -36,8 +90,12 @@ export const mockTeams = mockDivisions.flatMap((division, divIdx) => {
     const wins = Math.floor(seededRandom(seed * 7) * 10);
     const losses = Math.floor(seededRandom(seed * 13) * 8);
     const ties = Math.floor(seededRandom(seed * 19) * 3);
-    const pointsFor = wins * Math.floor(seededRandom(seed * 23) * 15 + 5) + ties * Math.floor(seededRandom(seed * 29) * 5 + 1);
-    const pointsAgainst = losses * Math.floor(seededRandom(seed * 31) * 15 + 5) + ties * Math.floor(seededRandom(seed * 37) * 5 + 1);
+    const pointsFor =
+      wins * Math.floor(seededRandom(seed * 23) * 15 + 5) +
+      ties * Math.floor(seededRandom(seed * 29) * 5 + 1);
+    const pointsAgainst =
+      losses * Math.floor(seededRandom(seed * 31) * 15 + 5) +
+      ties * Math.floor(seededRandom(seed * 37) * 5 + 1);
 
     const wantsFreeAgents = seededRandom(seed * 41) < 0.35;
     const freeAgentsRequested = wantsFreeAgents ? Math.floor(seededRandom(seed * 43) * 3) + 1 : 0;

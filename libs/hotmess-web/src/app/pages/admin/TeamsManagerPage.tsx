@@ -85,9 +85,7 @@ export function TeamsManagerPage() {
   // Roster dialog
   const [rosterTeamId, setRosterTeamId] = useState<string | null>(null);
   const [rosterTeamName, setRosterTeamName] = useState('');
-  const { data: teamMembers, loading: membersLoading } = useTeamMembers(
-    rosterTeamId ?? undefined
-  );
+  const { data: teamMembers, loading: membersLoading } = useTeamMembers(rosterTeamId ?? undefined);
 
   const breadcrumbs = buildAdminBreadcrumbs(
     seasonId
@@ -209,7 +207,15 @@ export function TeamsManagerPage() {
         config: dropdownConfig,
       },
     ];
-  }, [cities, sports, leagues, seasons, filterValues.city, filterValues.sport, filterValues.league]);
+  }, [
+    cities,
+    sports,
+    leagues,
+    seasons,
+    filterValues.city,
+    filterValues.sport,
+    filterValues.league,
+  ]);
 
   // Apply filters to team data
   const filteredTeams = useMemo(() => {
@@ -235,10 +241,16 @@ export function TeamsManagerPage() {
         }
       }
 
-      if (cityFilter.length > 0 && (!teamLeague?.cities?.id || !cityFilter.includes(teamLeague.cities.id))) {
+      if (
+        cityFilter.length > 0 &&
+        (!teamLeague?.cities?.id || !cityFilter.includes(teamLeague.cities.id))
+      ) {
         return false;
       }
-      if (sportFilter.length > 0 && (!teamLeague?.sports?.id || !sportFilter.includes(teamLeague.sports.id))) {
+      if (
+        sportFilter.length > 0 &&
+        (!teamLeague?.sports?.id || !sportFilter.includes(teamLeague.sports.id))
+      ) {
         return false;
       }
       if (leagueFilter.length > 0 && (!teamLeague?.id || !leagueFilter.includes(teamLeague.id))) {
@@ -261,10 +273,7 @@ export function TeamsManagerPage() {
       string,
       {
         cityName: string;
-        seasonMap: Map<
-          string,
-          { seasonName: string; seasonStatus: string; teams: AllTeamRow[] }
-        >;
+        seasonMap: Map<string, { seasonName: string; seasonStatus: string; teams: AllTeamRow[] }>;
       }
     >();
 
@@ -396,9 +405,7 @@ export function TeamsManagerPage() {
         <h1 className={styles.pageTitle}>
           {seasonId ? 'Season Teams' : 'All Teams'}
           {filteredTeams.length > 0 && (
-            <span
-              style={{ color: 'var(--text-muted)', fontSize: '1rem', marginLeft: '0.75rem' }}
-            >
+            <span style={{ color: 'var(--text-muted)', fontSize: '1rem', marginLeft: '0.75rem' }}>
               ({filteredTeams.length} total)
             </span>
           )}
@@ -476,7 +483,8 @@ export function TeamsManagerPage() {
                     </span>
                   </h3>
                   <Badge variant={getStatusBadgeVariant(seasonGroup.seasonStatus)} size="sm">
-                    {seasonGroup.seasonStatus.charAt(0).toUpperCase() + seasonGroup.seasonStatus.slice(1)}
+                    {seasonGroup.seasonStatus.charAt(0).toUpperCase() +
+                      seasonGroup.seasonStatus.slice(1)}
                   </Badge>
                   <span className={styles.seasonGroupCount}>
                     {seasonGroup.teams.length} {seasonGroup.teams.length === 1 ? 'team' : 'teams'}

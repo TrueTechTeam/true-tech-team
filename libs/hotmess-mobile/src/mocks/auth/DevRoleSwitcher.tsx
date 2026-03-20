@@ -28,11 +28,7 @@ export function DevRoleSwitcher() {
 
   return (
     <>
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => setIsExpanded(true)}
-        activeOpacity={0.8}
-      >
+      <TouchableOpacity style={styles.fab} onPress={() => setIsExpanded(true)} activeOpacity={0.8}>
         <Text style={styles.fabBadge}>DEV</Text>
         <Text style={styles.fabRole}>{ROLE_LABELS[role]}</Text>
       </TouchableOpacity>
@@ -134,7 +130,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   activeRole: {
-    backgroundColor: `${colors.accent  }33`,
+    backgroundColor: `${colors.accent}33`,
   },
   roleText: {
     color: colors.textPrimary,

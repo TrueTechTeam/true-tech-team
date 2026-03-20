@@ -1,4 +1,12 @@
-import { type ReactNode, createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import {
+  type ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 
@@ -69,7 +77,9 @@ const defaultPermissions: Permissions = {
   captainTeamIds: [],
   canView: () => false,
   canEdit: () => false,
-  refresh: async () => { /* noop */ },
+  refresh: async () => {
+    /* noop */
+  },
 };
 
 export const PermissionsContext = createContext<Permissions>(defaultPermissions);
@@ -78,7 +88,9 @@ function getHighestRole(...roles: Array<UserRole | null>): UserRole {
   let highest = -1;
   let highestRole = UserRole.Player;
   for (const role of roles) {
-    if (!role) {continue;}
+    if (!role) {
+      continue;
+    }
     const idx = ROLE_HIERARCHY.indexOf(role);
     if (idx > highest) {
       highest = idx;
@@ -132,8 +144,11 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
         .eq('referee_id', userId);
       const refSeasonIds = new Set<string>();
       for (const g of refereeGames ?? []) {
-        const div = g.divisions as { season_id: string } | null;
-        if (div?.season_id) {refSeasonIds.add(div.season_id);}
+        const divRaw = g.divisions as Array<{ season_id: string }> | { season_id: string } | null;
+        const div = Array.isArray(divRaw) ? divRaw[0] : divRaw;
+        if (div?.season_id) {
+          refSeasonIds.add(div.season_id);
+        }
       }
       setRefereeSeasonIds(Array.from(refSeasonIds));
 
@@ -147,7 +162,9 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
       const captTeamIds: string[] = [];
       for (const tm of teamMembers ?? []) {
         allTeamIds.push(tm.team_id);
-        if (tm.role === 'team_captain') {captTeamIds.push(tm.team_id);}
+        if (tm.role === 'team_captain') {
+          captTeamIds.push(tm.team_id);
+        }
       }
       setMyTeamIds(allTeamIds);
       setCaptainTeamIds(captTeamIds);
@@ -163,19 +180,29 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
   }, [fetchPermissions]);
 
   const dbHighestRole = useMemo(() => {
-    if (dbRoles.length === 0) {return null;}
+    if (dbRoles.length === 0) {
+      return null;
+    }
     return getHighestRole(...dbRoles.map((r) => r.role));
   }, [dbRoles]);
 
   const teamBasedRole = useMemo(() => {
-    if (captainTeamIds.length > 0) {return UserRole.TeamCaptain;}
-    if (myTeamIds.length > 0) {return UserRole.Player;}
+    if (captainTeamIds.length > 0) {
+      return UserRole.TeamCaptain;
+    }
+    if (myTeamIds.length > 0) {
+      return UserRole.Player;
+    }
     return null;
   }, [captainTeamIds, myTeamIds]);
 
   const contextRole = useMemo(() => {
-    if (managedSeasonIds.length > 0) {return UserRole.Manager;}
-    if (refereeSeasonIds.length > 0) {return UserRole.Referee;}
+    if (managedSeasonIds.length > 0) {
+      return UserRole.Manager;
+    }
+    if (refereeSeasonIds.length > 0) {
+      return UserRole.Referee;
+    }
     return null;
   }, [managedSeasonIds, refereeSeasonIds]);
 
@@ -187,7 +214,9 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
   const isAdmin = effectiveRole === UserRole.Admin;
 
   const isCommissioner = useMemo(
-    () => effectiveRole === UserRole.Commissioner || dbRoles.some((r) => r.role === UserRole.Commissioner),
+    () =>
+      effectiveRole === UserRole.Commissioner ||
+      dbRoles.some((r) => r.role === UserRole.Commissioner),
     [effectiveRole, dbRoles]
   );
 
@@ -201,7 +230,9 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
 
   const canView = useCallback(
     (resource: string, scopeId?: string): boolean => {
-      if (isAdmin) {return true;}
+      if (isAdmin) {
+        return true;
+      }
 
       switch (resource) {
         case 'cities':
@@ -209,22 +240,36 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
         case 'sports':
           return isAdmin || isCommissioner;
         case 'leagues':
-          if (isCommissioner && scopeId) {return commissionerCityIds.includes(scopeId);}
+          if (isCommissioner && scopeId) {
+            return commissionerCityIds.includes(scopeId);
+          }
           return isCommissioner;
         case 'seasons':
-          if (isCommissioner) {return true;}
-          if (scopeId) {return managedSeasonIds.includes(scopeId) || refereeSeasonIds.includes(scopeId);}
+          if (isCommissioner) {
+            return true;
+          }
+          if (scopeId) {
+            return managedSeasonIds.includes(scopeId) || refereeSeasonIds.includes(scopeId);
+          }
           return managedSeasonIds.length > 0 || refereeSeasonIds.length > 0 || myTeamIds.length > 0;
         case 'teams':
-          if (isCommissioner) {return true;}
-          if (scopeId) {return myTeamIds.includes(scopeId);}
+          if (isCommissioner) {
+            return true;
+          }
+          if (scopeId) {
+            return myTeamIds.includes(scopeId);
+          }
           return myTeamIds.length > 0;
         case 'schedules':
         case 'games':
-          if (isCommissioner) {return true;}
+          if (isCommissioner) {
+            return true;
+          }
           return managedSeasonIds.length > 0 || refereeSeasonIds.length > 0 || myTeamIds.length > 0;
         case 'brackets':
-          if (isCommissioner) {return true;}
+          if (isCommissioner) {
+            return true;
+          }
           return managedSeasonIds.length > 0 || refereeSeasonIds.length > 0;
         default:
           return false;
@@ -235,30 +280,48 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
 
   const canEdit = useCallback(
     (resource: string, scopeId?: string): boolean => {
-      if (isAdmin) {return true;}
+      if (isAdmin) {
+        return true;
+      }
 
       switch (resource) {
         case 'cities':
         case 'sports':
           return false;
         case 'leagues':
-          if (isCommissioner && scopeId) {return commissionerCityIds.includes(scopeId);}
+          if (isCommissioner && scopeId) {
+            return commissionerCityIds.includes(scopeId);
+          }
           return false;
         case 'seasons':
-          if (isCommissioner) {return true;}
-          if (scopeId) {return managedSeasonIds.includes(scopeId);}
+          if (isCommissioner) {
+            return true;
+          }
+          if (scopeId) {
+            return managedSeasonIds.includes(scopeId);
+          }
           return false;
         case 'teams':
-          if (isCommissioner) {return true;}
-          if (scopeId) {return captainTeamIds.includes(scopeId);}
+          if (isCommissioner) {
+            return true;
+          }
+          if (scopeId) {
+            return captainTeamIds.includes(scopeId);
+          }
           return managedSeasonIds.length > 0;
         case 'schedules':
         case 'games':
-          if (isCommissioner) {return true;}
-          if (effectiveRole === UserRole.Referee) {return true;}
+          if (isCommissioner) {
+            return true;
+          }
+          if (effectiveRole === UserRole.Referee) {
+            return true;
+          }
           return managedSeasonIds.length > 0;
         case 'brackets':
-          if (isCommissioner) {return true;}
+          if (isCommissioner) {
+            return true;
+          }
           return managedSeasonIds.length > 0;
         case 'user_roles':
           return false;
@@ -304,11 +367,7 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
     ]
   );
 
-  return (
-    <PermissionsContext.Provider value={value}>
-      {children}
-    </PermissionsContext.Provider>
-  );
+  return <PermissionsContext.Provider value={value}>{children}</PermissionsContext.Provider>;
 }
 
 export function usePermissions(): Permissions {

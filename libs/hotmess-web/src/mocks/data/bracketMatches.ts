@@ -8,7 +8,9 @@ let store: BracketMatch[] = [];
 let nextId = 1;
 
 export function getMockBracketMatches(bracketId?: string): BracketMatch[] {
-  if (!bracketId) { return []; }
+  if (!bracketId) {
+    return [];
+  }
   return store.filter((m) => m.bracket_id === bracketId);
 }
 

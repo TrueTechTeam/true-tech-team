@@ -68,7 +68,9 @@ export function NotificationsManagerPage() {
 
   const data: NotifRow[] = useMemo(() => {
     const items = mockNotifications as NotifRow[];
-    if (!statusFilter) { return items; }
+    if (!statusFilter) {
+      return items;
+    }
     return items.filter((n) => n.status === statusFilter);
   }, [statusFilter]);
 
@@ -174,7 +176,9 @@ export function NotificationsManagerPage() {
         size="md"
         actions={
           <DialogFooter align="end">
-            <Button variant="outline" onClick={dialog.close}>Cancel</Button>
+            <Button variant="outline" onClick={dialog.close}>
+              Cancel
+            </Button>
             <Button variant="primary" onClick={handleSave}>
               {dialog.mode === 'create' ? 'Create' : 'Save Changes'}
             </Button>
@@ -203,7 +207,9 @@ export function NotificationsManagerPage() {
               { value: 'team', label: 'Team' },
             ]}
             value={form.target}
-            onChange={(val) => setForm((f) => ({ ...f, target: val as MockNotification['target'] }))}
+            onChange={(val) =>
+              setForm((f) => ({ ...f, target: val as MockNotification['target'] }))
+            }
           />
           {form.target !== 'all' && (
             <Input
@@ -220,7 +226,9 @@ export function NotificationsManagerPage() {
               { value: 'sent', label: 'Sent' },
             ]}
             value={form.status}
-            onChange={(val) => setForm((f) => ({ ...f, status: val as MockNotification['status'] }))}
+            onChange={(val) =>
+              setForm((f) => ({ ...f, status: val as MockNotification['status'] }))
+            }
           />
           {form.status === 'scheduled' && (
             <Input

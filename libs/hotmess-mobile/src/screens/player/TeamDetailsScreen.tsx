@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography } from '../../theme';
-import { sportColors } from '../../theme/colors';
 import { useTeamMembers, useUpcomingGames } from '../../hooks';
 import { useAuth } from '../../contexts';
 import { LoadingSpinner } from '../../components/common';
@@ -19,12 +18,6 @@ import type { RootStackParamList } from '../../navigation/types';
 type Props = NativeStackScreenProps<RootStackParamList, 'TeamDetails'>;
 
 type Tab = 'schedule' | 'roster' | 'stats';
-
-function getSportColor(sportName: string | undefined): string {
-  if (!sportName) return colors.primary;
-  const key = sportName.toLowerCase().replace(/\s+/g, '') as keyof typeof sportColors;
-  return sportColors[key] || colors.primary;
-}
 
 function formatDate(dateString: string) {
   const date = new Date(dateString);
@@ -42,16 +35,24 @@ export function TeamDetailsScreen({ route }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('schedule');
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data: members, loading: membersLoading, refetch: refetchMembers } = useTeamMembers(teamId);
-  const { data: allGames, loading: gamesLoading, refetch: refetchGames } = useUpcomingGames(user?.id);
+  const {
+    data: members,
+    loading: membersLoading,
+    refetch: refetchMembers,
+  } = useTeamMembers(teamId);
+  const {
+    data: allGames,
+    loading: gamesLoading,
+    refetch: refetchGames,
+  } = useUpcomingGames(user?.id);
 
-  const teamGames = allGames?.filter(
-    (g) => g.home_team?.id === teamId || g.away_team?.id === teamId
-  ) ?? [];
+  const teamGames =
+    allGames?.filter((g) => g.home_team?.id === teamId || g.away_team?.id === teamId) ?? [];
 
-  const teamName = teamGames[0]?.home_team?.id === teamId
-    ? teamGames[0]?.home_team?.name
-    : teamGames[0]?.away_team?.name;
+  const teamName =
+    teamGames[0]?.home_team?.id === teamId
+      ? teamGames[0]?.home_team?.name
+      : teamGames[0]?.away_team?.name;
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -61,7 +62,7 @@ export function TeamDetailsScreen({ route }: Props) {
 
   const loading = membersLoading || gamesLoading;
 
-  const tabs: { key: Tab; label: string }[] = [
+  const tabs: Array<{ key: Tab; label: string }> = [
     { key: 'schedule', label: 'Schedule' },
     { key: 'roster', label: 'Roster' },
     { key: 'stats', label: 'Stats' },
@@ -88,19 +89,19 @@ export function TeamDetailsScreen({ route }: Props) {
       <ScrollView
         style={styles.scrollView}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
         }
       >
         {loading && !refreshing ? (
           <LoadingSpinner />
         ) : (
           <>
-            {activeTab === 'schedule' && (
-              <ScheduleTab games={teamGames} teamId={teamId} />
-            )}
-            {activeTab === 'roster' && (
-              <RosterTab members={members} />
-            )}
+            {activeTab === 'schedule' && <ScheduleTab games={teamGames} teamId={teamId} />}
+            {activeTab === 'roster' && <RosterTab members={members} />}
             {activeTab === 'stats' && (
               <StatsTab games={teamGames} teamId={teamId} teamName={teamName} />
             )}
@@ -187,7 +188,8 @@ function RosterTab({ members }: { members: Member[] | null }) {
         <View key={member.id} style={styles.memberCard}>
           <View style={styles.memberAvatar}>
             <Text style={styles.memberInitials}>
-              {(member.first_name?.[0] || '?')}{(member.last_name?.[0] || '')}
+              {member.first_name?.[0] || '?'}
+              {member.last_name?.[0] || ''}
             </Text>
           </View>
           <View style={styles.memberInfo}>
@@ -207,7 +209,7 @@ function RosterTab({ members }: { members: Member[] | null }) {
 function StatsTab({
   games,
   teamId,
-  teamName,
+  teamName: _teamName,
 }: {
   games: Game[];
   teamId: string;
@@ -228,9 +230,13 @@ function StatsTab({
     pointsFor += teamScore;
     pointsAgainst += oppScore;
 
-    if (teamScore > oppScore) wins++;
-    else if (teamScore < oppScore) losses++;
-    else ties++;
+    if (teamScore > oppScore) {
+      wins++;
+    } else if (teamScore < oppScore) {
+      losses++;
+    } else {
+      ties++;
+    }
   }
 
   return (

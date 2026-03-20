@@ -12,7 +12,10 @@ import type { MainTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-const TAB_ICONS: Record<string, { active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }> = {
+const TAB_ICONS: Record<
+  string,
+  { active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }
+> = {
   Home: { active: 'home', inactive: 'home-outline' },
   Schedule: { active: 'calendar', inactive: 'calendar-outline' },
   Messages: { active: 'chatbubbles', inactive: 'chatbubbles-outline' },
@@ -35,9 +38,7 @@ export function MainTabNavigator() {
         tabBarIcon: ({ focused, size }) => {
           const icons = TAB_ICONS[route.name] || { active: 'ellipse', inactive: 'ellipse-outline' };
           const iconName = focused ? icons.active : icons.inactive;
-          const iconColor = focused
-            ? tabColors[route.name] || colors.primary
-            : colors.textMuted;
+          const iconColor = focused ? tabColors[route.name] || colors.primary : colors.textMuted;
           return <Ionicons name={iconName} size={size} color={iconColor} />;
         },
         tabBarActiveTintColor: tabColors[route.name] || colors.primary,
@@ -59,9 +60,7 @@ export function MainTabNavigator() {
       <Tab.Screen name="Schedule" component={ScheduleScreen} />
       <Tab.Screen name="Messages" component={MessagesScreen} />
       <Tab.Screen name="Photos" component={PhotosScreen} />
-      {showAdminTab && (
-        <Tab.Screen name="Admin" component={AdminDashboardScreen} />
-      )}
+      {showAdminTab && <Tab.Screen name="Admin" component={AdminDashboardScreen} />}
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

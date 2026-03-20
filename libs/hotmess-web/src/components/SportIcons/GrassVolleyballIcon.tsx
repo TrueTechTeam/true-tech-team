@@ -57,7 +57,15 @@ export function GrassVolleyballIcon({ size = 24, className }: Props) {
       {/* Outline */}
       <circle cx="12" cy="10" r="8.5" stroke="#65a30d" strokeWidth="0.6" fill="none" />
       {/* Shine */}
-      <ellipse cx="9" cy="6.5" rx="2.2" ry="1" transform="rotate(-15 9 6.5)" fill="white" opacity="0.25" />
+      <ellipse
+        cx="9"
+        cy="6.5"
+        rx="2.2"
+        ry="1"
+        transform="rotate(-15 9 6.5)"
+        fill="white"
+        opacity="0.25"
+      />
     </svg>
   );
 }

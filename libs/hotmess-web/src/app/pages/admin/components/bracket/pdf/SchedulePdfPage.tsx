@@ -99,7 +99,9 @@ const styles = StyleSheet.create({
 });
 
 function formatTime(scheduledAt: string | undefined): string {
-  if (!scheduledAt) { return '\u2014'; }
+  if (!scheduledAt) {
+    return '\u2014';
+  }
   const d = new Date(scheduledAt);
   const h = d.getHours();
   const m = d.getMinutes().toString().padStart(2, '0');
@@ -131,7 +133,9 @@ export function SchedulePdfPage({
       matchesByField.set(field, []);
     }
     const fieldArr = matchesByField.get(field);
-    if (fieldArr) { fieldArr.push(match); }
+    if (fieldArr) {
+      fieldArr.push(match);
+    }
   }
   for (const [, fieldMatches] of matchesByField) {
     fieldMatches.sort((a, b) => {
@@ -172,15 +176,29 @@ export function SchedulePdfPage({
 
             return (
               <View key={match.id} style={styles.row}>
-                <Text style={[styles.cellTime, { color }]}>
-                  {formatTime(match.scheduled_at)}
-                </Text>
+                <Text style={[styles.cellTime, { color }]}>{formatTime(match.scheduled_at)}</Text>
                 <Text style={styles.cellGame}>{match.gameId}</Text>
-                <Text style={homeName ? styles.cellTeam : homeFeeder ? [styles.cellTeam, styles.feeder] : [styles.cellTeam, styles.tbd]}>
+                <Text
+                  style={
+                    homeName
+                      ? styles.cellTeam
+                      : homeFeeder
+                        ? [styles.cellTeam, styles.feeder]
+                        : [styles.cellTeam, styles.tbd]
+                  }
+                >
                   {homeName || homeFeeder || '\u2014'}
                 </Text>
                 <Text style={styles.cellVs}>vs</Text>
-                <Text style={awayName ? styles.cellTeam : awayFeeder ? [styles.cellTeam, styles.feeder] : [styles.cellTeam, styles.tbd]}>
+                <Text
+                  style={
+                    awayName
+                      ? styles.cellTeam
+                      : awayFeeder
+                        ? [styles.cellTeam, styles.feeder]
+                        : [styles.cellTeam, styles.tbd]
+                  }
+                >
                   {awayName || awayFeeder || '\u2014'}
                 </Text>
               </View>

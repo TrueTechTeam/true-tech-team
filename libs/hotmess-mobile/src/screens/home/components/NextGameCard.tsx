@@ -33,7 +33,7 @@ export function NextGameCard({ game }: NextGameCardProps) {
 
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate('GameDetails' as never, { gameId: game.id } as never)}
+      onPress={() => navigation.navigate('GameDetails', { gameId: game.id })}
       activeOpacity={0.7}
     >
       <SectionCard title="Next Game">

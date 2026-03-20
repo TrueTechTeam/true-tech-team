@@ -79,7 +79,9 @@ function violatesSchedulingRule(
   rule: SchedulingRule
 ): boolean {
   const assigned = teamSlotAssignments.get(teamId);
-  if (!assigned || assigned.length === 0) return false;
+  if (!assigned || assigned.length === 0) {
+    return false;
+  }
 
   switch (rule) {
     case 'no_rules':
@@ -112,7 +114,9 @@ function rotationCost(
   currentWeek: number
 ): number {
   const history = teamHistory.get(teamId);
-  if (!history || history.length === 0) return 0;
+  if (!history || history.length === 0) {
+    return 0;
+  }
 
   let cost = 0;
   for (const prev of history) {
@@ -149,7 +153,10 @@ export function generateFullSeasonSchedule(config: SeasonScheduleConfig): Genera
   allMatchups.forEach((m) => matchupFrequency.set(makeMatchupKey(m[0], m[1]), 0));
 
   const gamesPerTimeSlot = playAreas.length; // one game per play area per time slot
-  const gamesPerDay = Math.min(timeSlots.length * gamesPerTimeSlot, Math.floor(teams.length / 2) * maxGamesPerDay);
+  const gamesPerDay = Math.min(
+    timeSlots.length * gamesPerTimeSlot,
+    Math.floor(teams.length / 2) * maxGamesPerDay
+  );
   const matchupsPerWeek = Math.min(
     Math.floor(gamesPerDay),
     Math.floor((teams.length * maxGamesPerDay) / 2)
@@ -230,7 +237,9 @@ function generateWeekMatchups(
   const maxGamesPerTeam = Math.ceil((targetCount * 2) / teamIds.length);
 
   for (const matchup of sorted) {
-    if (selected.length >= targetCount) break;
+    if (selected.length >= targetCount) {
+      break;
+    }
 
     const [a, b] = matchup;
     const countA = teamGameCount.get(a) || 0;
@@ -244,7 +253,7 @@ function generateWeekMatchups(
   }
 
   // Randomize home/away
-  return selected.map((m) => (Math.random() > 0.5 ? m : [m[1], m[0]] as [string, string]));
+  return selected.map((m) => (Math.random() > 0.5 ? m : ([m[1], m[0]] as [string, string])));
 }
 
 interface AssignedGame {
@@ -278,7 +287,9 @@ function assignSlotsAndAreas(
     // Check team daily game limits
     const homeCount = teamDayGameCount.get(home) || 0;
     const awayCount = teamDayGameCount.get(away) || 0;
-    if (homeCount >= maxGamesPerDay || awayCount >= maxGamesPerDay) continue;
+    if (homeCount >= maxGamesPerDay || awayCount >= maxGamesPerDay) {
+      continue;
+    }
 
     // Find best slot+area combo
     let bestSlot = -1;
@@ -287,17 +298,25 @@ function assignSlotsAndAreas(
 
     for (let si = 0; si < timeSlots.length; si++) {
       // Check scheduling rule violations
-      if (violatesSchedulingRule(home, si, teamSlotAssignments, schedulingRule)) continue;
-      if (violatesSchedulingRule(away, si, teamSlotAssignments, schedulingRule)) continue;
+      if (violatesSchedulingRule(home, si, teamSlotAssignments, schedulingRule)) {
+        continue;
+      }
+      if (violatesSchedulingRule(away, si, teamSlotAssignments, schedulingRule)) {
+        continue;
+      }
 
       // Check that neither team is already playing in this time slot
       const homeSlots = teamSlotAssignments.get(home) || [];
       const awaySlots = teamSlotAssignments.get(away) || [];
-      if (homeSlots.includes(si) || awaySlots.includes(si)) continue;
+      if (homeSlots.includes(si) || awaySlots.includes(si)) {
+        continue;
+      }
 
       for (let ai = 0; ai < playAreas.length; ai++) {
         const occupiedKey = `${si}:${ai}`;
-        if (slotAreaOccupied.has(occupiedKey)) continue;
+        if (slotAreaOccupied.has(occupiedKey)) {
+          continue;
+        }
 
         const cost =
           rotationCost(home, si, ai, teamHistory, constraints, week) +
@@ -311,7 +330,9 @@ function assignSlotsAndAreas(
       }
     }
 
-    if (bestSlot === -1 || bestArea === -1) continue; // No valid slot found
+    if (bestSlot === -1 || bestArea === -1) {
+      continue;
+    } // No valid slot found
 
     assigned.push({
       home,
@@ -325,8 +346,12 @@ function assignSlotsAndAreas(
     // Track assignments
     slotAreaOccupied.add(`${bestSlot}:${bestArea}`);
 
-    if (!teamSlotAssignments.has(home)) teamSlotAssignments.set(home, []);
-    if (!teamSlotAssignments.has(away)) teamSlotAssignments.set(away, []);
+    if (!teamSlotAssignments.has(home)) {
+      teamSlotAssignments.set(home, []);
+    }
+    if (!teamSlotAssignments.has(away)) {
+      teamSlotAssignments.set(away, []);
+    }
     teamSlotAssignments.get(home)!.push(bestSlot);
     teamSlotAssignments.get(away)!.push(bestSlot);
 
@@ -335,8 +360,12 @@ function assignSlotsAndAreas(
 
     // Update team history for rotation tracking
     const historyEntry = { slot: bestSlot, area: bestArea, week };
-    if (!teamHistory.has(home)) teamHistory.set(home, []);
-    if (!teamHistory.has(away)) teamHistory.set(away, []);
+    if (!teamHistory.has(home)) {
+      teamHistory.set(home, []);
+    }
+    if (!teamHistory.has(away)) {
+      teamHistory.set(away, []);
+    }
     teamHistory.get(home)!.push(historyEntry);
     teamHistory.get(away)!.push(historyEntry);
   }
@@ -373,19 +402,26 @@ export function generateWeeklySchedule(
   for (const game of previousGames) {
     const slotIndex = timeSlots.indexOf(game.timeSlot);
     const areaIndex = playAreas.indexOf(game.playArea);
-    if (slotIndex === -1 || areaIndex === -1) continue;
+    if (slotIndex === -1 || areaIndex === -1) {
+      continue;
+    }
 
     const entry = { slot: slotIndex, area: areaIndex, week: game.week };
-    if (!teamHistory.has(game.homeTeamId)) teamHistory.set(game.homeTeamId, []);
-    if (!teamHistory.has(game.awayTeamId)) teamHistory.set(game.awayTeamId, []);
+    if (!teamHistory.has(game.homeTeamId)) {
+      teamHistory.set(game.homeTeamId, []);
+    }
+    if (!teamHistory.has(game.awayTeamId)) {
+      teamHistory.set(game.awayTeamId, []);
+    }
     teamHistory.get(game.homeTeamId)!.push(entry);
     teamHistory.get(game.awayTeamId)!.push(entry);
   }
 
   // Generate matchups based on mode
-  const matchups = mode === 'standings'
-    ? generateStandingsMatchups(teams, matchupFrequency, constraints)
-    : generateSwissMatchups(teams, matchupFrequency, constraints);
+  const matchups =
+    mode === 'standings'
+      ? generateStandingsMatchups(teams, matchupFrequency, constraints)
+      : generateSwissMatchups(teams, matchupFrequency, constraints);
 
   // Assign slots and areas
   const assigned = assignSlotsAndAreas(
@@ -426,8 +462,10 @@ function generateStandingsMatchups(
   const sorted = [...teams].sort((a, b) => {
     const wpA = a.gamesPlayed > 0 ? a.wins / a.gamesPlayed : 0;
     const wpB = b.gamesPlayed > 0 ? b.wins / b.gamesPlayed : 0;
-    if (wpB !== wpA) return wpB - wpA;
-    return (b.wins - b.losses) - (a.wins - a.losses);
+    if (wpB !== wpA) {
+      return wpB - wpA;
+    }
+    return b.wins - b.losses - (a.wins - a.losses);
   });
 
   const pairs: Array<[string, string]> = [];
@@ -476,14 +514,18 @@ function generateSwissMatchups(
   const used = new Set<string>();
 
   for (let i = 0; i < sorted.length; i++) {
-    if (used.has(sorted[i].id)) continue;
+    if (used.has(sorted[i].id)) {
+      continue;
+    }
 
     const wpI = sorted[i].gamesPlayed > 0 ? sorted[i].wins / sorted[i].gamesPlayed : 0;
     let bestMatch = -1;
     let bestScore = Infinity;
 
     for (let j = i + 1; j < sorted.length; j++) {
-      if (used.has(sorted[j].id)) continue;
+      if (used.has(sorted[j].id)) {
+        continue;
+      }
 
       const wpJ = sorted[j].gamesPlayed > 0 ? sorted[j].wins / sorted[j].gamesPlayed : 0;
       const wpDiff = Math.abs(wpI - wpJ);

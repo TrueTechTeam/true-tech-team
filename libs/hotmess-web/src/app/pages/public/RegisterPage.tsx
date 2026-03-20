@@ -12,7 +12,7 @@ const faqs = [
   },
   {
     question: 'Can I sign up as a free agent?',
-    answer: 'Yes! Sign up as a free agent and we\'ll place you on a team.',
+    answer: "Yes! Sign up as a free agent and we'll place you on a team.",
   },
   {
     question: 'What skill level do I need?',

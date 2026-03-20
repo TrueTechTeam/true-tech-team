@@ -5,7 +5,9 @@ import styles from './UpcomingLeaguesSection.module.scss';
 export function UpcomingLeaguesSection() {
   const { data: seasons, loading } = useUpcomingLeagues();
 
-  if (loading || !seasons || seasons.length === 0) {return null;}
+  if (loading || !seasons || seasons.length === 0) {
+    return null;
+  }
 
   return (
     <section className={styles.section}>
@@ -17,10 +19,11 @@ export function UpcomingLeaguesSection() {
         <div className={styles.grid}>
           {seasons.slice(0, 6).map((season) => {
             const league = season.leagues;
-            const startDate = new Date(season.season_start_date).toLocaleDateString(
-              'en-US',
-              { month: 'short', day: 'numeric', year: 'numeric' }
-            );
+            const startDate = new Date(season.season_start_date).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            });
 
             return (
               <div key={season.id} className={styles.card}>

@@ -1,4 +1,19 @@
-import { mockCities, mockSports, mockLeagues, mockSeasons, mockDivisions, mockTeams, mockTeamMembers, mockGames, mockVenues, mockThreads, mockMessages, mockSuperlativeCategories, mockSuperlativeNominations, mockSuperlativeVotes } from '../data';
+import {
+  mockCities,
+  mockSports,
+  mockLeagues,
+  mockSeasons,
+  mockDivisions,
+  mockTeams,
+  mockTeamMembers,
+  mockGames,
+  mockVenues,
+  mockThreads,
+  mockMessages,
+  mockSuperlativeCategories,
+  mockSuperlativeNominations,
+  mockSuperlativeVotes,
+} from '../data';
 
 interface QueryResult<T> {
   data: T | null;
@@ -48,7 +63,9 @@ export function useMockVenues() {
 }
 
 export function useMockMyTeams(userId?: string) {
-  if (!userId) {return mockResult([]);}
+  if (!userId) {
+    return mockResult([]);
+  }
 
   // For mock users, return specific team assignments
   const userTeamIds = getUserTeamIds(userId);
@@ -64,24 +81,32 @@ export function useMockMyTeams(userId?: string) {
 
     return {
       ...m,
-      teams: team ? {
-        id: team.id,
-        name: team.name,
-        divisions: division ? {
-          id: division.id,
-          name: division.name,
-          seasons: season ? {
-            id: season.id,
-            name: season.name,
-            status: season.status,
-            leagues: league ? {
-              name: league.name,
-              sports: { name: league.sports.name },
-              cities: { name: league.cities.name },
-            } : undefined,
-          } : undefined,
-        } : undefined,
-      } : undefined,
+      teams: team
+        ? {
+            id: team.id,
+            name: team.name,
+            divisions: division
+              ? {
+                  id: division.id,
+                  name: division.name,
+                  seasons: season
+                    ? {
+                        id: season.id,
+                        name: season.name,
+                        status: season.status,
+                        leagues: league
+                          ? {
+                              name: league.name,
+                              sports: { name: league.sports.name },
+                              cities: { name: league.cities.name },
+                            }
+                          : undefined,
+                      }
+                    : undefined,
+                }
+              : undefined,
+          }
+        : undefined,
     };
   });
 
@@ -94,18 +119,27 @@ function getUserTeamIds(userId: string): string[] {
   // team-016 to team-019 are in registration season (season-003)
   // team-001 to team-004 are in completed season (season-001)
   switch (userId) {
-    case 'mock-captain-001': return ['team-010', 'team-011', 'team-001'];
-    case 'mock-player-001': return ['team-010', 'team-012', 'team-016'];
-    case 'mock-admin-001': return [];
-    case 'mock-commissioner-001': return [];
-    case 'mock-manager-001': return [];
-    case 'mock-referee-001': return [];
-    default: return [];
+    case 'mock-captain-001':
+      return ['team-010', 'team-011', 'team-001'];
+    case 'mock-player-001':
+      return ['team-010', 'team-012', 'team-016'];
+    case 'mock-admin-001':
+      return [];
+    case 'mock-commissioner-001':
+      return [];
+    case 'mock-manager-001':
+      return [];
+    case 'mock-referee-001':
+      return [];
+    default:
+      return [];
   }
 }
 
 export function useMockUpcomingGames(userId?: string) {
-  if (!userId) {return mockResult([]);}
+  if (!userId) {
+    return mockResult([]);
+  }
 
   const userTeamIds = getUserTeamIds(userId);
   const now = new Date().toISOString();
@@ -114,8 +148,12 @@ export function useMockUpcomingGames(userId?: string) {
   const isReferee = userId === 'mock-referee-001';
 
   const upcoming = mockGames.filter((g) => {
-    if (g.scheduled_at < now) {return false;}
-    if (isReferee && g.referee_id === userId) {return true;}
+    if (g.scheduled_at < now) {
+      return false;
+    }
+    if (isReferee && g.referee_id === userId) {
+      return true;
+    }
     return userTeamIds.includes(g.home_team.id) || userTeamIds.includes(g.away_team.id);
   });
 
@@ -123,7 +161,9 @@ export function useMockUpcomingGames(userId?: string) {
 }
 
 export function useMockRefereeGames(userId?: string) {
-  if (!userId) {return mockResult([]);}
+  if (!userId) {
+    return mockResult([]);
+  }
 
   const games = mockGames.filter((g) => g.referee_id === userId);
   return mockResult(games);
@@ -132,29 +172,57 @@ export function useMockRefereeGames(userId?: string) {
 export function useMockPendingJoinRequests(_teamIds: string[]) {
   // Mock pending requests for captain features
   return mockResult([
-    { id: 'request-001', user_id: 'user-fa-001', first_name: 'Olivia', last_name: 'Chen', team_id: 'team-010', status: 'requested' },
-    { id: 'request-002', user_id: 'user-fa-002', first_name: 'Liam', last_name: 'Patel', team_id: 'team-010', status: 'requested' },
+    {
+      id: 'request-001',
+      user_id: 'user-fa-001',
+      first_name: 'Olivia',
+      last_name: 'Chen',
+      team_id: 'team-010',
+      status: 'requested',
+    },
+    {
+      id: 'request-002',
+      user_id: 'user-fa-002',
+      first_name: 'Liam',
+      last_name: 'Patel',
+      team_id: 'team-010',
+      status: 'requested',
+    },
   ]);
 }
 
 export function useMockMessageThreads(userId?: string) {
-  if (!userId) {return mockResult([]);}
+  if (!userId) {
+    return mockResult([]);
+  }
 
   // Filter threads based on mock user role
   const filtered = mockThreads.filter((t) => {
     // Everyone sees DMs and announcements
-    if (t.type === 'direct' || t.type === 'announcement') return true;
+    if (t.type === 'direct' || t.type === 'announcement') {
+      return true;
+    }
     // Team chats: visible to players and captains
     if (t.type === 'team') {
       return ['mock-captain-001', 'mock-player-001'].includes(userId);
     }
     // Captain chats: visible to captains and managers
     if (t.type === 'captain') {
-      return ['mock-captain-001', 'mock-manager-001', 'mock-admin-001', 'mock-commissioner-001'].includes(userId);
+      return [
+        'mock-captain-001',
+        'mock-manager-001',
+        'mock-admin-001',
+        'mock-commissioner-001',
+      ].includes(userId);
     }
     // Referee chats: visible to refs and managers
     if (t.type === 'referee') {
-      return ['mock-referee-001', 'mock-manager-001', 'mock-admin-001', 'mock-commissioner-001'].includes(userId);
+      return [
+        'mock-referee-001',
+        'mock-manager-001',
+        'mock-admin-001',
+        'mock-commissioner-001',
+      ].includes(userId);
     }
     return true;
   });
@@ -163,13 +231,17 @@ export function useMockMessageThreads(userId?: string) {
 }
 
 export function useMockThreadMessages(threadId?: string) {
-  if (!threadId) {return mockResult([]);}
+  if (!threadId) {
+    return mockResult([]);
+  }
   const messages = mockMessages[threadId] ?? [];
   return mockResult(messages);
 }
 
 export function useMockTeamMembers(teamId?: string) {
-  if (!teamId) {return mockResult([]);}
+  if (!teamId) {
+    return mockResult([]);
+  }
   const filtered = mockTeamMembers.filter((m) => m.team_id === teamId);
   return mockResult(filtered);
 }
@@ -208,14 +280,10 @@ export function useMockSuperlativeResults(seasonId?: string) {
     : [...mockSuperlativeCategories];
 
   const results = categories.map((category) => {
-    const nominations = mockSuperlativeNominations.filter(
-      (n) => n.categoryId === category.id
-    );
+    const nominations = mockSuperlativeNominations.filter((n) => n.categoryId === category.id);
 
     const nominationsWithVotes = nominations.map((nom) => {
-      const voteCount = mockSuperlativeVotes.filter(
-        (v) => v.nominationId === nom.id
-      ).length;
+      const voteCount = mockSuperlativeVotes.filter((v) => v.nominationId === nom.id).length;
       return { ...nom, voteCount };
     });
 

@@ -55,7 +55,12 @@ export function ScheduleScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <Ionicons name="calendar" size={24} color={tabColors.Schedule} style={styles.headerIcon} />
+          <Ionicons
+            name="calendar"
+            size={24}
+            color={tabColors.Schedule}
+            style={styles.headerIcon}
+          />
           <Text style={styles.title}>Schedule</Text>
         </View>
         <Text style={styles.subtitle}>{getSeasonName()} Season</Text>
@@ -90,8 +95,8 @@ export function ScheduleScreen() {
                     {game.home_team?.name} vs. {game.away_team?.name}
                   </Text>
                   <Text style={styles.location}>
-                    {game.venues?.name || 'TBD'}
-                    {game.venues?.address && ` • ${game.venues.address}`}
+                    {game.venue?.name || 'TBD'}
+                    {game.venue?.address && ` • ${game.venue.address}`}
                   </Text>
                 </View>
               </View>

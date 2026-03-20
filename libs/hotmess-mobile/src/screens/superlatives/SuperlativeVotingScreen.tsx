@@ -122,7 +122,9 @@ export function SuperlativeVotingScreen({ route }: Props) {
                     onPress={() => handleVote(category.id, nominee.id)}
                     activeOpacity={0.7}
                   >
-                    <View style={[styles.nomineeAvatar, isSelected && styles.nomineeAvatarSelected]}>
+                    <View
+                      style={[styles.nomineeAvatar, isSelected && styles.nomineeAvatarSelected]}
+                    >
                       <Text style={styles.nomineeInitial}>{nominee.name[0]}</Text>
                     </View>
                     <View style={styles.nomineeInfo}>
@@ -140,7 +142,10 @@ export function SuperlativeVotingScreen({ route }: Props) {
         ))}
 
         <TouchableOpacity
-          style={[styles.submitButton, Object.keys(votes).length === 0 && styles.submitButtonDisabled]}
+          style={[
+            styles.submitButton,
+            Object.keys(votes).length === 0 && styles.submitButtonDisabled,
+          ]}
           onPress={handleSubmit}
           disabled={Object.keys(votes).length === 0}
         >

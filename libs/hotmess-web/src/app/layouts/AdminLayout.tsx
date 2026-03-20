@@ -11,15 +11,62 @@ const ALL_NAV_ITEMS: Array<{
   icon: string;
   roles: UserRole[];
 }> = [
-  { path: '/admin/dashboard', label: 'Dashboard', icon: '📊', roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager, UserRole.Referee, UserRole.TeamCaptain, UserRole.Player] },
-  { path: '/admin/cities', label: 'Cities', icon: '🏙️', roles: [UserRole.Admin, UserRole.Commissioner] },
+  {
+    path: '/admin/dashboard',
+    label: 'Dashboard',
+    icon: '📊',
+    roles: [
+      UserRole.Admin,
+      UserRole.Commissioner,
+      UserRole.Manager,
+      UserRole.Referee,
+      UserRole.TeamCaptain,
+      UserRole.Player,
+    ],
+  },
+  {
+    path: '/admin/cities',
+    label: 'Cities',
+    icon: '🏙️',
+    roles: [UserRole.Admin, UserRole.Commissioner],
+  },
   { path: '/admin/sports', label: 'Sports', icon: '⚽', roles: [UserRole.Admin] },
-  { path: '/admin/leagues', label: 'Leagues', icon: '🏆', roles: [UserRole.Admin, UserRole.Commissioner] },
-  { path: '/admin/seasons', label: 'Seasons', icon: '📅', roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager] },
-  { path: '/admin/teams', label: 'Teams', icon: '👥', roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager, UserRole.TeamCaptain] },
-  { path: '/admin/schedules', label: 'Schedules', icon: '📋', roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager, UserRole.Referee] },
-  { path: '/admin/brackets', label: 'Brackets', icon: '🎯', roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager, UserRole.Referee] },
-  { path: '/admin/notifications', label: 'Notifications', icon: '🔔', roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager] },
+  {
+    path: '/admin/leagues',
+    label: 'Leagues',
+    icon: '🏆',
+    roles: [UserRole.Admin, UserRole.Commissioner],
+  },
+  {
+    path: '/admin/seasons',
+    label: 'Seasons',
+    icon: '📅',
+    roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager],
+  },
+  {
+    path: '/admin/teams',
+    label: 'Teams',
+    icon: '👥',
+    roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager, UserRole.TeamCaptain],
+  },
+  {
+    path: '/admin/schedules',
+    label: 'Schedules',
+    icon: '📋',
+    roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager, UserRole.Referee],
+  },
+  {
+    path: '/admin/brackets',
+    label: 'Brackets',
+    icon: '🎯',
+    roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager, UserRole.Referee],
+  },
+  {
+    path: '/admin/notifications',
+    label: 'Notifications',
+    icon: '🔔',
+    roles: [UserRole.Admin, UserRole.Commissioner, UserRole.Manager],
+  },
   { path: '/admin/permissions', label: 'Permissions', icon: '🔐', roles: [UserRole.Admin] },
 ];
 
@@ -77,9 +124,7 @@ export function AdminLayout() {
           {isCommissioner && commissionerCityIds.length > 0 && (
             <div className={styles.scopeIndicator}>
               <span className={styles.scopeLabel}>Your Cities</span>
-              <span className={styles.scopeValue}>
-                {commissionerCityIds.length} assigned
-              </span>
+              <span className={styles.scopeValue}>{commissionerCityIds.length} assigned</span>
             </div>
           )}
           <button onClick={handleLogout} className={styles.logoutButton}>
@@ -94,7 +139,9 @@ export function AdminLayout() {
             <h1 className={styles.pageTitle}>Admin Console</h1>
             <div className={styles.userInfo}>
               <span className={styles.userName}>{userName}</span>
-              <span className={styles.roleBadge}>{ROLE_LABELS[effectiveRole] ?? effectiveRole}</span>
+              <span className={styles.roleBadge}>
+                {ROLE_LABELS[effectiveRole] ?? effectiveRole}
+              </span>
             </div>
           </div>
         </header>

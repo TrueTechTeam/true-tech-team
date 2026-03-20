@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, RefreshControl } from 'react-native';
 import { useState, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { usePermissions, UserRole, ROLE_HIERARCHY } from '../../contexts';
@@ -30,8 +23,7 @@ export function AdminDashboardScreen() {
 
   const isCommissioner =
     ROLE_HIERARCHY.indexOf(effectiveRole) >= ROLE_HIERARCHY.indexOf(UserRole.Commissioner);
-  const isAdmin =
-    ROLE_HIERARCHY.indexOf(effectiveRole) >= ROLE_HIERARCHY.indexOf(UserRole.Admin);
+  const isAdmin = ROLE_HIERARCHY.indexOf(effectiveRole) >= ROLE_HIERARCHY.indexOf(UserRole.Admin);
 
   const registrationSeasons =
     seasons?.filter((s: { status?: string }) => s.status === 'registration') || [];
@@ -44,18 +36,19 @@ export function AdminDashboardScreen() {
         <View style={styles.headerRow}>
           <Ionicons name="shield" size={24} color={tabColors.Admin} style={styles.headerIcon} />
           <Text style={styles.pageTitle}>Admin Dashboard</Text>
-          <Text style={styles.roleLabel}>
-            {effectiveRole.replace(/_/g, ' ')}
-          </Text>
+          <Text style={styles.roleLabel}>{effectiveRole.replace(/_/g, ' ')}</Text>
         </View>
       </View>
       <ScrollView
         style={styles.scrollView}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
         }
       >
-
         {/* Overview Stats */}
         <View style={styles.statsGrid}>
           {isCommissioner && (
@@ -82,7 +75,11 @@ export function AdminDashboardScreen() {
         {registrationSeasons.length > 0 && (
           <SectionCard title="Registration Open">
             {registrationSeasons.map(
-              (season: { id: string; name: string; leagues?: { name: string; sports?: { name: string } } }) => (
+              (season: {
+                id: string;
+                name: string;
+                leagues?: { name: string; sports?: { name: string } };
+              }) => (
                 <View key={season.id} style={styles.seasonItem}>
                   <Text style={styles.seasonName}>{season.name}</Text>
                   <Text style={styles.seasonMeta}>
@@ -98,7 +95,11 @@ export function AdminDashboardScreen() {
         {activeGameSeasons.length > 0 && (
           <SectionCard title="Active Seasons">
             {activeGameSeasons.map(
-              (season: { id: string; name: string; leagues?: { name: string; sports?: { name: string } } }) => (
+              (season: {
+                id: string;
+                name: string;
+                leagues?: { name: string; sports?: { name: string } };
+              }) => (
                 <View key={season.id} style={styles.seasonItem}>
                   <Text style={styles.seasonName}>{season.name}</Text>
                   <Text style={styles.seasonMeta}>
@@ -114,9 +115,7 @@ export function AdminDashboardScreen() {
         {isCommissioner && cities && (
           <SectionCard title="City Overview">
             {cities
-              .filter((c: { id: string }) =>
-                isAdmin ? true : commissionerCityIds.includes(c.id)
-              )
+              .filter((c: { id: string }) => (isAdmin ? true : commissionerCityIds.includes(c.id)))
               .slice(0, 5)
               .map((city: { id: string; name: string; state: string }) => (
                 <View key={city.id} style={styles.cityItem}>

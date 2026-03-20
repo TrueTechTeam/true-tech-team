@@ -5,7 +5,9 @@ const DEFAULT_BUFFER_MINUTES = 10;
  * Each time slot can run one game per play area concurrently.
  */
 export function computeSlotsNeeded(totalMatches: number, playAreaCount: number): number {
-  if (playAreaCount <= 0 || totalMatches <= 0) { return 0; }
+  if (playAreaCount <= 0 || totalMatches <= 0) {
+    return 0;
+  }
   return Math.ceil(totalMatches / playAreaCount);
 }
 
@@ -37,10 +39,10 @@ export function computeTimeSlots(
   for (let i = 0; i < slotsNeeded; i++) {
     const hours = Math.floor(totalMinutes / 60);
     const mins = totalMinutes % 60;
-    if (hours >= 24) { break; }
-    slots.push(
-      `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`
-    );
+    if (hours >= 24) {
+      break;
+    }
+    slots.push(`${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`);
     totalMinutes += increment;
   }
 

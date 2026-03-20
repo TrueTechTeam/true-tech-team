@@ -1,7 +1,11 @@
 import { type ReactNode, useMemo, useCallback } from 'react';
 import { UserRole } from '@true-tech-team/hotmess-types';
 import { useMockAuth } from './MockAuthProvider';
-import { PermissionsContext, type Permissions, type UserRoleRow } from '../../contexts/PermissionsContext';
+import {
+  PermissionsContext,
+  type Permissions,
+  type UserRoleRow,
+} from '../../contexts/PermissionsContext';
 
 /**
  * Mock city assignments for Commissioner role.
@@ -50,10 +54,18 @@ export function MockPermissionsProvider({ children }: { children: ReactNode }) {
   );
 
   const myTeamIds = useMemo(() => {
-    if (isAdmin || isCommissioner) return [];
-    if (role === UserRole.Manager) return [];
-    if (role === UserRole.Referee) return [];
-    if (role === UserRole.TeamCaptain) return CAPTAIN_TEAM_IDS;
+    if (isAdmin || isCommissioner) {
+      return [];
+    }
+    if (role === UserRole.Manager) {
+      return [];
+    }
+    if (role === UserRole.Referee) {
+      return [];
+    }
+    if (role === UserRole.TeamCaptain) {
+      return CAPTAIN_TEAM_IDS;
+    }
     return PLAYER_TEAM_IDS; // Player
   }, [role, isAdmin, isCommissioner]);
 
@@ -64,7 +76,16 @@ export function MockPermissionsProvider({ children }: { children: ReactNode }) {
 
   const dbRoles = useMemo<UserRoleRow[]>(() => {
     if (isAdmin) {
-      return [{ id: 'mock-role-1', user_id: 'mock-admin-001', role: UserRole.Admin, city_id: null, source: 'manual' as const, se_permission_level: null }];
+      return [
+        {
+          id: 'mock-role-1',
+          user_id: 'mock-admin-001',
+          role: UserRole.Admin,
+          city_id: null,
+          source: 'manual' as const,
+          se_permission_level: null,
+        },
+      ];
     }
     if (isCommissioner) {
       return COMMISSIONER_CITY_IDS.map((cityId, i) => ({
@@ -81,7 +102,9 @@ export function MockPermissionsProvider({ children }: { children: ReactNode }) {
 
   const canView = useCallback(
     (resource: string, scopeId?: string): boolean => {
-      if (isAdmin) return true;
+      if (isAdmin) {
+        return true;
+      }
 
       switch (resource) {
         case 'cities':
@@ -89,22 +112,36 @@ export function MockPermissionsProvider({ children }: { children: ReactNode }) {
         case 'sports':
           return isAdmin || isCommissioner;
         case 'leagues':
-          if (isCommissioner && scopeId) return commissionerCityIds.includes(scopeId);
+          if (isCommissioner && scopeId) {
+            return commissionerCityIds.includes(scopeId);
+          }
           return isCommissioner;
         case 'seasons':
-          if (isCommissioner) return true;
-          if (scopeId) return managedSeasonIds.includes(scopeId) || refereeSeasonIds.includes(scopeId);
+          if (isCommissioner) {
+            return true;
+          }
+          if (scopeId) {
+            return managedSeasonIds.includes(scopeId) || refereeSeasonIds.includes(scopeId);
+          }
           return managedSeasonIds.length > 0 || refereeSeasonIds.length > 0 || myTeamIds.length > 0;
         case 'teams':
-          if (isCommissioner) return true;
-          if (scopeId) return myTeamIds.includes(scopeId);
+          if (isCommissioner) {
+            return true;
+          }
+          if (scopeId) {
+            return myTeamIds.includes(scopeId);
+          }
           return myTeamIds.length > 0;
         case 'schedules':
         case 'games':
-          if (isCommissioner) return true;
+          if (isCommissioner) {
+            return true;
+          }
           return managedSeasonIds.length > 0 || refereeSeasonIds.length > 0 || myTeamIds.length > 0;
         case 'brackets':
-          if (isCommissioner) return true;
+          if (isCommissioner) {
+            return true;
+          }
           return managedSeasonIds.length > 0 || refereeSeasonIds.length > 0;
         default:
           return false;
@@ -115,30 +152,48 @@ export function MockPermissionsProvider({ children }: { children: ReactNode }) {
 
   const canEdit = useCallback(
     (resource: string, scopeId?: string): boolean => {
-      if (isAdmin) return true;
+      if (isAdmin) {
+        return true;
+      }
 
       switch (resource) {
         case 'cities':
         case 'sports':
           return false;
         case 'leagues':
-          if (isCommissioner && scopeId) return commissionerCityIds.includes(scopeId);
+          if (isCommissioner && scopeId) {
+            return commissionerCityIds.includes(scopeId);
+          }
           return false;
         case 'seasons':
-          if (isCommissioner) return true;
-          if (scopeId) return managedSeasonIds.includes(scopeId);
+          if (isCommissioner) {
+            return true;
+          }
+          if (scopeId) {
+            return managedSeasonIds.includes(scopeId);
+          }
           return false;
         case 'teams':
-          if (isCommissioner) return true;
-          if (scopeId) return captainTeamIds.includes(scopeId);
+          if (isCommissioner) {
+            return true;
+          }
+          if (scopeId) {
+            return captainTeamIds.includes(scopeId);
+          }
           return managedSeasonIds.length > 0;
         case 'schedules':
         case 'games':
-          if (isCommissioner) return true;
-          if (role === UserRole.Referee) return true;
+          if (isCommissioner) {
+            return true;
+          }
+          if (role === UserRole.Referee) {
+            return true;
+          }
           return managedSeasonIds.length > 0;
         case 'brackets':
-          if (isCommissioner) return true;
+          if (isCommissioner) {
+            return true;
+          }
           return managedSeasonIds.length > 0;
         case 'user_roles':
           return false;
@@ -187,9 +242,5 @@ export function MockPermissionsProvider({ children }: { children: ReactNode }) {
     ]
   );
 
-  return (
-    <PermissionsContext.Provider value={value}>
-      {children}
-    </PermissionsContext.Provider>
-  );
+  return <PermissionsContext.Provider value={value}>{children}</PermissionsContext.Provider>;
 }

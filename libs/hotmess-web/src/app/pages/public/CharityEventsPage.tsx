@@ -137,9 +137,7 @@ export function CharityEventsPage() {
                       </span>
                     )}
                     {event.participants && (
-                      <span className={styles.resultBadge}>
-                        {event.participants} participants
-                      </span>
+                      <span className={styles.resultBadge}>{event.participants} participants</span>
                     )}
                   </div>
                 )}

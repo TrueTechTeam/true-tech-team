@@ -18,23 +18,25 @@ export interface SportIconProps {
 }
 
 export const sportIconMap: Record<string, ComponentType<SportIconProps>> = {
-  'kickball': KickballIcon,
-  'dodgeball': DodgeballIcon,
-  'bowling': BowlingIcon,
+  kickball: KickballIcon,
+  dodgeball: DodgeballIcon,
+  bowling: BowlingIcon,
   'indoor-volleyball': IndoorVolleyballIcon,
   'sand-volleyball': SandVolleyballIcon,
   'grass-volleyball': GrassVolleyballIcon,
-  'cornhole': CornholeIcon,
-  'pickleball': PickleballIcon,
-  'basketball': BasketballIcon,
+  cornhole: CornholeIcon,
+  pickleball: PickleballIcon,
+  basketball: BasketballIcon,
   'flag-football': FlagFootballIcon,
-  'tennis': TennisIcon,
+  tennis: TennisIcon,
   'beer-pong': BeerPongIcon,
 };
 
 export function SportIcon({ slug, size, className }: SportIconProps & { slug: string }) {
   const Icon = sportIconMap[slug];
-  if (!Icon) {return null;}
+  if (!Icon) {
+    return null;
+  }
   return <Icon size={size} className={className} />;
 }
 

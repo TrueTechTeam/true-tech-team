@@ -74,9 +74,7 @@ export function BracketPdfPage({
   sportName,
   tournamentDate,
 }: BracketPdfPageProps) {
-  const titleText = divisionLetter
-    ? `${divisionName}`
-    : divisionName;
+  const titleText = divisionLetter ? `${divisionName}` : divisionName;
 
   return (
     <Page size="LETTER" style={styles.page}>
@@ -106,12 +104,24 @@ export function BracketPdfPage({
 }
 
 function formatTournamentDate(dateStr: string): string {
-  if (!dateStr) { return ''; }
+  if (!dateStr) {
+    return '';
+  }
   const d = new Date(`${dateStr}T12:00:00`); // avoid timezone shift
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   const day = days[d.getDay()];
   const month = months[d.getMonth()];

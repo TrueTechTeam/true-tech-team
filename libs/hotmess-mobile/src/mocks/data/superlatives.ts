@@ -37,13 +37,21 @@ export interface MockSuperlativeVote {
 }
 
 const CATEGORY_DEFINITIONS = [
-  { name: 'MVP', description: 'Most Valuable Player of the season', eligibility: { minGamesPlayed: 3 } },
+  {
+    name: 'MVP',
+    description: 'Most Valuable Player of the season',
+    eligibility: { minGamesPlayed: 3 },
+  },
   { name: 'Best Dressed', description: 'Always looking fly on game day', eligibility: {} },
   { name: 'Most Spirited', description: 'Brings the energy every single game', eligibility: {} },
   { name: 'Best Teammate', description: 'Always has your back', eligibility: {} },
   { name: 'Most Improved', description: 'Biggest glow-up this season', eligibility: {} },
   { name: 'Party MVP', description: 'Life of the after-party', eligibility: {} },
-  { name: 'Rookie of the Season', description: 'Best first-season player', eligibility: { rookiesOnly: true } },
+  {
+    name: 'Rookie of the Season',
+    description: 'Best first-season player',
+    eligibility: { rookiesOnly: true },
+  },
   { name: 'Best Team Name', description: 'The most creative team name', eligibility: {} },
 ];
 
@@ -88,12 +96,16 @@ export const mockSuperlativeNominations: MockSuperlativeNomination[] =
       const seed = nomIdx * 37 + category.displayOrder;
       const memberIndex = Math.floor(seededRandom(seed) * Math.min(mockTeamMembers.length, 200));
       const member = mockTeamMembers[memberIndex];
-      if (!member) continue;
+      if (!member) {
+        continue;
+      }
 
       const team = mockTeams.find((t) => t.id === member.team_id);
 
       // Skip if rookie-only and not a rookie
-      if (category.eligibility.rookiesOnly && !member.is_rookie) continue;
+      if (category.eligibility.rookiesOnly && !member.is_rookie) {
+        continue;
+      }
 
       // Find the captain of that team (nominatedBy)
       const captain = mockTeamMembers.find(
@@ -119,8 +131,8 @@ export const mockSuperlativeNominations: MockSuperlativeNomination[] =
 // Generate some votes for nominations
 let voteIdx = 0;
 
-export const mockSuperlativeVotes: MockSuperlativeVote[] =
-  mockSuperlativeNominations.flatMap((nomination) => {
+export const mockSuperlativeVotes: MockSuperlativeVote[] = mockSuperlativeNominations.flatMap(
+  (nomination) => {
     // Each nomination gets 2-8 random votes
     const seed = voteIdx + 1;
     const voteCount = 2 + Math.floor(seededRandom(seed * 41) * 7);
@@ -129,9 +141,13 @@ export const mockSuperlativeVotes: MockSuperlativeVote[] =
     for (let v = 0; v < voteCount; v++) {
       voteIdx++;
       const voterSeed = voteIdx * 53;
-      const voterIndex = Math.floor(seededRandom(voterSeed) * Math.min(mockTeamMembers.length, 200));
+      const voterIndex = Math.floor(
+        seededRandom(voterSeed) * Math.min(mockTeamMembers.length, 200)
+      );
       const voter = mockTeamMembers[voterIndex];
-      if (!voter) continue;
+      if (!voter) {
+        continue;
+      }
 
       votes.push({
         id: `superlative-vote-${String(voteIdx).padStart(4, '0')}`,
@@ -143,4 +159,5 @@ export const mockSuperlativeVotes: MockSuperlativeVote[] =
     }
 
     return votes;
-  });
+  }
+);

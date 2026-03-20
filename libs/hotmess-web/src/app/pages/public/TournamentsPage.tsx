@@ -76,7 +76,9 @@ export function TournamentsPage() {
             ))}
           </div>
           {upcomingTournaments.length === 0 && (
-            <p className={styles.emptyState}>No upcoming tournaments at this time. Check back soon!</p>
+            <p className={styles.emptyState}>
+              No upcoming tournaments at this time. Check back soon!
+            </p>
           )}
         </div>
       </section>

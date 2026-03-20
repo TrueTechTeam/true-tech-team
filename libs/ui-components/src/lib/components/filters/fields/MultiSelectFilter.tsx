@@ -208,11 +208,7 @@ export const MultiSelectFilter = ({
                   const isChecked = value?.includes(optVal) ?? false;
 
                   return (
-                    <MenuItem
-                      key={optVal}
-                      itemKey={optVal}
-                      disabled={option.disabled}
-                    >
+                    <MenuItem key={optVal} itemKey={optVal} disabled={option.disabled}>
                       <span className={styles.dropdownOption}>
                         <Checkbox
                           checked={isChecked}
@@ -230,11 +226,7 @@ export const MultiSelectFilter = ({
 
             {selectedCount > 0 && (
               <div className={styles.dropdownFooter}>
-                <button
-                  type="button"
-                  className={styles.dropdownClearBtn}
-                  onClick={handleClearAll}
-                >
+                <button type="button" className={styles.dropdownClearBtn} onClick={handleClearAll}>
                   Clear all ({selectedCount})
                 </button>
               </div>

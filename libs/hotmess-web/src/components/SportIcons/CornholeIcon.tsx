@@ -30,10 +30,7 @@ export function CornholeIcon({ size = 24, className }: Props) {
       />
       <path d="M3 21L6.5 5h11L21 21z" fill="url(#ch-g)" />
       {/* Board side thickness - bottom edge */}
-      <path
-        d="M3 21l-.3 1h18.6l-.3-1z"
-        fill="#5b21b6"
-      />
+      <path d="M3 21l-.3 1h18.6l-.3-1z" fill="#5b21b6" />
       {/* Board raised-end hint - back edge thickness */}
       <path
         d="M6.5 5l.2-1.2h10.6l.2 1.2"
@@ -43,15 +40,7 @@ export function CornholeIcon({ size = 24, className }: Props) {
         strokeLinejoin="round"
       />
       {/* Hole in upper portion of board */}
-      <ellipse
-        cx="12"
-        cy="10"
-        rx="2.8"
-        ry="2"
-        fill="#1e1b4b"
-        stroke="#4c1d95"
-        strokeWidth="0.7"
-      />
+      <ellipse cx="12" cy="10" rx="2.8" ry="2" fill="#1e1b4b" stroke="#4c1d95" strokeWidth="0.7" />
       {/* Board center line decoration */}
       <line x1="12" y1="5.5" x2="12" y2="20" stroke="#6d28d9" strokeWidth="0.4" opacity="0.3" />
       {/* Bean bag on the board surface */}

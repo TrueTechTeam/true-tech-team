@@ -1,4 +1,12 @@
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
 import { useState, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { colors, spacing, typography } from '../../theme';
@@ -8,7 +16,9 @@ import { useMyTeams } from '../../hooks';
 import { LoadingSpinner } from '../../components/common';
 
 function getSportColor(sportName: string | undefined): string {
-  if (!sportName) return colors.primary;
+  if (!sportName) {
+    return colors.primary;
+  }
   const key = sportName.toLowerCase().replace(/\s+/g, '') as keyof typeof sportColors;
   return sportColors[key] || colors.primary;
 }
@@ -48,7 +58,11 @@ export function AllTeamsScreen() {
       <ScrollView
         style={styles.scrollView}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
         }
       >
         {currentTeams.length > 0 && (
@@ -60,7 +74,7 @@ export function AllTeamsScreen() {
                   key={membership.id}
                   membership={membership}
                   onPress={() =>
-                    navigation.navigate('TeamDetails' as never, { teamId: membership.teams?.id } as never)
+                    navigation.navigate('TeamDetails', { teamId: membership.teams?.id ?? '' })
                   }
                 />
               ))}
@@ -77,7 +91,7 @@ export function AllTeamsScreen() {
                   key={membership.id}
                   membership={membership}
                   onPress={() =>
-                    navigation.navigate('TeamDetails' as never, { teamId: membership.teams?.id } as never)
+                    navigation.navigate('TeamDetails', { teamId: membership.teams?.id ?? '' })
                   }
                 />
               ))}
@@ -88,7 +102,9 @@ export function AllTeamsScreen() {
         {(!teams || teams.length === 0) && (
           <View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>No Teams Yet</Text>
-            <Text style={styles.emptyText}>Join a team or register for a season to get started.</Text>
+            <Text style={styles.emptyText}>
+              Join a team or register for a season to get started.
+            </Text>
           </View>
         )}
       </ScrollView>
@@ -98,7 +114,7 @@ export function AllTeamsScreen() {
 
 interface TeamMembership {
   id: string;
-  team_id: string;
+  team_id: string | null;
   role?: string;
   teams?: {
     id: string;
@@ -138,9 +154,7 @@ function TeamCard({ membership, onPress }: { membership: TeamMembership; onPress
           </Text>
         )}
       </View>
-      <Text style={[styles.roleTag, { color: sportColor }]}>
-        {membership.role || 'Player'}
-      </Text>
+      <Text style={[styles.roleTag, { color: sportColor }]}>{membership.role || 'Player'}</Text>
     </TouchableOpacity>
   );
 }

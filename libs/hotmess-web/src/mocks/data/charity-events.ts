@@ -18,8 +18,7 @@ export const charityEvents: CharityEvent[] = [
     location: 'Nashville, TN',
     beneficiary: 'Boys & Girls Clubs of Middle Tennessee',
     status: 'registration-open',
-    description:
-      'A fun kickball tournament where all proceeds go to support local youth programs.',
+    description: 'A fun kickball tournament where all proceeds go to support local youth programs.',
   },
   {
     id: 'ce2',
@@ -28,8 +27,7 @@ export const charityEvents: CharityEvent[] = [
     location: 'St. Petersburg, FL',
     beneficiary: 'American Cancer Society',
     status: 'upcoming',
-    description:
-      'Beach volleyball fundraiser to raise awareness and funds for cancer research.',
+    description: 'Beach volleyball fundraiser to raise awareness and funds for cancer research.',
   },
   {
     id: 'ce3',
@@ -38,8 +36,7 @@ export const charityEvents: CharityEvent[] = [
     location: 'Birmingham, AL',
     beneficiary: 'United Way of Central Alabama',
     status: 'upcoming',
-    description:
-      'Bowling night fundraiser with raffles, prizes, and all-you-can-eat food.',
+    description: 'Bowling night fundraiser with raffles, prizes, and all-you-can-eat food.',
   },
   {
     id: 'ce4',
@@ -48,8 +45,7 @@ export const charityEvents: CharityEvent[] = [
     location: 'Oklahoma City, OK',
     beneficiary: 'Wounded Warrior Project',
     status: 'completed',
-    description:
-      'Annual cornhole tournament supporting veterans and their families.',
+    description: 'Annual cornhole tournament supporting veterans and their families.',
     raised: 2500,
     participants: 120,
   },
@@ -60,8 +56,7 @@ export const charityEvents: CharityEvent[] = [
     location: 'Cincinnati, OH',
     beneficiary: 'Cincinnati Animal CARE',
     status: 'completed',
-    description:
-      'Pickleball tournament benefiting local animal shelters and rescue organizations.',
+    description: 'Pickleball tournament benefiting local animal shelters and rescue organizations.',
     raised: 1800,
     participants: 85,
   },
@@ -72,8 +67,7 @@ export const charityEvents: CharityEvent[] = [
     location: 'St. Louis, MO',
     beneficiary: 'St. Louis Area Foodbank',
     status: 'completed',
-    description:
-      'Dodgeball event collecting canned goods and raising funds for local food banks.',
+    description: 'Dodgeball event collecting canned goods and raising funds for local food banks.',
     raised: 1200,
     participants: 150,
   },

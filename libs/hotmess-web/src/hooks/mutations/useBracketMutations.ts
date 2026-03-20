@@ -44,7 +44,9 @@ export function useBracketMutations() {
         .select('id, name')
         .eq('season_id', data.season_id);
 
-      if (divisionsError) { throw divisionsError; }
+      if (divisionsError) {
+        throw divisionsError;
+      }
       if (!divisions || divisions.length === 0) {
         throw new Error('No divisions found for this season');
       }
@@ -62,7 +64,9 @@ export function useBracketMutations() {
         .insert(bracketInserts)
         .select('id');
 
-      if (bracketsError) { throw bracketsError; }
+      if (bracketsError) {
+        throw bracketsError;
+      }
       if (!brackets || brackets.length === 0) {
         throw new Error('Failed to create brackets');
       }
@@ -77,145 +81,191 @@ export function useBracketMutations() {
   /**
    * Generate bracket matches for ALL divisions in a season.
    */
-  const generateSeason = useCallback(async (params: GenerateSeasonBracketsParams): Promise<void> => {
-    console.warn('[useBracketMutations] generateSeason called', { season_id: params.season_id, USE_MOCK });
-    if (USE_MOCK) {
-      // Generate mock bracket matches using in-memory store
-      const seasonDivisions = mockDivisions.filter((d) => d.season_id === params.season_id);
-      console.warn('[useBracketMutations] seasonDivisions:', seasonDivisions.map((d) => ({ id: d.id, name: d.name })));
+  const generateSeason = useCallback(
+    async (params: GenerateSeasonBracketsParams): Promise<void> => {
+      console.warn('[useBracketMutations] generateSeason called', {
+        season_id: params.season_id,
+        USE_MOCK,
+      });
+      if (USE_MOCK) {
+        // Generate mock bracket matches using in-memory store
+        const seasonDivisions = mockDivisions.filter((d) => d.season_id === params.season_id);
+        console.warn(
+          '[useBracketMutations] seasonDivisions:',
+          seasonDivisions.map((d) => ({ id: d.id, name: d.name }))
+        );
 
-      const seasonBrackets = mockBrackets.filter((b) =>
-        seasonDivisions.some((d) => d.id === b.division_id)
-      );
-      console.warn('[useBracketMutations] seasonBrackets:', seasonBrackets.map((b) => ({ id: b.id, division_id: b.division_id, type: b.type })));
+        const seasonBrackets = mockBrackets.filter((b) =>
+          seasonDivisions.some((d) => d.id === b.division_id)
+        );
+        console.warn(
+          '[useBracketMutations] seasonBrackets:',
+          seasonBrackets.map((b) => ({ id: b.id, division_id: b.division_id, type: b.type }))
+        );
 
-      if (seasonBrackets.length === 0) {
-        console.warn('[useBracketMutations] NO brackets found for season divisions! Check mockBrackets data.');
-      }
-
-      for (const bracket of seasonBrackets) {
-        const divTeams = mockTeams
-          .filter((t) => t.division_id === bracket.division_id && t.status === 'confirmed')
-          .map((t) => ({
-            ...t,
-            pointsFor: t.points_for,
-            pointsAgainst: t.points_against,
-          })) as unknown as Team[];
-
-        console.warn('[useBracketMutations] bracket', bracket.id, 'divTeams:', divTeams.length,
-          'teams:', divTeams.map((t) => ({ id: t.id, name: t.name, status: (t as unknown as Record<string, unknown>).status })));
-        if (divTeams.length === 0) {
-          console.warn('[useBracketMutations] skipping bracket', bracket.id, '- no confirmed teams');
-          continue;
+        if (seasonBrackets.length === 0) {
+          console.warn(
+            '[useBracketMutations] NO brackets found for season divisions! Check mockBrackets data.'
+          );
         }
 
-        const seeded = calculateSeeding(divTeams);
-        console.warn('[useBracketMutations] seeded teams:', seeded.map((t) => ({ id: t.id, name: t.name, seed: t.seed })));
-        let matchInputs: BracketMatchInput[] = [];
+        for (const bracket of seasonBrackets) {
+          const divTeams = mockTeams
+            .filter((t) => t.division_id === bracket.division_id && t.status === 'confirmed')
+            .map((t) => ({
+              ...t,
+              pointsFor: t.points_for,
+              pointsAgainst: t.points_against,
+            })) as unknown as Team[];
 
-        switch (bracket.type) {
-          case 'single_elimination':
-            matchInputs = generateSingleElimination(seeded);
-            break;
-          case 'double_elimination':
-            matchInputs = generateDoubleElimination(seeded);
-            break;
-          case 'round_robin':
-            matchInputs = generateRoundRobin(seeded);
-            break;
-        }
-
-        console.warn('[useBracketMutations] generated', matchInputs.length, 'match inputs for bracket', bracket.id);
-
-        // First pass: create matches with generated IDs
-        const mockMatches: BracketMatch[] = matchInputs.map((m) => {
-          const team1 = m.team1Id ? divTeams.find((t) => t.id === m.team1Id) : undefined;
-          const team2 = m.team2Id ? divTeams.find((t) => t.id === m.team2Id) : undefined;
-          return {
-            id: generateMockId(),
-            bracket_id: bracket.id,
-            round: m.round,
-            position: m.position,
-            team1_id: m.team1Id,
-            team2_id: m.team2Id,
-            team1: team1 ? { id: team1.id, name: team1.name } : undefined,
-            team2: team2 ? { id: team2.id, name: team2.name } : undefined,
-          };
-        });
-
-        // Second pass: resolve temp IDs to real mock IDs for match linking
-        for (let i = 0; i < matchInputs.length; i++) {
-          const input = matchInputs[i];
-          if (input.winnerNextMatchId) {
-            const [, nextRound, nextPos] = input.winnerNextMatchId.split('-');
-            const nextMatch = mockMatches.find(
-              (m) => m.round === parseInt(nextRound) && m.position === parseInt(nextPos)
+          console.warn(
+            '[useBracketMutations] bracket',
+            bracket.id,
+            'divTeams:',
+            divTeams.length,
+            'teams:',
+            divTeams.map((t) => ({
+              id: t.id,
+              name: t.name,
+              status: (t as unknown as Record<string, unknown>).status,
+            }))
+          );
+          if (divTeams.length === 0) {
+            console.warn(
+              '[useBracketMutations] skipping bracket',
+              bracket.id,
+              '- no confirmed teams'
             );
-            if (nextMatch) {
-              mockMatches[i].winner_next_match_id = nextMatch.id;
+            continue;
+          }
+
+          const seeded = calculateSeeding(divTeams);
+          console.warn(
+            '[useBracketMutations] seeded teams:',
+            seeded.map((t) => ({ id: t.id, name: t.name, seed: t.seed }))
+          );
+          let matchInputs: BracketMatchInput[] = [];
+
+          switch (bracket.type) {
+            case 'single_elimination':
+              matchInputs = generateSingleElimination(seeded);
+              break;
+            case 'double_elimination':
+              matchInputs = generateDoubleElimination(seeded);
+              break;
+            case 'round_robin':
+              matchInputs = generateRoundRobin(seeded);
+              break;
+          }
+
+          console.warn(
+            '[useBracketMutations] generated',
+            matchInputs.length,
+            'match inputs for bracket',
+            bracket.id
+          );
+
+          // First pass: create matches with generated IDs
+          const mockMatches: BracketMatch[] = matchInputs.map((m) => {
+            const team1 = m.team1Id ? divTeams.find((t) => t.id === m.team1Id) : undefined;
+            const team2 = m.team2Id ? divTeams.find((t) => t.id === m.team2Id) : undefined;
+            return {
+              id: generateMockId(),
+              bracket_id: bracket.id,
+              round: m.round,
+              position: m.position,
+              team1_id: m.team1Id,
+              team2_id: m.team2Id,
+              team1: team1 ? { id: team1.id, name: team1.name } : undefined,
+              team2: team2 ? { id: team2.id, name: team2.name } : undefined,
+            };
+          });
+
+          // Second pass: resolve temp IDs to real mock IDs for match linking
+          for (let i = 0; i < matchInputs.length; i++) {
+            const input = matchInputs[i];
+            if (input.winnerNextMatchId) {
+              const [, nextRound, nextPos] = input.winnerNextMatchId.split('-');
+              const nextMatch = mockMatches.find(
+                (m) => m.round === parseInt(nextRound) && m.position === parseInt(nextPos)
+              );
+              if (nextMatch) {
+                mockMatches[i].winner_next_match_id = nextMatch.id;
+              }
+            }
+            if (input.loserNextMatchId) {
+              const [, nextRound, nextPos] = input.loserNextMatchId.split('-');
+              const nextMatch = mockMatches.find(
+                (m) => m.round === parseInt(nextRound) && m.position === parseInt(nextPos)
+              );
+              if (nextMatch) {
+                mockMatches[i].loser_next_match_id = nextMatch.id;
+              }
             }
           }
-          if (input.loserNextMatchId) {
-            const [, nextRound, nextPos] = input.loserNextMatchId.split('-');
-            const nextMatch = mockMatches.find(
-              (m) => m.round === parseInt(nextRound) && m.position === parseInt(nextPos)
-            );
-            if (nextMatch) {
-              mockMatches[i].loser_next_match_id = nextMatch.id;
-            }
-          }
+
+          addMockBracketMatches(mockMatches);
+          console.warn(
+            '[useBracketMutations] added',
+            mockMatches.length,
+            'mock matches for bracket',
+            bracket.id,
+            'matches:',
+            mockMatches.map((m) => ({
+              id: m.id,
+              round: m.round,
+              pos: m.position,
+              team1: m.team1?.name ?? m.team1_id ?? 'TBD',
+              team2: m.team2?.name ?? m.team2_id ?? 'TBD',
+              winner_next: m.winner_next_match_id,
+              scheduled_at: m.scheduled_at,
+              play_area: m.play_area,
+            }))
+          );
+        }
+        console.warn('[useBracketMutations] generateSeason mock complete');
+        return;
+      }
+
+      try {
+        // Fetch all brackets for this season's divisions
+        const { data: divisions, error: divError } = await supabase
+          .from('divisions')
+          .select('id')
+          .eq('season_id', params.season_id);
+
+        if (divError) {
+          throw divError;
+        }
+        if (!divisions || divisions.length === 0) {
+          throw new Error('No divisions found for this season');
         }
 
-        addMockBracketMatches(mockMatches);
-        console.warn('[useBracketMutations] added', mockMatches.length, 'mock matches for bracket', bracket.id,
-          'matches:', mockMatches.map((m) => ({
-            id: m.id,
-            round: m.round,
-            pos: m.position,
-            team1: m.team1?.name ?? m.team1_id ?? 'TBD',
-            team2: m.team2?.name ?? m.team2_id ?? 'TBD',
-            winner_next: m.winner_next_match_id,
-            scheduled_at: m.scheduled_at,
-            play_area: m.play_area,
-          })));
+        const divisionIds = divisions.map((d) => d.id);
+
+        const { data: brackets, error: bracketError } = await supabase
+          .from('brackets')
+          .select('id, type, division_id')
+          .in('division_id', divisionIds);
+
+        if (bracketError) {
+          throw bracketError;
+        }
+        if (!brackets || brackets.length === 0) {
+          throw new Error('No brackets found for this season');
+        }
+
+        // Generate matches for each bracket
+        for (const bracket of brackets) {
+          await generateBracketMatches(bracket.id, bracket.division_id, bracket.type);
+        }
+      } catch (error) {
+        console.error('[useBracketMutations] generateSeason error:', error);
+        throw error;
       }
-      console.warn('[useBracketMutations] generateSeason mock complete');
-      return;
-    }
-
-    try {
-      // Fetch all brackets for this season's divisions
-      const { data: divisions, error: divError } = await supabase
-        .from('divisions')
-        .select('id')
-        .eq('season_id', params.season_id);
-
-      if (divError) { throw divError; }
-      if (!divisions || divisions.length === 0) {
-        throw new Error('No divisions found for this season');
-      }
-
-      const divisionIds = divisions.map((d) => d.id);
-
-      const { data: brackets, error: bracketError } = await supabase
-        .from('brackets')
-        .select('id, type, division_id')
-        .in('division_id', divisionIds);
-
-      if (bracketError) { throw bracketError; }
-      if (!brackets || brackets.length === 0) {
-        throw new Error('No brackets found for this season');
-      }
-
-      // Generate matches for each bracket
-      for (const bracket of brackets) {
-        await generateBracketMatches(bracket.id, bracket.division_id, bracket.type);
-      }
-    } catch (error) {
-      console.error('[useBracketMutations] generateSeason error:', error);
-      throw error;
-    }
-  }, []);
+    },
+    []
+  );
 
   /**
    * Internal: generate matches for a single bracket
@@ -232,8 +282,12 @@ export function useBracketMutations() {
       .eq('division_id', divisionId)
       .eq('status', 'confirmed');
 
-    if (teamsError) { throw teamsError; }
-    if (!teams || teams.length === 0) { return; }
+    if (teamsError) {
+      throw teamsError;
+    }
+    if (!teams || teams.length === 0) {
+      return;
+    }
 
     // Calculate seeding
     const seededTeams = calculateSeeding(teams as unknown as Team[]);
@@ -270,8 +324,12 @@ export function useBracketMutations() {
       .insert(matchInserts)
       .select('id, round, position');
 
-    if (matchesError) { throw matchesError; }
-    if (!insertedMatches) { throw new Error('Failed to create matches'); }
+    if (matchesError) {
+      throw matchesError;
+    }
+    if (!insertedMatches) {
+      throw new Error('Failed to create matches');
+    }
 
     // Update winner/loser next match IDs with real IDs
     const linkUpdates = matches
@@ -286,7 +344,9 @@ export function useBracketMutations() {
           const nextMatch = insertedMatches.find(
             (m) => m.round === parseInt(nextRound) && m.position === parseInt(nextPos)
           );
-          if (nextMatch) { upd.winner_next_match_id = nextMatch.id; }
+          if (nextMatch) {
+            upd.winner_next_match_id = nextMatch.id;
+          }
         }
 
         if (match.loserNextMatchId) {
@@ -294,7 +354,9 @@ export function useBracketMutations() {
           const nextMatch = insertedMatches.find(
             (m) => m.round === parseInt(nextRound) && m.position === parseInt(nextPos)
           );
-          if (nextMatch) { upd.loser_next_match_id = nextMatch.id; }
+          if (nextMatch) {
+            upd.loser_next_match_id = nextMatch.id;
+          }
         }
 
         return upd;
@@ -316,33 +378,32 @@ export function useBracketMutations() {
     }
 
     // Update bracket team count
-    await supabase
-      .from('brackets')
-      .update({ team_count: seededTeams.length })
-      .eq('id', bracketId);
+    await supabase.from('brackets').update({ team_count: seededTeams.length }).eq('id', bracketId);
   };
 
   /**
    * Update bracket metadata
    */
-  const update = useCallback(async (id: string, updates: Partial<{ name: string; type: string }>): Promise<void> => {
-    if (USE_MOCK) {
-      console.warn('[useBracketMutations] update (mock):', id, updates);
-      return;
-    }
+  const update = useCallback(
+    async (id: string, updates: Partial<{ name: string; type: string }>): Promise<void> => {
+      if (USE_MOCK) {
+        console.warn('[useBracketMutations] update (mock):', id, updates);
+        return;
+      }
 
-    try {
-      const { error } = await supabase
-        .from('brackets')
-        .update(updates)
-        .eq('id', id);
+      try {
+        const { error } = await supabase.from('brackets').update(updates).eq('id', id);
 
-      if (error) { throw error; }
-    } catch (error) {
-      console.error('[useBracketMutations] update error:', error);
-      throw error;
-    }
-  }, []);
+        if (error) {
+          throw error;
+        }
+      } catch (error) {
+        console.error('[useBracketMutations] update error:', error);
+        throw error;
+      }
+    },
+    []
+  );
 
   /**
    * Delete a bracket and all its matches
@@ -354,12 +415,11 @@ export function useBracketMutations() {
     }
 
     try {
-      const { error } = await supabase
-        .from('brackets')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('brackets').delete().eq('id', id);
 
-      if (error) { throw error; }
+      if (error) {
+        throw error;
+      }
     } catch (error) {
       console.error('[useBracketMutations] remove error:', error);
       throw error;

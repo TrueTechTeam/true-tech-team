@@ -53,53 +53,63 @@ export function JoinRequestsScreen({ route }: Props) {
     ]);
   };
 
-  const pendingRequests =
-    requests?.filter((r: { id: string }) => !handledIds.has(r.id)) || [];
+  const pendingRequests = requests?.filter((r: { id: string }) => !handledIds.has(r.id)) || [];
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
         }
       >
         {loading && !refreshing ? (
           <LoadingSpinner />
         ) : pendingRequests.length > 0 ? (
           <View style={styles.list}>
-            {pendingRequests.map((request: { id: string; first_name?: string; last_name?: string; user_id?: string }) => {
-              const name = request.first_name
-                ? `${request.first_name} ${request.last_name || ''}`
-                : 'Unknown Player';
-              return (
-                <View key={request.id} style={styles.requestCard}>
-                  <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>
-                      {(request.first_name?.[0] || '?').toUpperCase()}
-                    </Text>
+            {pendingRequests.map(
+              (request: {
+                id: string;
+                first_name?: string;
+                last_name?: string;
+                user_id?: string;
+              }) => {
+                const name = request.first_name
+                  ? `${request.first_name} ${request.last_name || ''}`
+                  : 'Unknown Player';
+                return (
+                  <View key={request.id} style={styles.requestCard}>
+                    <View style={styles.avatar}>
+                      <Text style={styles.avatarText}>
+                        {(request.first_name?.[0] || '?').toUpperCase()}
+                      </Text>
+                    </View>
+                    <View style={styles.requestInfo}>
+                      <Text style={styles.requestName}>{name}</Text>
+                      <Text style={styles.requestMeta}>Wants to join your team</Text>
+                    </View>
+                    <View style={styles.requestActions}>
+                      <TouchableOpacity
+                        style={styles.acceptButton}
+                        onPress={() => handleAccept(request.id, name)}
+                      >
+                        <Text style={styles.acceptText}>Accept</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.declineButton}
+                        onPress={() => handleDecline(request.id, name)}
+                      >
+                        <Text style={styles.declineText}>Decline</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                  <View style={styles.requestInfo}>
-                    <Text style={styles.requestName}>{name}</Text>
-                    <Text style={styles.requestMeta}>Wants to join your team</Text>
-                  </View>
-                  <View style={styles.requestActions}>
-                    <TouchableOpacity
-                      style={styles.acceptButton}
-                      onPress={() => handleAccept(request.id, name)}
-                    >
-                      <Text style={styles.acceptText}>Accept</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.declineButton}
-                      onPress={() => handleDecline(request.id, name)}
-                    >
-                      <Text style={styles.declineText}>Decline</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              );
-            })}
+                );
+              }
+            )}
           </View>
         ) : (
           <EmptyState

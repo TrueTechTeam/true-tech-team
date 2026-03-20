@@ -23,14 +23,18 @@ export interface BracketMatchInput {
 export function calculateSeeding(teams: Team[]): SeededTeam[] {
   const sorted = [...teams].sort((a, b) => {
     // 1. Most wins
-    if (b.wins !== a.wins) {return b.wins - a.wins;}
+    if (b.wins !== a.wins) {
+      return b.wins - a.wins;
+    }
 
     // 2. Best win percentage
     const aTotalGames = a.wins + a.losses + a.ties;
     const bTotalGames = b.wins + b.losses + b.ties;
     const aWinPct = aTotalGames > 0 ? a.wins / aTotalGames : 0;
     const bWinPct = bTotalGames > 0 ? b.wins / bTotalGames : 0;
-    if (bWinPct !== aWinPct) {return bWinPct - aWinPct;}
+    if (bWinPct !== aWinPct) {
+      return bWinPct - aWinPct;
+    }
 
     // 3. Best point differential
     const aPointDiff = a.pointsFor - a.pointsAgainst;
@@ -50,7 +54,12 @@ export function calculateSeeding(teams: Team[]): SeededTeam[] {
  * Handles byes for non-power-of-2 team counts by advancing bye teams to round 2.
  */
 export function generateSingleElimination(teams: SeededTeam[]): BracketMatchInput[] {
-  console.warn('[bracketGeneration] generateSingleElimination called with', teams.length, 'teams:', teams.map((t) => ({ id: t.id, name: t.name, seed: t.seed })));
+  console.warn(
+    '[bracketGeneration] generateSingleElimination called with',
+    teams.length,
+    'teams:',
+    teams.map((t) => ({ id: t.id, name: t.name, seed: t.seed }))
+  );
 
   if (teams.length <= 1) {
     console.warn('[bracketGeneration] <= 1 team, returning empty');
@@ -61,7 +70,14 @@ export function generateSingleElimination(teams: SeededTeam[]): BracketMatchInpu
   const totalRounds = Math.ceil(Math.log2(teams.length));
   const bracketSize = Math.pow(2, totalRounds);
 
-  console.warn('[bracketGeneration] totalRounds:', totalRounds, 'bracketSize:', bracketSize, 'byes:', bracketSize - teams.length);
+  console.warn(
+    '[bracketGeneration] totalRounds:',
+    totalRounds,
+    'bracketSize:',
+    bracketSize,
+    'byes:',
+    bracketSize - teams.length
+  );
 
   // Create first round matchups with bracket seeding
   const firstRoundTeams = [...teams];
@@ -87,11 +103,14 @@ export function generateSingleElimination(teams: SeededTeam[]): BracketMatchInpu
     });
   }
 
-  console.warn('[bracketGeneration] first round matches:', matches.map((m) => ({
-    pos: m.position,
-    team1: m.team1Id ?? 'BYE',
-    team2: m.team2Id ?? 'BYE',
-  })));
+  console.warn(
+    '[bracketGeneration] first round matches:',
+    matches.map((m) => ({
+      pos: m.position,
+      team1: m.team1Id ?? 'BYE',
+      team2: m.team2Id ?? 'BYE',
+    }))
+  );
 
   // Create subsequent rounds with TBD teams
   for (let round = 2; round <= totalRounds; round++) {
@@ -121,40 +140,50 @@ export function generateSingleElimination(teams: SeededTeam[]): BracketMatchInpu
   }
 
   // Process byes: advance teams with first-round byes directly to round 2
-  const byeMatches = matches.filter(
-    (m) => m.round === 1 && m.team1Id && !m.team2Id
+  const byeMatches = matches.filter((m) => m.round === 1 && m.team1Id && !m.team2Id);
+  console.warn(
+    '[bracketGeneration] byeMatches:',
+    byeMatches.length,
+    byeMatches.map((m) => ({ pos: m.position, team: m.team1Id }))
   );
-  console.warn('[bracketGeneration] byeMatches:', byeMatches.length, byeMatches.map((m) => ({ pos: m.position, team: m.team1Id })));
 
   for (const byeMatch of byeMatches) {
     const nextRoundPos = Math.floor(byeMatch.position / 2);
-    const nextMatch = matches.find(
-      (m) => m.round === 2 && m.position === nextRoundPos
-    );
+    const nextMatch = matches.find((m) => m.round === 2 && m.position === nextRoundPos);
     if (nextMatch) {
       // Even positions feed into team1 slot, odd positions feed into team2 slot
       if (byeMatch.position % 2 === 0) {
         nextMatch.team1Id = byeMatch.team1Id;
-        console.warn('[bracketGeneration] bye: advanced', byeMatch.team1Id, '→ R2P' + nextRoundPos + ' team1');
+        console.warn(
+          '[bracketGeneration] bye: advanced',
+          byeMatch.team1Id,
+          `→ R2P${nextRoundPos} team1`
+        );
       } else {
         nextMatch.team2Id = byeMatch.team1Id;
-        console.warn('[bracketGeneration] bye: advanced', byeMatch.team1Id, '→ R2P' + nextRoundPos + ' team2');
+        console.warn(
+          '[bracketGeneration] bye: advanced',
+          byeMatch.team1Id,
+          `→ R2P${nextRoundPos} team2`
+        );
       }
     }
   }
 
   // Remove bye matches from the bracket (they don't need to be played)
-  const result = matches.filter(
-    (m) => !(m.round === 1 && m.team1Id && !m.team2Id)
-  );
+  const result = matches.filter((m) => !(m.round === 1 && m.team1Id && !m.team2Id));
 
-  console.warn('[bracketGeneration] final matches:', result.length, result.map((m) => ({
-    round: m.round,
-    pos: m.position,
-    team1: m.team1Id ?? 'TBD',
-    team2: m.team2Id ?? 'TBD',
-    winnerNext: m.winnerNextMatchId,
-  })));
+  console.warn(
+    '[bracketGeneration] final matches:',
+    result.length,
+    result.map((m) => ({
+      round: m.round,
+      pos: m.position,
+      team1: m.team1Id ?? 'TBD',
+      team2: m.team2Id ?? 'TBD',
+      winnerNext: m.winnerNextMatchId,
+    }))
+  );
 
   return result;
 }
@@ -196,7 +225,9 @@ function createSeedPairs(bracketSize: number): number[][] {
  * Creates both winners and losers brackets.
  */
 export function generateDoubleElimination(teams: SeededTeam[]): BracketMatchInput[] {
-  if (teams.length === 0) {return [];}
+  if (teams.length === 0) {
+    return [];
+  }
 
   const matches: BracketMatchInput[] = [];
 

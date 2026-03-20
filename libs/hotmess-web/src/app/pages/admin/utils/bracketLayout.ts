@@ -41,7 +41,9 @@ export function groupByRound(matches: BracketMatch[]): Map<number, BracketMatch[
       grouped.set(match.round, []);
     }
     const roundArr = grouped.get(match.round);
-    if (roundArr) { roundArr.push(match); }
+    if (roundArr) {
+      roundArr.push(match);
+    }
   }
 
   // Sort matches within each round by position
@@ -65,7 +67,9 @@ function buildParentMap(matches: BracketMatch[]): Map<string, BracketMatch[]> {
         parentMap.set(match.winner_next_match_id, []);
       }
       const parents = parentMap.get(match.winner_next_match_id);
-      if (parents) { parents.push(match); }
+      if (parents) {
+        parents.push(match);
+      }
     }
   }
 
@@ -170,7 +174,9 @@ function layoutBracketSection(
         // Bye case: align with the single parent for now;
         // a post-processing step below will offset the parent match.
         const parentPos = positions.get(parents[0].id);
-        y = parentPos ? parentPos.y : yOffset + VERTICAL_PADDING + i * firstRoundStep * Math.pow(2, roundIdx);
+        y = parentPos
+          ? parentPos.y
+          : yOffset + VERTICAL_PADDING + i * firstRoundStep * Math.pow(2, roundIdx);
       } else {
         // No parents found — use spacing based on position in round
         y = yOffset + VERTICAL_PADDING + i * firstRoundStep * Math.pow(2, roundIdx);
@@ -189,11 +195,15 @@ function layoutBracketSection(
 
     for (const match of roundMatches) {
       const parents = parentMap.get(match.id) || [];
-      if (parents.length !== 1) { continue; }
+      if (parents.length !== 1) {
+        continue;
+      }
 
       const parent = parents[0];
       const parentPos = positions.get(parent.id);
-      if (!parentPos) { continue; }
+      if (!parentPos) {
+        continue;
+      }
 
       // Offset the parent (feeder) match away from the child.
       // Lower feeder (odd position) → move down; upper feeder (even) → move up.
@@ -222,7 +232,9 @@ function layoutBracketSection(
   let maxY = 0;
   for (const pos of positions.values()) {
     const bottom = pos.y + MATCH_HEIGHT;
-    if (bottom > maxY) { maxY = bottom; }
+    if (bottom > maxY) {
+      maxY = bottom;
+    }
   }
 
   return { positions, rounds, height: maxY + VERTICAL_PADDING - yOffset };
@@ -233,15 +245,20 @@ function layoutBracketSection(
  * Handles single elimination, double elimination, and round robin.
  */
 export function calculateMatchPositions(matches: BracketMatch[]): BracketLayout {
-  console.warn('[bracketLayout] calculateMatchPositions called with', matches.length, 'matches:', matches.map((m) => ({
-    id: m.id,
-    round: m.round,
-    pos: m.position,
-    team1: m.team1?.name ?? m.team1_id ?? 'TBD',
-    team2: m.team2?.name ?? m.team2_id ?? 'TBD',
-    winner_next: m.winner_next_match_id,
-    loser_next: m.loser_next_match_id,
-  })));
+  console.warn(
+    '[bracketLayout] calculateMatchPositions called with',
+    matches.length,
+    'matches:',
+    matches.map((m) => ({
+      id: m.id,
+      round: m.round,
+      pos: m.position,
+      team1: m.team1?.name ?? m.team1_id ?? 'TBD',
+      team2: m.team2?.name ?? m.team2_id ?? 'TBD',
+      winner_next: m.winner_next_match_id,
+      loser_next: m.loser_next_match_id,
+    }))
+  );
 
   if (matches.length === 0) {
     return { rounds: [], width: 0, height: 0 };
@@ -300,7 +317,8 @@ export function calculateMatchPositions(matches: BracketMatch[]): BracketLayout 
   // Grand final
   if (grandFinal) {
     const lastWinnersRound = winners.rounds[winners.rounds.length - 1];
-    const lastLosersRound = losers.rounds.length > 0 ? losers.rounds[losers.rounds.length - 1] : null;
+    const lastLosersRound =
+      losers.rounds.length > 0 ? losers.rounds[losers.rounds.length - 1] : null;
 
     const gfX = Math.max(
       lastWinnersRound ? lastWinnersRound.x + ROUND_WIDTH : 0,
@@ -329,8 +347,12 @@ export function calculateMatchPositions(matches: BracketMatch[]): BracketLayout 
   let maxY = 0;
   for (const round of allRounds) {
     for (const m of round.matches) {
-      if (m.x + MATCH_CARD_WIDTH > maxX) { maxX = m.x + MATCH_CARD_WIDTH; }
-      if (m.y + MATCH_HEIGHT > maxY) { maxY = m.y + MATCH_HEIGHT; }
+      if (m.x + MATCH_CARD_WIDTH > maxX) {
+        maxX = m.x + MATCH_CARD_WIDTH;
+      }
+      if (m.y + MATCH_HEIGHT > maxY) {
+        maxY = m.y + MATCH_HEIGHT;
+      }
     }
   }
 
@@ -373,7 +395,13 @@ export function getConnectorPaths(layout: BracketLayout): Array<{
             type: 'winner',
           });
         } else {
-          console.warn('[bracketLayout] connector MISSING: match', match.id, 'winner_next_match_id', match.winner_next_match_id, 'not found in positionMap');
+          console.warn(
+            '[bracketLayout] connector MISSING: match',
+            match.id,
+            'winner_next_match_id',
+            match.winner_next_match_id,
+            'not found in positionMap'
+          );
         }
       }
 
@@ -385,7 +413,13 @@ export function getConnectorPaths(layout: BracketLayout): Array<{
             type: 'loser',
           });
         } else {
-          console.warn('[bracketLayout] connector MISSING: match', match.id, 'loser_next_match_id', match.loser_next_match_id, 'not found in positionMap');
+          console.warn(
+            '[bracketLayout] connector MISSING: match',
+            match.id,
+            'loser_next_match_id',
+            match.loser_next_match_id,
+            'not found in positionMap'
+          );
         }
       }
     }
@@ -412,9 +446,6 @@ function buildBracketConnector(from: MatchPosition, to: MatchPosition): string {
 }
 
 // Keep legacy exports for backward compatibility
-export function getConnectorPath(
-  fromMatch: MatchPosition,
-  toMatch: MatchPosition,
-): string {
+export function getConnectorPath(fromMatch: MatchPosition, toMatch: MatchPosition): string {
   return buildBracketConnector(fromMatch, toMatch);
 }

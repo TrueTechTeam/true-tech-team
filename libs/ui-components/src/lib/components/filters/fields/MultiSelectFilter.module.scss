@@ -80,7 +80,9 @@
   border-radius: var(--border-radius-md, 6px);
   background: var(--theme-input-bg, #fff);
   cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
   font-size: var(--font-size-sm, 0.875rem);
 
   &:hover:not([data-disabled]) {

@@ -74,7 +74,11 @@ export function SuperlativeNominationsScreen({ route }: Props) {
               <Text style={styles.categoryLabel}>{category.label}</Text>
               <Text style={styles.categoryDesc}>{category.description}</Text>
 
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.memberScroll}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.memberScroll}
+              >
                 {teamMembers.map((member) => {
                   const isSelected = nominatedId === member.id;
                   return (

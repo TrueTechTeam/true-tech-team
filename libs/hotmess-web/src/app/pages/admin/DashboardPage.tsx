@@ -2,7 +2,14 @@ import { Link } from 'react-router-dom';
 import { KPI } from '@true-tech-team/ui-components';
 import { UserRole } from '@true-tech-team/hotmess-types';
 import { usePermissions } from '../../../contexts/PermissionsContext';
-import { useCities, useSports, useSeasons, useTeams, useDivisions, useUpcomingGames } from '../../../hooks/useSupabaseQuery';
+import {
+  useCities,
+  useSports,
+  useSeasons,
+  useTeams,
+  useDivisions,
+  useUpcomingGames,
+} from '../../../hooks/useSupabaseQuery';
 import { mockNotifications } from '../../../mocks/data';
 import styles from './AdminPages.module.scss';
 
@@ -16,9 +23,7 @@ function AdminDashboard() {
 
   const activeSeasons = seasons?.filter((s) => s.status === 'active') || [];
   const activeDivisionIds = new Set(
-    divisions
-      ?.filter((d) => activeSeasons.some((s) => s.id === d.season_id))
-      .map((d) => d.id) || []
+    divisions?.filter((d) => activeSeasons.some((s) => s.id === d.season_id)).map((d) => d.id) || []
   );
   const activeTeams = teams?.filter((t) => activeDivisionIds.has(t.division_id)) || [];
   const registrationSeasons = seasons?.filter((s) => s.status === 'registration') || [];
@@ -70,17 +75,30 @@ function AdminDashboard() {
       {registrationSeasons.length > 0 && (
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Open Registration ({registrationSeasons.length})</h2>
-            <Link to="/admin/seasons" className={styles.viewAllLink}>View All</Link>
+            <h2 className={styles.sectionTitle}>
+              Open Registration ({registrationSeasons.length})
+            </h2>
+            <Link to="/admin/seasons" className={styles.viewAllLink}>
+              View All
+            </Link>
           </div>
           <div className={styles.activityList}>
             {registrationSeasons.slice(0, 5).map((season) => (
-              <Link key={season.id} to={`/admin/seasons/${season.id}`} className={styles.activityItemLink}>
+              <Link
+                key={season.id}
+                to={`/admin/seasons/${season.id}`}
+                className={styles.activityItemLink}
+              >
                 <span className={styles.activityIcon}>📋</span>
                 <div className={styles.activityContent}>
                   <p>{season.name}</p>
                   <span className={styles.activityTime}>
-                    Starts {new Date(season.season_start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    Starts{' '}
+                    {new Date(season.season_start_date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
                   </span>
                 </div>
               </Link>
@@ -92,18 +110,24 @@ function AdminDashboard() {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Recent Notifications</h2>
         <div className={styles.activityList}>
-          {mockNotifications.filter((n) => n.status === 'sent').slice(0, 5).map((notif) => (
-            <div key={notif.id} className={styles.activityItem}>
-              <span className={styles.activityIcon}>📢</span>
-              <div className={styles.activityContent}>
-                <p>{notif.title}</p>
-                <span className={styles.activityTime}>
-                  {new Date(notif.sent_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  {notif.target !== 'all' && ` · ${notif.target_name}`}
-                </span>
+          {mockNotifications
+            .filter((n) => n.status === 'sent')
+            .slice(0, 5)
+            .map((notif) => (
+              <div key={notif.id} className={styles.activityItem}>
+                <span className={styles.activityIcon}>📢</span>
+                <div className={styles.activityContent}>
+                  <p>{notif.title}</p>
+                  <span className={styles.activityTime}>
+                    {new Date(notif.sent_date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                    {notif.target !== 'all' && ` · ${notif.target_name}`}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </section>
     </>
@@ -159,23 +183,35 @@ function ManagerDashboard() {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Your Seasons</h2>
-          <Link to="/admin/seasons" className={styles.viewAllLink}>View All</Link>
+          <Link to="/admin/seasons" className={styles.viewAllLink}>
+            View All
+          </Link>
         </div>
         <div className={styles.activityList}>
           {mySeasons.length === 0 && (
             <div className={styles.activityItem}>
-              <div className={styles.activityContent}><p>No seasons assigned yet.</p></div>
+              <div className={styles.activityContent}>
+                <p>No seasons assigned yet.</p>
+              </div>
             </div>
           )}
           {mySeasons.map((season) => (
-            <Link key={season.id} to={`/admin/seasons/${season.id}`} className={styles.activityItemLink}>
+            <Link
+              key={season.id}
+              to={`/admin/seasons/${season.id}`}
+              className={styles.activityItemLink}
+            >
               <span className={styles.activityIcon}>
                 {season.status === 'active' ? '🟢' : season.status === 'registration' ? '📋' : '📅'}
               </span>
               <div className={styles.activityContent}>
                 <p>{season.name}</p>
                 <span className={styles.activityTime}>
-                  {season.status.charAt(0).toUpperCase() + season.status.slice(1)} · Starts {new Date(season.season_start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  {season.status.charAt(0).toUpperCase() + season.status.slice(1)} · Starts{' '}
+                  {new Date(season.season_start_date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
                 </span>
               </div>
             </Link>
@@ -188,15 +224,37 @@ function ManagerDashboard() {
           <h2 className={styles.sectionTitle}>Quick Actions</h2>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <Link to="/admin/schedules" style={{ textDecoration: 'none' }}>
-              <div className={styles.activityItem} style={{ borderRadius: '0.5rem', border: '1px solid var(--border-default)', background: 'var(--bg-secondary)', cursor: 'pointer', padding: '0.75rem 1rem' }}>
+              <div
+                className={styles.activityItem}
+                style={{
+                  borderRadius: '0.5rem',
+                  border: '1px solid var(--border-default)',
+                  background: 'var(--bg-secondary)',
+                  cursor: 'pointer',
+                  padding: '0.75rem 1rem',
+                }}
+              >
                 <span className={styles.activityIcon}>📋</span>
-                <div className={styles.activityContent}><p>Manage Schedules</p></div>
+                <div className={styles.activityContent}>
+                  <p>Manage Schedules</p>
+                </div>
               </div>
             </Link>
             <Link to="/admin/teams" style={{ textDecoration: 'none' }}>
-              <div className={styles.activityItem} style={{ borderRadius: '0.5rem', border: '1px solid var(--border-default)', background: 'var(--bg-secondary)', cursor: 'pointer', padding: '0.75rem 1rem' }}>
+              <div
+                className={styles.activityItem}
+                style={{
+                  borderRadius: '0.5rem',
+                  border: '1px solid var(--border-default)',
+                  background: 'var(--bg-secondary)',
+                  cursor: 'pointer',
+                  padding: '0.75rem 1rem',
+                }}
+              >
                 <span className={styles.activityIcon}>👥</span>
-                <div className={styles.activityContent}><p>Manage Teams</p></div>
+                <div className={styles.activityContent}>
+                  <p>Manage Teams</p>
+                </div>
               </div>
             </Link>
           </div>
@@ -242,23 +300,36 @@ function RefereeDashboard() {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Your Schedule</h2>
-          <Link to="/admin/schedules" className={styles.viewAllLink}>View Full Schedule</Link>
+          <Link to="/admin/schedules" className={styles.viewAllLink}>
+            View Full Schedule
+          </Link>
         </div>
         <div className={styles.activityList}>
           {upcomingGames.length === 0 && (
             <div className={styles.activityItem}>
-              <div className={styles.activityContent}><p>No upcoming games assigned.</p></div>
+              <div className={styles.activityContent}>
+                <p>No upcoming games assigned.</p>
+              </div>
             </div>
           )}
           {upcomingGames.slice(0, 8).map((game) => (
             <div key={game.id} className={styles.activityItem}>
               <span className={styles.activityIcon}>🏟️</span>
               <div className={styles.activityContent}>
-                <p>{game.home_team?.name} vs {game.away_team?.name}</p>
+                <p>
+                  {game.home_team?.name} vs {game.away_team?.name}
+                </p>
                 <span className={styles.activityTime}>
-                  {new Date(game.scheduled_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                  {new Date(game.scheduled_at).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
                   {' · '}
-                  {new Date(game.scheduled_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                  {new Date(game.scheduled_at).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  })}
                   {game.venue && ` · ${game.venue.name}`}
                 </span>
               </div>
@@ -346,11 +417,17 @@ function CaptainDashboard() {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Your Teams (Captain)</h2>
-            <Link to="/admin/teams" className={styles.viewAllLink}>Manage Teams</Link>
+            <Link to="/admin/teams" className={styles.viewAllLink}>
+              Manage Teams
+            </Link>
           </div>
           <div className={styles.activityList}>
             {captainedTeams.map((team) => (
-              <Link key={team.id} to={`/admin/teams/${team.id}`} className={styles.activityItemLink}>
+              <Link
+                key={team.id}
+                to={`/admin/teams/${team.id}`}
+                className={styles.activityItemLink}
+              >
                 <span className={styles.activityIcon}>👥</span>
                 <div className={styles.activityContent}>
                   <p>{team.name}</p>
@@ -367,23 +444,36 @@ function CaptainDashboard() {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Upcoming Games</h2>
-          <Link to="/admin/schedules" className={styles.viewAllLink}>Full Schedule</Link>
+          <Link to="/admin/schedules" className={styles.viewAllLink}>
+            Full Schedule
+          </Link>
         </div>
         <div className={styles.activityList}>
           {myGames.length === 0 && (
             <div className={styles.activityItem}>
-              <div className={styles.activityContent}><p>No upcoming games.</p></div>
+              <div className={styles.activityContent}>
+                <p>No upcoming games.</p>
+              </div>
             </div>
           )}
           {myGames.slice(0, 5).map((game) => (
             <div key={game.id} className={styles.activityItem}>
               <span className={styles.activityIcon}>🏟️</span>
               <div className={styles.activityContent}>
-                <p>{game.home_team?.name} vs {game.away_team?.name}</p>
+                <p>
+                  {game.home_team?.name} vs {game.away_team?.name}
+                </p>
                 <span className={styles.activityTime}>
-                  {new Date(game.scheduled_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                  {new Date(game.scheduled_at).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
                   {' · '}
-                  {new Date(game.scheduled_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                  {new Date(game.scheduled_at).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  })}
                 </span>
               </div>
             </div>
@@ -396,12 +486,20 @@ function CaptainDashboard() {
           <h2 className={styles.sectionTitle}>Register for Seasons</h2>
           <div className={styles.activityList}>
             {regSeasons.map((season) => (
-              <Link key={season.id} to={`/admin/seasons/${season.id}`} className={styles.activityItemLink}>
+              <Link
+                key={season.id}
+                to={`/admin/seasons/${season.id}`}
+                className={styles.activityItemLink}
+              >
                 <span className={styles.activityIcon}>📋</span>
                 <div className={styles.activityContent}>
                   <p>{season.name}</p>
                   <span className={styles.activityTime}>
-                    Registration open · Starts {new Date(season.season_start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    Registration open · Starts{' '}
+                    {new Date(season.season_start_date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
                   </span>
                 </div>
               </Link>
@@ -464,7 +562,11 @@ function PlayerDashboard() {
           <h2 className={styles.sectionTitle}>Your Teams</h2>
           <div className={styles.activityList}>
             {myTeams.map((team) => (
-              <Link key={team.id} to={`/admin/teams/${team.id}`} className={styles.activityItemLink}>
+              <Link
+                key={team.id}
+                to={`/admin/teams/${team.id}`}
+                className={styles.activityItemLink}
+              >
                 <span className={styles.activityIcon}>👥</span>
                 <div className={styles.activityContent}>
                   <p>{team.name}</p>
@@ -483,18 +585,29 @@ function PlayerDashboard() {
         <div className={styles.activityList}>
           {myGames.length === 0 && (
             <div className={styles.activityItem}>
-              <div className={styles.activityContent}><p>No upcoming games.</p></div>
+              <div className={styles.activityContent}>
+                <p>No upcoming games.</p>
+              </div>
             </div>
           )}
           {myGames.slice(0, 5).map((game) => (
             <div key={game.id} className={styles.activityItem}>
               <span className={styles.activityIcon}>🏟️</span>
               <div className={styles.activityContent}>
-                <p>{game.home_team?.name} vs {game.away_team?.name}</p>
+                <p>
+                  {game.home_team?.name} vs {game.away_team?.name}
+                </p>
                 <span className={styles.activityTime}>
-                  {new Date(game.scheduled_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                  {new Date(game.scheduled_at).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
                   {' · '}
-                  {new Date(game.scheduled_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                  {new Date(game.scheduled_at).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  })}
                 </span>
               </div>
             </div>
@@ -507,12 +620,20 @@ function PlayerDashboard() {
           <h2 className={styles.sectionTitle}>Register for Seasons</h2>
           <div className={styles.activityList}>
             {regSeasons.map((season) => (
-              <Link key={season.id} to={`/admin/seasons/${season.id}`} className={styles.activityItemLink}>
+              <Link
+                key={season.id}
+                to={`/admin/seasons/${season.id}`}
+                className={styles.activityItemLink}
+              >
                 <span className={styles.activityIcon}>📋</span>
                 <div className={styles.activityContent}>
                   <p>{season.name}</p>
                   <span className={styles.activityTime}>
-                    Registration open · Starts {new Date(season.season_start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    Registration open · Starts{' '}
+                    {new Date(season.season_start_date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
                   </span>
                 </div>
               </Link>
@@ -531,7 +652,12 @@ function PlayerDashboard() {
                 <div className={styles.activityContent}>
                   <p>{season.name}</p>
                   <span className={styles.activityTime}>
-                    Completed {new Date(season.season_end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    Completed{' '}
+                    {new Date(season.season_end_date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
                   </span>
                 </div>
               </div>
@@ -562,7 +688,9 @@ export function DashboardPage() {
     <div className={styles.page}>
       <h1 className={styles.pageTitle}>{title}</h1>
 
-      {(effectiveRole === UserRole.Admin || effectiveRole === UserRole.Commissioner) && <AdminDashboard />}
+      {(effectiveRole === UserRole.Admin || effectiveRole === UserRole.Commissioner) && (
+        <AdminDashboard />
+      )}
       {effectiveRole === UserRole.Manager && <ManagerDashboard />}
       {effectiveRole === UserRole.Referee && <RefereeDashboard />}
       {effectiveRole === UserRole.TeamCaptain && <CaptainDashboard />}

@@ -43,7 +43,8 @@ export function useBracketMatches(bracketId?: string) {
   const mockData = { data: mockMatches, loading: false, error: null, refetch };
 
   const real = useSupabaseQuery<BracketMatch[]>('bracket_matches', {
-    select: '*, team1:teams!team1_id(id, name), team2:teams!team2_id(id, name), venue:venues(id, name)',
+    select:
+      '*, team1:teams!team1_id(id, name), team2:teams!team2_id(id, name), venue:venues(id, name)',
     filter: bracketId ? [{ column: 'bracket_id', value: bracketId }] : undefined,
     orderBy: { column: 'round', ascending: true },
     enabled: !USE_MOCK && !!bracketId,
@@ -84,11 +85,15 @@ export function useAllBracketMatches(bracketIds: string[]) {
 
     supabase
       .from('bracket_matches')
-      .select('*, team1:teams!team1_id(id, name), team2:teams!team2_id(id, name), venue:venues(id, name)')
+      .select(
+        '*, team1:teams!team1_id(id, name), team2:teams!team2_id(id, name), venue:venues(id, name)'
+      )
       .in('bracket_id', bracketIds)
       .order('round', { ascending: true })
       .then(({ data: result, error }) => {
-        if (cancelled) { return; }
+        if (cancelled) {
+          return;
+        }
         if (error) {
           console.error('[useAllBracketMatches] error:', error);
           setData([]);
@@ -98,8 +103,10 @@ export function useAllBracketMatches(bracketIds: string[]) {
         setLoading(false);
       });
 
-    return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bracketIdsKey, refreshKey]);
 
   return { data, loading, refetch };

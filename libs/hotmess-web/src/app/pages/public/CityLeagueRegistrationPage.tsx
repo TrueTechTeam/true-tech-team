@@ -14,9 +14,7 @@ export function CityLeagueRegistrationPage() {
   const city = cities?.find(
     (c) => c.slug === citySlug || c.name.toLowerCase().replace(/\s+/g, '-') === citySlug
   );
-  const sport = sports?.find(
-    (s) => s.name.toLowerCase().replace(/\s+/g, '-') === sportSlug
-  );
+  const sport = sports?.find((s) => s.name.toLowerCase().replace(/\s+/g, '-') === sportSlug);
 
   if (!city || !sport) {
     return (
@@ -24,20 +22,18 @@ export function CityLeagueRegistrationPage() {
         <div className={styles.container}>
           <p className={styles.notFound}>
             {!city ? 'City' : 'Sport'} not found.{' '}
-            <Link to="/cities" className={styles.link}>Browse all cities</Link>
+            <Link to="/cities" className={styles.link}>
+              Browse all cities
+            </Link>
           </p>
         </div>
       </div>
     );
   }
 
-  const league = leagues?.find(
-    (l) => l.city_id === city.id && l.sports?.name === sport.name
-  );
+  const league = leagues?.find((l) => l.city_id === city.id && l.sports?.name === sport.name);
 
-  const leagueSeasons = league
-    ? seasons?.filter((s) => s.league_id === league.id) || []
-    : [];
+  const leagueSeasons = league ? seasons?.filter((s) => s.league_id === league.id) || [] : [];
 
   const openSeason = leagueSeasons.find((s) => s.status === 'registration');
   const config = sport.config as Record<string, unknown>;
@@ -45,15 +41,24 @@ export function CityLeagueRegistrationPage() {
   return (
     <div className={styles.page}>
       {/* Hero */}
-      <div className={styles.hero} style={{ backgroundImage: `url(${getSportImage(sportSlug || '')})` }}>
+      <div
+        className={styles.hero}
+        style={{ backgroundImage: `url(${getSportImage(sportSlug || '')})` }}
+      >
         <div className={styles.heroOverlay}>
           <div className={styles.container}>
             <nav className={styles.breadcrumbs}>
-              <Link to="/" className={styles.crumb}>Home</Link>
+              <Link to="/" className={styles.crumb}>
+                Home
+              </Link>
               <span className={styles.separator}>/</span>
-              <Link to="/cities" className={styles.crumb}>Cities</Link>
+              <Link to="/cities" className={styles.crumb}>
+                Cities
+              </Link>
               <span className={styles.separator}>/</span>
-              <Link to={`/cities/${citySlug}`} className={styles.crumb}>{city.name}</Link>
+              <Link to={`/cities/${citySlug}`} className={styles.crumb}>
+                {city.name}
+              </Link>
               <span className={styles.separator}>/</span>
               <span className={styles.crumbCurrent}>{sport.name}</span>
             </nav>
@@ -61,7 +66,9 @@ export function CityLeagueRegistrationPage() {
               <SportIcon slug={sportSlug || ''} size={48} className={styles.heroIcon} />
               <div>
                 <h1 className={styles.heroTitle}>{sport.name}</h1>
-                <p className={styles.heroLocation}>{city.name}, {city.state}</p>
+                <p className={styles.heroLocation}>
+                  {city.name}, {city.state}
+                </p>
               </div>
             </div>
           </div>
@@ -118,8 +125,8 @@ export function CityLeagueRegistrationPage() {
               <div className={styles.seasonCard}>
                 <h2 className={styles.seasonName}>No Open Registration</h2>
                 <p className={styles.placeholder}>
-                  Registration for {sport.name} in {city.name} is not currently open.
-                  Check back soon or browse other leagues.
+                  Registration for {sport.name} in {city.name} is not currently open. Check back
+                  soon or browse other leagues.
                 </p>
                 <Link to="/register" className={styles.registerButton}>
                   Browse All Registrations
@@ -134,22 +141,34 @@ export function CityLeagueRegistrationPage() {
                 <div className={styles.expectCard}>
                   <span className={styles.expectIcon}>📅</span>
                   <h3>Game Day</h3>
-                  <p>Games are played weekly on weeknight evenings. Each game lasts about {(config.gameDurationMinutes as number) || 50} minutes.</p>
+                  <p>
+                    Games are played weekly on weeknight evenings. Each game lasts about{' '}
+                    {(config.gameDurationMinutes as number) || 50} minutes.
+                  </p>
                 </div>
                 <div className={styles.expectCard}>
                   <span className={styles.expectIcon}>👥</span>
                   <h3>Teams</h3>
-                  <p>Teams have {(config.teamSize as number) || 8} players. Join with friends or sign up as a free agent — we&apos;ll find you a team!</p>
+                  <p>
+                    Teams have {(config.teamSize as number) || 8} players. Join with friends or sign
+                    up as a free agent — we&apos;ll find you a team!
+                  </p>
                 </div>
                 <div className={styles.expectCard}>
                   <span className={styles.expectIcon}>🍻</span>
                   <h3>Social Scene</h3>
-                  <p>Post-game hangouts at local sponsor bars. End-of-season tournaments and parties included.</p>
+                  <p>
+                    Post-game hangouts at local sponsor bars. End-of-season tournaments and parties
+                    included.
+                  </p>
                 </div>
                 <div className={styles.expectCard}>
                   <span className={styles.expectIcon}>🏆</span>
                   <h3>Season Format</h3>
-                  <p>8-10 week regular season followed by a single-elimination playoff tournament. All skill levels welcome.</p>
+                  <p>
+                    8-10 week regular season followed by a single-elimination playoff tournament.
+                    All skill levels welcome.
+                  </p>
                 </div>
               </div>
             </section>
@@ -172,7 +191,9 @@ export function CityLeagueRegistrationPage() {
                 alt={city.name}
                 className={styles.sidebarImage}
               />
-              <h3>{city.name}, {city.state}</h3>
+              <h3>
+                {city.name}, {city.state}
+              </h3>
               <Link to={`/cities/${citySlug}`} className={styles.link}>
                 View all sports in {city.name} &rarr;
               </Link>
@@ -181,11 +202,21 @@ export function CityLeagueRegistrationPage() {
             <div className={styles.sidebarCard}>
               <h3>Quick Facts</h3>
               <ul className={styles.factsList}>
-                <li><strong>Team Size:</strong> {config.teamSize as number || 'Varies'} players</li>
-                <li><strong>Game Length:</strong> {config.gameDurationMinutes as number || 50} min</li>
-                <li><strong>Cost:</strong> $50 - $75 / season</li>
-                <li><strong>Skill Level:</strong> All levels</li>
-                <li><strong>Free Agents:</strong> Welcome!</li>
+                <li>
+                  <strong>Team Size:</strong> {(config.teamSize as number) || 'Varies'} players
+                </li>
+                <li>
+                  <strong>Game Length:</strong> {(config.gameDurationMinutes as number) || 50} min
+                </li>
+                <li>
+                  <strong>Cost:</strong> $50 - $75 / season
+                </li>
+                <li>
+                  <strong>Skill Level:</strong> All levels
+                </li>
+                <li>
+                  <strong>Free Agents:</strong> Welcome!
+                </li>
               </ul>
             </div>
 

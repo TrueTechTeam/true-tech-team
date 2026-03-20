@@ -27,7 +27,10 @@ function matchesToCsv(brackets: BracketExportProps['brackets'], tournamentDate: 
     .sort((a, b) => a.round - b.round || a.position - b.position)
     .map((m) => {
       const time = m.scheduled_at
-        ? new Date(m.scheduled_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
+        ? new Date(m.scheduled_at).toLocaleTimeString(undefined, {
+            hour: 'numeric',
+            minute: '2-digit',
+          })
         : '';
       const status = m.winner_id ? 'Complete' : 'Pending';
       return [

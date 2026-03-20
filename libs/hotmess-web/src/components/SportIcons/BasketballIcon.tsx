@@ -48,7 +48,15 @@ export function BasketballIcon({ size = 24, className }: Props) {
       {/* Outline */}
       <circle cx="12" cy="12" r="10" stroke="#92400e" strokeWidth="0.6" fill="none" />
       {/* Shine */}
-      <ellipse cx="8.5" cy="7.5" rx="3" ry="1.5" transform="rotate(-30 8.5 7.5)" fill="white" opacity="0.18" />
+      <ellipse
+        cx="8.5"
+        cy="7.5"
+        rx="3"
+        ry="1.5"
+        transform="rotate(-30 8.5 7.5)"
+        fill="white"
+        opacity="0.18"
+      />
     </svg>
   );
 }

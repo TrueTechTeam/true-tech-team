@@ -63,7 +63,9 @@ export function ScheduleGenerator({
   }));
 
   const handleGenerate = () => {
-    if (!canGenerate) return;
+    if (!canGenerate) {
+      return;
+    }
 
     if (mode === 'full') {
       const games = generateFullSeasonSchedule({
@@ -163,27 +165,19 @@ export function ScheduleGenerator({
             <Checkbox
               label="Rotate play areas"
               checked={constraints.rotatePlayAreas}
-              onChange={(checked) =>
-                setConstraints((c) => ({ ...c, rotatePlayAreas: checked }))
-              }
+              onChange={(checked) => setConstraints((c) => ({ ...c, rotatePlayAreas: checked }))}
             />
             <Checkbox
               label="Rotate time slots"
               checked={constraints.rotateTimeSlots}
-              onChange={(checked) =>
-                setConstraints((c) => ({ ...c, rotateTimeSlots: checked }))
-              }
+              onChange={(checked) => setConstraints((c) => ({ ...c, rotateTimeSlots: checked }))}
             />
           </div>
         </div>
 
         {/* Actions */}
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <Button
-            variant="primary"
-            onClick={handleGenerate}
-            disabled={!canGenerate}
-          >
+          <Button variant="primary" onClick={handleGenerate} disabled={!canGenerate}>
             {mode === 'full' ? 'Generate Full Season' : `Generate Week ${selectedWeek}`}
           </Button>
           {generatedGames.length > 0 && (

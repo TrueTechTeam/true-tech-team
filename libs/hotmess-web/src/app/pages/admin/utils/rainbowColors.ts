@@ -37,11 +37,10 @@ export function getTimeSlotBgColor(slotIndex: number): string {
 /**
  * Find the time slot index for a scheduled time by matching against configured slots.
  */
-export function findTimeSlotIndex(
-  scheduledAt: string | undefined,
-  timeSlots: string[]
-): number {
-  if (!scheduledAt || timeSlots.length === 0) { return 0; }
+export function findTimeSlotIndex(scheduledAt: string | undefined, timeSlots: string[]): number {
+  if (!scheduledAt || timeSlots.length === 0) {
+    return 0;
+  }
 
   const date = new Date(scheduledAt);
   const hours = date.getHours().toString().padStart(2, '0');

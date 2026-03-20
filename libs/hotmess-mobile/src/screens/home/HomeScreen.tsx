@@ -41,9 +41,9 @@ export function HomeScreen() {
     (s: { status?: string }) => s.status === 'registration'
   );
 
-  const votingSeason = activeSeasons?.find(
-    (s: { status?: string }) => s.status === 'active'
-  ) as { id: string; name: string } | undefined;
+  const votingSeason = activeSeasons?.find((s: { status?: string }) => s.status === 'active') as
+    | { id: string; name: string }
+    | undefined;
 
   const showCaptainSection = captainTeamIds.length > 0;
   const showRefereeSection = refereeSeasonIds.length > 0 && refereeGames && refereeGames.length > 0;
@@ -84,7 +84,6 @@ export function HomeScreen() {
           />
         }
       >
-
         {showRefereeSection && refereeGames && <RefereeDutiesSection games={refereeGames} />}
 
         {showCaptainSection && (
@@ -95,10 +94,7 @@ export function HomeScreen() {
         )}
 
         {votingSeason && (
-          <SuperlativeVotingCard
-            seasonId={votingSeason.id}
-            seasonName={votingSeason.name}
-          />
+          <SuperlativeVotingCard seasonId={votingSeason.id} seasonName={votingSeason.name} />
         )}
 
         <UpcomingEventsSection

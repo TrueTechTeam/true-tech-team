@@ -25,21 +25,20 @@ export function MockAuthProvider({ children }: { children: ReactNode }) {
 
   const currentUser = MOCK_USERS[state.role];
 
-  const handleAuthCode = async () => {
+  const handleAuthCode = () => {
     setState((prev) => ({ ...prev, isAuthenticated: true }));
+    return Promise.resolve();
   };
 
-  const signOut = async () => {
+  const signOut = () => {
     setState((prev) => ({ ...prev, isAuthenticated: false }));
+    return Promise.resolve();
   };
 
-  const refreshProfile = async () => {
-    // No-op in mock mode
-  };
+  const refreshProfile = () => Promise.resolve();
 
-  const getAccessToken = async () => {
-    return state.isAuthenticated ? 'mock-token-hotmess-dev' : null;
-  };
+  const getAccessToken = () =>
+    Promise.resolve(state.isAuthenticated ? 'mock-token-hotmess-dev' : null);
 
   return (
     <AuthContext.Provider

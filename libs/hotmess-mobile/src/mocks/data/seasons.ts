@@ -2,10 +2,38 @@ import { mockLeagues } from './leagues';
 import { mockVenues } from './venues';
 
 const SEASON_CONFIGS = [
-  { suffix: 'Fall 2025', status: 'completed', regStart: '2025-08-01', regEnd: '2025-09-01', start: '2025-09-15', end: '2025-11-30' },
-  { suffix: 'Spring 2026', status: 'active', regStart: '2026-01-01', regEnd: '2026-02-01', start: '2026-02-15', end: '2026-05-31' },
-  { suffix: 'Summer 2026', status: 'registration', regStart: '2026-05-01', regEnd: '2026-06-01', start: '2026-06-15', end: '2026-08-31' },
-  { suffix: 'Fall 2026', status: 'draft', regStart: '2026-08-01', regEnd: '2026-09-01', start: '2026-09-15', end: '2026-11-30' },
+  {
+    suffix: 'Fall 2025',
+    status: 'completed',
+    regStart: '2025-08-01',
+    regEnd: '2025-09-01',
+    start: '2025-09-15',
+    end: '2025-11-30',
+  },
+  {
+    suffix: 'Spring 2026',
+    status: 'active',
+    regStart: '2026-01-01',
+    regEnd: '2026-02-01',
+    start: '2026-02-15',
+    end: '2026-05-31',
+  },
+  {
+    suffix: 'Summer 2026',
+    status: 'registration',
+    regStart: '2026-05-01',
+    regEnd: '2026-06-01',
+    start: '2026-06-15',
+    end: '2026-08-31',
+  },
+  {
+    suffix: 'Fall 2026',
+    status: 'draft',
+    regStart: '2026-08-01',
+    regEnd: '2026-09-01',
+    start: '2026-09-15',
+    end: '2026-11-30',
+  },
 ];
 
 const POPULAR_LEAGUE_PREFIXES = [
@@ -62,7 +90,9 @@ let seasonIdx = 0;
 
 export const mockSeasons = POPULAR_LEAGUE_PREFIXES.flatMap((leagueId) => {
   const league = mockLeagues.find((l) => l.id === leagueId);
-  if (!league) { return []; }
+  if (!league) {
+    return [];
+  }
 
   const venueId = LEAGUE_VENUE_MAP[leagueId];
   const venue = venueId ? venueMap.get(venueId) : undefined;

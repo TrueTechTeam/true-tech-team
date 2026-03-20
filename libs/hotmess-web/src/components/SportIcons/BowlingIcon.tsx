@@ -51,7 +51,15 @@ export function BowlingIcon({ size = 24, className }: Props) {
       {/* Ball outline */}
       <circle cx="8" cy="15" r="6.5" stroke="#0891b2" strokeWidth="0.5" fill="none" />
       {/* Ball shine */}
-      <ellipse cx="5.5" cy="12" rx="2" ry="1" transform="rotate(-30 5.5 12)" fill="white" opacity="0.2" />
+      <ellipse
+        cx="5.5"
+        cy="12"
+        rx="2"
+        ry="1"
+        transform="rotate(-30 5.5 12)"
+        fill="white"
+        opacity="0.2"
+      />
     </svg>
   );
 }

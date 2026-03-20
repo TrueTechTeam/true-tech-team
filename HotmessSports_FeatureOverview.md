@@ -1,4 +1,5 @@
 # Hotmess Sports — Platform Feature Overview
+
 ### Web App & Mobile App
 
 ---
@@ -9,6 +10,7 @@
 ---
 
 ## Table of Contents
+
 1. [Web App — Public Features](#1-web-app--public-features)
 2. [Web App — Admin Portal](#2-web-app--admin-portal)
 3. [Mobile App — Player Features](#3-mobile-app--player-features)
@@ -103,13 +105,13 @@ The admin portal is a **role-protected dashboard** accessible only to authentica
 
 Each user sees a **custom dashboard** tailored to their role:
 
-| Role | What They See |
-|---|---|
+| Role                     | What They See                                                                   |
+| ------------------------ | ------------------------------------------------------------------------------- |
 | **Admin / Commissioner** | Active cities, sports, seasons, teams; open registrations; recent notifications |
-| **Manager** | Their assigned seasons, active/registration counts, quick actions |
-| **Referee** | Assigned seasons, upcoming games schedule |
-| **Team Captain** | Their teams (W/L/T record), upcoming games, open registrations |
-| **Player** | Their teams, upcoming games, open registrations, past seasons |
+| **Manager**              | Their assigned seasons, active/registration counts, quick actions               |
+| **Referee**              | Assigned seasons, upcoming games schedule                                       |
+| **Team Captain**         | Their teams (W/L/T record), upcoming games, open registrations                  |
+| **Player**               | Their teams, upcoming games, open registrations, past seasons                   |
 
 ---
 
@@ -323,14 +325,14 @@ The features below are **not available** in the standard Sports Engine web or mo
 
 At the end of each season, players can **nominate and vote on fun end-of-season awards** for their teammates. Categories include:
 
-| Award | Description |
-|---|---|
-| **MVP** | Most Valuable Player |
-| **Best Dressed** | Always looking fly on game day |
-| **Most Spirited** | Brings the most energy |
-| **Best Teammate** | Always has your back |
-| **Most Improved** | Biggest glow-up this season |
-| **Party MVP** | Life of the after-party |
+| Award             | Description                    |
+| ----------------- | ------------------------------ |
+| **MVP**           | Most Valuable Player           |
+| **Best Dressed**  | Always looking fly on game day |
+| **Most Spirited** | Brings the most energy         |
+| **Best Teammate** | Always has your back           |
+| **Most Improved** | Biggest glow-up this season    |
+| **Party MVP**     | Life of the after-party        |
 
 - Nominations are **anonymous** — no social pressure
 - Captains submit nominations; all players vote
@@ -384,14 +386,14 @@ At the end of each season, players can **nominate and vote on fun end-of-season 
 
 Six distinct roles with fine-grained access control:
 
-| Role | Access |
-|---|---|
-| **Admin** | Everything — all cities, sports, permissions |
+| Role             | Access                                             |
+| ---------------- | -------------------------------------------------- |
+| **Admin**        | Everything — all cities, sports, permissions       |
 | **Commissioner** | City-level: leagues, seasons, teams, notifications |
-| **Manager** | Season-level: schedules, teams |
-| **Referee** | Schedules and score entry |
-| **Team Captain** | Team roster, join requests, invites, nominations |
-| **Player** | Their teams, schedule, messages |
+| **Manager**      | Season-level: schedules, teams                     |
+| **Referee**      | Schedules and score entry                          |
+| **Team Captain** | Team roster, join requests, invites, nominations   |
+| **Player**       | Their teams, schedule, messages                    |
 
 ---
 
@@ -405,4 +407,4 @@ Six distinct roles with fine-grained access control:
 
 ---
 
-*End of document — add screenshots to each placeholder before presenting.*
+_End of document — add screenshots to each placeholder before presenting._

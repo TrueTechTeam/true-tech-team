@@ -49,7 +49,6 @@ const initialForm = {
   status: 'draft',
 };
 
-
 export function SeasonsManagerPage() {
   const { leagueId } = useParams();
   const navigate = useNavigate();
@@ -70,15 +69,12 @@ export function SeasonsManagerPage() {
   });
 
   const leagueName = leagueId
-    ? (seasons?.[0] as SeasonRow | undefined)?.leagues?.name ?? 'League'
+    ? ((seasons?.[0] as SeasonRow | undefined)?.leagues?.name ?? 'League')
     : null;
 
   const breadcrumbs = buildAdminBreadcrumbs(
     leagueId
-      ? [
-          { label: 'Leagues', href: '/admin/leagues' },
-          { label: `${leagueName} Seasons` },
-        ]
+      ? [{ label: 'Leagues', href: '/admin/leagues' }, { label: `${leagueName} Seasons` }]
       : [{ label: 'Seasons' }]
   );
 
@@ -184,16 +180,18 @@ export function SeasonsManagerPage() {
 
     // Build a set of matching league IDs for city/sport filtering
     const allLeagues = leagues || [];
-    const matchingLeagueIds = cityFilter.length > 0 || sportFilter.length > 0
-      ? new Set(
-          allLeagues
-            .filter((l) =>
-              (cityFilter.length === 0 || cityFilter.includes(l.city_id)) &&
-              (sportFilter.length === 0 || sportFilter.includes(l.sport_id))
-            )
-            .map((l) => l.id)
-        )
-      : null;
+    const matchingLeagueIds =
+      cityFilter.length > 0 || sportFilter.length > 0
+        ? new Set(
+            allLeagues
+              .filter(
+                (l) =>
+                  (cityFilter.length === 0 || cityFilter.includes(l.city_id)) &&
+                  (sportFilter.length === 0 || sportFilter.includes(l.sport_id))
+              )
+              .map((l) => l.id)
+          )
+        : null;
 
     return items.filter((s) => {
       // Time range filter
@@ -273,11 +271,7 @@ export function SeasonsManagerPage() {
       header: 'Actions',
       render: (_v, row) => (
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Button
-            variant="outline"
-            size="xs"
-            onClick={() => navigate(`/admin/seasons/${row.id}`)}
-          >
+          <Button variant="outline" size="xs" onClick={() => navigate(`/admin/seasons/${row.id}`)}>
             Manage
           </Button>
           <Button
@@ -297,9 +291,7 @@ export function SeasonsManagerPage() {
       <Breadcrumbs items={breadcrumbs} separator="/" size="sm" />
 
       <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>
-          {leagueId ? `${leagueName} Seasons` : 'All Seasons'}
-        </h1>
+        <h1 className={styles.pageTitle}>{leagueId ? `${leagueName} Seasons` : 'All Seasons'}</h1>
         <Button variant="primary" onClick={dialog.openCreate}>
           + Create Season
         </Button>
@@ -362,7 +354,9 @@ export function SeasonsManagerPage() {
         size="md"
         actions={
           <DialogFooter align="end">
-            <Button variant="outline" onClick={dialog.close}>Cancel</Button>
+            <Button variant="outline" onClick={dialog.close}>
+              Cancel
+            </Button>
             <Button variant="primary" onClick={handleSave}>
               {dialog.mode === 'create' ? 'Create' : 'Save Changes'}
             </Button>

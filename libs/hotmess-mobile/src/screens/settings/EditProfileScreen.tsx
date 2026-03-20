@@ -27,7 +27,9 @@ export function EditProfileScreen() {
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
-    if (!profile?.id) return;
+    if (!profile?.id) {
+      return;
+    }
 
     if (!firstName.trim() || !lastName.trim()) {
       Alert.alert('Required', 'First name and last name are required.');
@@ -47,7 +49,9 @@ export function EditProfileScreen() {
         })
         .eq('id', profile.id);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       await refreshProfile();
       Alert.alert('Saved', 'Your profile has been updated.', [
@@ -104,7 +108,9 @@ export function EditProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.label}>Email</Text>
           <Text style={styles.readonlyValue}>{profile?.email ?? '—'}</Text>
-          <Text style={styles.hint}>Email is managed through SportsEngine and cannot be changed here</Text>
+          <Text style={styles.hint}>
+            Email is managed through SportsEngine and cannot be changed here
+          </Text>
         </View>
 
         <View style={styles.section}>

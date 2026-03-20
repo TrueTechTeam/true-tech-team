@@ -94,7 +94,9 @@ export function MatchScheduler({
   }, [match, form.scheduled_at, form.venue_id, form.play_area, allMatches]);
 
   const handleSave = async () => {
-    if (!match) { return; }
+    if (!match) {
+      return;
+    }
 
     const hasErrors = conflicts.some((c) => c.severity === 'error');
     if (hasErrors) {
@@ -109,8 +111,12 @@ export function MatchScheduler({
       if (form.scheduled_at) {
         updates.scheduled_at = form.scheduled_at;
       }
-      if (form.venue_id) { updates.venue_id = form.venue_id; }
-      if (form.play_area) { updates.play_area = form.play_area; }
+      if (form.venue_id) {
+        updates.venue_id = form.venue_id;
+      }
+      if (form.play_area) {
+        updates.play_area = form.play_area;
+      }
 
       await onSave(match.id, updates);
       toast?.success('Match schedule updated successfully!');
@@ -123,16 +129,17 @@ export function MatchScheduler({
     }
   };
 
-  if (!match) { return null; }
+  if (!match) {
+    return null;
+  }
 
   const team1Name = match.team1?.name || '\u2014';
   const team2Name = match.team2?.name || '\u2014';
 
   const hasErrors = conflicts.some((c) => c.severity === 'error');
 
-  const timeOptions = tournamentDate && timeSlots.length > 0
-    ? buildTimeSlotOptions(timeSlots, tournamentDate)
-    : [];
+  const timeOptions =
+    tournamentDate && timeSlots.length > 0 ? buildTimeSlotOptions(timeSlots, tournamentDate) : [];
 
   return (
     <Dialog
@@ -154,7 +161,9 @@ export function MatchScheduler({
       <div className={styles.matchScheduler}>
         {/* Match Info */}
         <div className={styles.matchInfo}>
-          <h3>Round {match.round} &bull; Match {match.position + 1}</h3>
+          <h3>
+            Round {match.round} &bull; Match {match.position + 1}
+          </h3>
           <div className={styles.teams}>
             <span>{team1Name}</span>
             <span className={styles.vs}>vs</span>
@@ -169,10 +178,7 @@ export function MatchScheduler({
             <div className={styles.formRow}>
               <Select
                 label="Scheduled Time"
-                options={[
-                  { value: '', label: 'Select time slot...' },
-                  ...timeOptions,
-                ]}
+                options={[{ value: '', label: 'Select time slot...' }, ...timeOptions]}
                 value={form.scheduled_at || ''}
                 onChange={(val) => setForm({ ...form, scheduled_at: val })}
               />

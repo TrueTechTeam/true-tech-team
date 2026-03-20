@@ -5,14 +5,24 @@ import { mockDivisions } from './divisions';
 function futureDate(daysFromNow: number): string {
   const d = new Date();
   d.setDate(d.getDate() + daysFromNow);
-  d.setHours(18 + Math.floor(seededRandom(daysFromNow * 7) * 3), seededRandom(daysFromNow * 11) > 0.5 ? 0 : 30, 0, 0);
+  d.setHours(
+    18 + Math.floor(seededRandom(daysFromNow * 7) * 3),
+    seededRandom(daysFromNow * 11) > 0.5 ? 0 : 30,
+    0,
+    0
+  );
   return d.toISOString();
 }
 
 function pastDate(daysAgo: number): string {
   const d = new Date();
   d.setDate(d.getDate() - daysAgo);
-  d.setHours(18 + Math.floor(seededRandom(daysAgo * 7) * 3), seededRandom(daysAgo * 11) > 0.5 ? 0 : 30, 0, 0);
+  d.setHours(
+    18 + Math.floor(seededRandom(daysAgo * 7) * 3),
+    seededRandom(daysAgo * 11) > 0.5 ? 0 : 30,
+    0,
+    0
+  );
   return d.toISOString();
 }
 
@@ -42,7 +52,9 @@ const scheduledGames = Array.from({ length: 30 }, (_, i) => {
 
   const homeIdx = i % divTeams.length;
   let awayIdx = (i + 1) % divTeams.length;
-  if (awayIdx === homeIdx) {awayIdx = (homeIdx + 2) % divTeams.length;}
+  if (awayIdx === homeIdx) {
+    awayIdx = (homeIdx + 2) % divTeams.length;
+  }
 
   const venueIdx = i % mockVenues.length;
 
@@ -72,7 +84,9 @@ const completedGames = Array.from({ length: 15 }, (_, i) => {
 
   const homeIdx = (i * 2) % divTeams.length;
   let awayIdx = (i * 2 + 1) % divTeams.length;
-  if (awayIdx === homeIdx) {awayIdx = (homeIdx + 2) % divTeams.length;}
+  if (awayIdx === homeIdx) {
+    awayIdx = (homeIdx + 2) % divTeams.length;
+  }
 
   const venueIdx = (i + 3) % mockVenues.length;
   const seed = i + 100;

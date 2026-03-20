@@ -17,19 +17,14 @@ export function CaptainRegistrationSection({
   return (
     <SectionCard title="Captain - Registration">
       <Text style={styles.subtitle}>
-        {"You're captaining"} {captainTeamIds.length} team{captainTeamIds.length !== 1 ? 's' : ''}{' '}
+        You&apos;re captaining {captainTeamIds.length} team{captainTeamIds.length !== 1 ? 's' : ''}{' '}
         in registration
       </Text>
 
       <View style={styles.actions}>
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() =>
-            navigation.navigate(
-              'TeamManagement' as never,
-              { teamId: captainTeamIds[0] } as never
-            )
-          }
+          onPress={() => navigation.navigate('TeamManagement', { teamId: captainTeamIds[0] })}
         >
           <Text style={styles.actionIcon}>👥</Text>
           <Text style={styles.actionText}>Manage Roster</Text>
@@ -37,12 +32,7 @@ export function CaptainRegistrationSection({
 
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() =>
-            navigation.navigate(
-              'InvitePlayers' as never,
-              { teamId: captainTeamIds[0] } as never
-            )
-          }
+          onPress={() => navigation.navigate('InvitePlayers', { teamId: captainTeamIds[0] })}
         >
           <Text style={styles.actionIcon}>📨</Text>
           <Text style={styles.actionText}>Invite Players</Text>
@@ -50,12 +40,7 @@ export function CaptainRegistrationSection({
 
         <TouchableOpacity
           style={[styles.actionButton, pendingRequestCount > 0 && styles.actionButtonHighlight]}
-          onPress={() =>
-            navigation.navigate(
-              'JoinRequests' as never,
-              { teamId: captainTeamIds[0] } as never
-            )
-          }
+          onPress={() => navigation.navigate('JoinRequests', { teamId: captainTeamIds[0] })}
         >
           <Text style={styles.actionIcon}>📋</Text>
           <Text style={styles.actionText}>

@@ -51,22 +51,22 @@ export function CitiesManagerPage() {
     status: [],
   });
 
-  const handleFilterChange = useCallback(
-    (values: Record<string, FilterValue>) => {
-      setFilterValues(values);
-    },
+  const handleFilterChange = useCallback((values: Record<string, FilterValue>) => {
+    setFilterValues(values);
+  }, []);
+
+  const filterDefinitions: FilterDefinition[] = useMemo(
+    () => [
+      {
+        id: 'status',
+        type: 'multi-select' as const,
+        label: 'Status',
+        options: STATUS_OPTIONS,
+        config: { displayMode: 'dropdown' } as MultiSelectFilterConfig,
+      },
+    ],
     []
   );
-
-  const filterDefinitions: FilterDefinition[] = useMemo(() => [
-    {
-      id: 'status',
-      type: 'multi-select' as const,
-      label: 'Status',
-      options: STATUS_OPTIONS,
-      config: { displayMode: 'dropdown' } as MultiSelectFilterConfig,
-    },
-  ], []);
 
   const filteredData = useMemo(() => {
     const items = (cities || []) as CityRow[];
@@ -188,7 +188,9 @@ export function CitiesManagerPage() {
         size="sm"
         actions={
           <DialogFooter align="end">
-            <Button variant="outline" onClick={dialog.close}>Cancel</Button>
+            <Button variant="outline" onClick={dialog.close}>
+              Cancel
+            </Button>
             <Button variant="primary" onClick={handleSave}>
               {dialog.mode === 'create' ? 'Create' : 'Save Changes'}
             </Button>

@@ -244,11 +244,18 @@ export function autoScheduleBracket(
     }
   }
 
-  console.warn('[bracketScheduling] scheduled', scheduled.length, '/', matches.length, 'matches:', scheduled.map((s) => ({
-    id: s.id,
-    scheduled_at: s.scheduled_at,
-    play_area: s.play_area,
-  })));
+  console.warn(
+    '[bracketScheduling] scheduled',
+    scheduled.length,
+    '/',
+    matches.length,
+    'matches:',
+    scheduled.map((s) => ({
+      id: s.id,
+      scheduled_at: s.scheduled_at,
+      play_area: s.play_area,
+    }))
+  );
 
   return scheduled;
 }

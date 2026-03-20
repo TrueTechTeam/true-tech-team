@@ -6,12 +6,12 @@ import { PDF_COLORS, getSlotColor } from './pdfTheme';
 
 // ─── Layout constants (in PDF points) ────────────────────────────────────────
 
-const SLOT_HEIGHT = 20;        // vertical space for one team name above its line
-const SLOT_GAP = 4;            // gap between two team lines in a match
-const ROUND_GAP = 150;         // horizontal distance between round columns
-const MATCH_SPACING = 12;      // extra vertical space between first-round matches
-const TEAM_LINE_WIDTH = 120;   // horizontal length of each team slot line
-const SEED_WIDTH = 14;         // space reserved for the seed number
+const SLOT_HEIGHT = 20; // vertical space for one team name above its line
+const SLOT_GAP = 4; // gap between two team lines in a match
+const ROUND_GAP = 150; // horizontal distance between round columns
+const MATCH_SPACING = 12; // extra vertical space between first-round matches
+const TEAM_LINE_WIDTH = 120; // horizontal length of each team slot line
+const SEED_WIDTH = 14; // space reserved for the seed number
 const FONT_TEAM = 8;
 const FONT_SEED = 7;
 const FONT_BADGE = 6.5;
@@ -24,10 +24,10 @@ const BADGE_H = 12;
 
 interface MatchPos {
   x: number;
-  topLineY: number;    // Y of the top team's horizontal line
+  topLineY: number; // Y of the top team's horizontal line
   bottomLineY: number; // Y of the bottom team's horizontal line
-  midY: number;        // junction point (midpoint between the two lines)
-  rightX: number;      // right edge of team slot lines
+  midY: number; // junction point (midpoint between the two lines)
+  rightX: number; // right edge of team slot lines
   match: BracketMatch;
 }
 
@@ -46,7 +46,9 @@ function groupByRound(matches: BracketMatch[]): Map<number, BracketMatch[]> {
       grouped.set(m.round, []);
     }
     const arr = grouped.get(m.round);
-    if (arr) { arr.push(m); }
+    if (arr) {
+      arr.push(m);
+    }
   }
   for (const [, arr] of grouped) {
     arr.sort((a, b) => a.position - b.position);
@@ -70,7 +72,9 @@ function computeLayout(matches: BracketMatch[]): DiagramLayout {
         parentMap.set(m.winner_next_match_id, []);
       }
       const parents = parentMap.get(m.winner_next_match_id);
-      if (parents) { parents.push(m); }
+      if (parents) {
+        parents.push(m);
+      }
     }
   }
 
@@ -159,8 +163,12 @@ function computeLayout(matches: BracketMatch[]): DiagramLayout {
   let maxX = 0;
   let maxY = 0;
   for (const pos of allPositions) {
-    if (pos.rightX > maxX) { maxX = pos.rightX; }
-    if (pos.bottomLineY + 14 > maxY) { maxY = pos.bottomLineY + 14; } // extra for field label below badge
+    if (pos.rightX > maxX) {
+      maxX = pos.rightX;
+    }
+    if (pos.bottomLineY + 14 > maxY) {
+      maxY = pos.bottomLineY + 14;
+    } // extra for field label below badge
   }
   // Extra space for championship line
   maxX += ROUND_GAP * 0.5;
@@ -171,7 +179,9 @@ function computeLayout(matches: BracketMatch[]): DiagramLayout {
 // ─── Time formatting ─────────────────────────────────────────────────────────
 
 function formatTime(scheduledAt: string | undefined): string {
-  if (!scheduledAt) { return ''; }
+  if (!scheduledAt) {
+    return '';
+  }
   const d = new Date(scheduledAt);
   const h = d.getHours();
   const m = d.getMinutes().toString().padStart(2, '0');
@@ -229,9 +239,13 @@ export function PdfBracketDiagram({
         {/* Connector lines between rounds */}
         {layout.positions.map((pos) => {
           const m = pos.match;
-          if (!m.winner_next_match_id) { return null; }
+          if (!m.winner_next_match_id) {
+            return null;
+          }
           const next = posMap.get(m.winner_next_match_id);
-          if (!next) { return null; }
+          if (!next) {
+            return null;
+          }
 
           const fromX = s(pos.rightX);
           const fromY = s(pos.midY);
@@ -241,12 +255,30 @@ export function PdfBracketDiagram({
 
           return (
             <G key={`c-${m.id}`}>
-              <Line x1={fromX} y1={fromY} x2={midX} y2={fromY}
-                stroke={PDF_COLORS.line} strokeWidth={s(LINE_WEIGHT)} />
-              <Line x1={midX} y1={fromY} x2={midX} y2={toY}
-                stroke={PDF_COLORS.line} strokeWidth={s(LINE_WEIGHT)} />
-              <Line x1={midX} y1={toY} x2={toX} y2={toY}
-                stroke={PDF_COLORS.line} strokeWidth={s(LINE_WEIGHT)} />
+              <Line
+                x1={fromX}
+                y1={fromY}
+                x2={midX}
+                y2={fromY}
+                stroke={PDF_COLORS.line}
+                strokeWidth={s(LINE_WEIGHT)}
+              />
+              <Line
+                x1={midX}
+                y1={fromY}
+                x2={midX}
+                y2={toY}
+                stroke={PDF_COLORS.line}
+                strokeWidth={s(LINE_WEIGHT)}
+              />
+              <Line
+                x1={midX}
+                y1={toY}
+                x2={toX}
+                y2={toY}
+                stroke={PDF_COLORS.line}
+                strokeWidth={s(LINE_WEIGHT)}
+              />
             </G>
           );
         })}
@@ -255,21 +287,41 @@ export function PdfBracketDiagram({
         {layout.positions.map((pos) => (
           <G key={`m-${pos.match.id}`}>
             {/* Top team line */}
-            <Line x1={s(pos.x + SEED_WIDTH)} y1={s(pos.topLineY)} x2={s(pos.rightX)} y2={s(pos.topLineY)}
-              stroke={PDF_COLORS.line} strokeWidth={s(LINE_WEIGHT)} />
+            <Line
+              x1={s(pos.x + SEED_WIDTH)}
+              y1={s(pos.topLineY)}
+              x2={s(pos.rightX)}
+              y2={s(pos.topLineY)}
+              stroke={PDF_COLORS.line}
+              strokeWidth={s(LINE_WEIGHT)}
+            />
             {/* Bottom team line */}
-            <Line x1={s(pos.x + SEED_WIDTH)} y1={s(pos.bottomLineY)} x2={s(pos.rightX)} y2={s(pos.bottomLineY)}
-              stroke={PDF_COLORS.line} strokeWidth={s(LINE_WEIGHT)} />
+            <Line
+              x1={s(pos.x + SEED_WIDTH)}
+              y1={s(pos.bottomLineY)}
+              x2={s(pos.rightX)}
+              y2={s(pos.bottomLineY)}
+              stroke={PDF_COLORS.line}
+              strokeWidth={s(LINE_WEIGHT)}
+            />
             {/* Right vertical bracket closure */}
-            <Line x1={s(pos.rightX)} y1={s(pos.topLineY)} x2={s(pos.rightX)} y2={s(pos.bottomLineY)}
-              stroke={PDF_COLORS.line} strokeWidth={s(LINE_WEIGHT)} />
+            <Line
+              x1={s(pos.rightX)}
+              y1={s(pos.topLineY)}
+              x2={s(pos.rightX)}
+              y2={s(pos.bottomLineY)}
+              stroke={PDF_COLORS.line}
+              strokeWidth={s(LINE_WEIGHT)}
+            />
           </G>
         ))}
 
         {/* Time badges (colored rectangles) */}
         {layout.positions.map((pos) => {
           const m = pos.match;
-          if (!m.scheduled_at) { return null; }
+          if (!m.scheduled_at) {
+            return null;
+          }
 
           const slotIdx = findTimeSlotIndex(m.scheduled_at, timeSlots);
           const badgeColor = getSlotColor(slotIdx);
@@ -279,9 +331,14 @@ export function PdfBracketDiagram({
           const by = s(pos.midY) - bh / 2;
 
           return (
-            <Rect key={`b-${m.id}`}
-              x={bx} y={by} width={bw} height={bh}
-              rx={s(3)} fill={badgeColor}
+            <Rect
+              key={`b-${m.id}`}
+              x={bx}
+              y={by}
+              width={bw}
+              height={bh}
+              rx={s(3)}
+              fill={badgeColor}
             />
           );
         })}
@@ -289,13 +346,21 @@ export function PdfBracketDiagram({
         {/* Championship result line */}
         {(() => {
           const finalMatch = layout.positions.find((p) => !p.match.winner_next_match_id);
-          if (!finalMatch) { return null; }
+          if (!finalMatch) {
+            return null;
+          }
           const x1 = s(finalMatch.rightX);
           const x2 = x1 + s(ROUND_GAP * 0.35);
           const y = s(finalMatch.midY);
           return (
-            <Line x1={x1} y1={y} x2={x2} y2={y}
-              stroke={PDF_COLORS.line} strokeWidth={s(LINE_WEIGHT)} />
+            <Line
+              x1={x1}
+              y1={y}
+              x2={x2}
+              y2={y}
+              stroke={PDF_COLORS.line}
+              strokeWidth={s(LINE_WEIGHT)}
+            />
           );
         })()}
       </Svg>
@@ -315,77 +380,93 @@ export function PdfBracketDiagram({
         return (
           <React.Fragment key={`t-${m.id}`}>
             {/* Team 1: seed + name above top line */}
-            <View style={{
-              position: 'absolute',
-              left: s(pos.x),
-              top: s(pos.topLineY) - fontSize - textAboveLineOffset,
-              flexDirection: 'row',
-              alignItems: 'flex-end',
-              width: s(SEED_WIDTH + TEAM_LINE_WIDTH),
-            }}>
+            <View
+              style={{
+                position: 'absolute',
+                left: s(pos.x),
+                top: s(pos.topLineY) - fontSize - textAboveLineOffset,
+                flexDirection: 'row',
+                alignItems: 'flex-end',
+                width: s(SEED_WIDTH + TEAM_LINE_WIDTH),
+              }}
+            >
               {seed1 !== undefined && (
-                <Text style={{
-                  fontSize: seedFontSize,
-                  fontFamily: 'Helvetica-Bold',
-                  color: PDF_COLORS.text,
-                  width: s(SEED_WIDTH),
-                }}>
+                <Text
+                  style={{
+                    fontSize: seedFontSize,
+                    fontFamily: 'Helvetica-Bold',
+                    color: PDF_COLORS.text,
+                    width: s(SEED_WIDTH),
+                  }}
+                >
                   {String(seed1)}
                 </Text>
               )}
-              <Text style={{
-                fontSize,
-                fontFamily: 'Helvetica',
-                color: team1Name ? PDF_COLORS.text : PDF_COLORS.textMuted,
-              }}>
+              <Text
+                style={{
+                  fontSize,
+                  fontFamily: 'Helvetica',
+                  color: team1Name ? PDF_COLORS.text : PDF_COLORS.textMuted,
+                }}
+              >
                 {team1Name || ''}
               </Text>
             </View>
 
             {/* Team 2: seed + name above bottom line */}
-            <View style={{
-              position: 'absolute',
-              left: s(pos.x),
-              top: s(pos.bottomLineY) - fontSize - textAboveLineOffset,
-              flexDirection: 'row',
-              alignItems: 'flex-end',
-              width: s(SEED_WIDTH + TEAM_LINE_WIDTH),
-            }}>
+            <View
+              style={{
+                position: 'absolute',
+                left: s(pos.x),
+                top: s(pos.bottomLineY) - fontSize - textAboveLineOffset,
+                flexDirection: 'row',
+                alignItems: 'flex-end',
+                width: s(SEED_WIDTH + TEAM_LINE_WIDTH),
+              }}
+            >
               {seed2 !== undefined && (
-                <Text style={{
-                  fontSize: seedFontSize,
-                  fontFamily: 'Helvetica-Bold',
-                  color: PDF_COLORS.text,
-                  width: s(SEED_WIDTH),
-                }}>
+                <Text
+                  style={{
+                    fontSize: seedFontSize,
+                    fontFamily: 'Helvetica-Bold',
+                    color: PDF_COLORS.text,
+                    width: s(SEED_WIDTH),
+                  }}
+                >
                   {String(seed2)}
                 </Text>
               )}
-              <Text style={{
-                fontSize,
-                fontFamily: 'Helvetica',
-                color: team2Name ? PDF_COLORS.text : PDF_COLORS.textMuted,
-              }}>
+              <Text
+                style={{
+                  fontSize,
+                  fontFamily: 'Helvetica',
+                  color: team2Name ? PDF_COLORS.text : PDF_COLORS.textMuted,
+                }}
+              >
                 {team2Name || ''}
               </Text>
             </View>
 
             {/* Time badge text (white on colored bg) */}
             {m.scheduled_at && (
-              <View style={{
-                position: 'absolute',
-                left: s(pos.rightX) + 4 * scale,
-                top: s(pos.midY) - s(BADGE_H) / 2,
-                width: s(BADGE_W),
-                height: s(BADGE_H),
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Text style={{
-                  fontSize: Math.max(s(FONT_BADGE), 5),
-                  fontFamily: 'Helvetica-Bold',
-                  color: '#ffffff',
-                }}>
+              <View
+                style={{
+                  position: 'absolute',
+                  left: s(pos.rightX) + 4 * scale,
+                  top: s(pos.midY) - s(BADGE_H) / 2,
+                  width: s(BADGE_W),
+                  height: s(BADGE_H),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: Math.max(s(FONT_BADGE), 5),
+                    fontFamily: 'Helvetica-Bold',
+                    color: '#ffffff',
+                  }}
+                >
                   {formatTime(m.scheduled_at)}
                 </Text>
               </View>
@@ -393,16 +474,18 @@ export function PdfBracketDiagram({
 
             {/* Field label below time badge */}
             {m.play_area && m.scheduled_at && (
-              <Text style={{
-                position: 'absolute',
-                left: s(pos.rightX) + 4 * scale,
-                top: s(pos.midY) + s(BADGE_H) / 2 + 1 * scale,
-                fontSize: Math.max(s(FONT_FIELD), 4.5),
-                fontFamily: 'Helvetica',
-                color: PDF_COLORS.textSecondary,
-                width: s(BADGE_W),
-                textAlign: 'center',
-              }}>
+              <Text
+                style={{
+                  position: 'absolute',
+                  left: s(pos.rightX) + 4 * scale,
+                  top: s(pos.midY) + s(BADGE_H) / 2 + 1 * scale,
+                  fontSize: Math.max(s(FONT_FIELD), 4.5),
+                  fontFamily: 'Helvetica',
+                  color: PDF_COLORS.textSecondary,
+                  width: s(BADGE_W),
+                  textAlign: 'center',
+                }}
+              >
                 {m.play_area}
               </Text>
             )}

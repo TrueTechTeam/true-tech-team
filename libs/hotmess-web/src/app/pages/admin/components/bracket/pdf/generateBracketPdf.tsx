@@ -11,9 +11,7 @@ export async function generateBracketPdf(input: PdfGenerationInput): Promise<voi
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${input.seasonName}-brackets.pdf`
-    .replace(/\s+/g, '-')
-    .toLowerCase();
+  a.download = `${input.seasonName}-brackets.pdf`.replace(/\s+/g, '-').toLowerCase();
   a.click();
   URL.revokeObjectURL(url);
 }

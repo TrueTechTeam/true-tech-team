@@ -1,7 +1,10 @@
 .banner {
   width: 100%;
   padding: 0.625rem 1.5rem;
-  background: var(--gradient-rainbow-horizontal, linear-gradient(90deg, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #a855f7));
+  background: var(
+    --gradient-rainbow-horizontal,
+    linear-gradient(90deg, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #a855f7)
+  );
   color: white;
   display: flex;
   align-items: center;

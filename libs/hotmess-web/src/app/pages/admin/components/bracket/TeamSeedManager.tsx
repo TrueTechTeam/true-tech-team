@@ -32,7 +32,7 @@ export function TeamSeedManager({ teams, bracketGenerated }: TeamSeedManagerProp
     };
   });
 
-  const columns: Array<ColumnConfig<typeof enrichedTeams[0]>> = [
+  const columns: Array<ColumnConfig<(typeof enrichedTeams)[0]>> = [
     {
       key: 'seed',
       header: 'Seed',
@@ -93,8 +93,13 @@ export function TeamSeedManager({ teams, bracketGenerated }: TeamSeedManagerProp
       render: (val) => {
         const v = val as number;
         return (
-          <span style={{ color: v > 0 ? 'var(--theme-success)' : v < 0 ? 'var(--theme-danger)' : 'inherit' }}>
-            {v > 0 ? '+' : ''}{v}
+          <span
+            style={{
+              color: v > 0 ? 'var(--theme-success)' : v < 0 ? 'var(--theme-danger)' : 'inherit',
+            }}
+          >
+            {v > 0 ? '+' : ''}
+            {v}
           </span>
         );
       },

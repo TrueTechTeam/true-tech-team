@@ -34,19 +34,39 @@ export function PublicLayout() {
           </Link>
 
           <nav className={styles.nav}>
-            <Link to="/" className={styles.navLink}>Home</Link>
-            <Link to="/cities" className={styles.navLink}>Cities</Link>
-            <Link to="/sports" className={styles.navLink}>Sports</Link>
-            <Link to="/register" className={styles.navLink}>Register</Link>
-            <Link to="/rules" className={styles.navLink}>Rules</Link>
+            <Link to="/" className={styles.navLink}>
+              Home
+            </Link>
+            <Link to="/cities" className={styles.navLink}>
+              Cities
+            </Link>
+            <Link to="/sports" className={styles.navLink}>
+              Sports
+            </Link>
+            <Link to="/register" className={styles.navLink}>
+              Register
+            </Link>
+            <Link to="/rules" className={styles.navLink}>
+              Rules
+            </Link>
             <div className={styles.navDropdown}>
               <span className={styles.navLink}>More ▾</span>
               <div className={styles.dropdownMenu}>
-                <Link to="/tournaments" className={styles.dropdownItem}>Tournaments</Link>
-                <Link to="/charity-events" className={styles.dropdownItem}>Charity Events</Link>
-                <Link to="/hm-classic" className={styles.dropdownItem}>HM Classic</Link>
-                <Link to="/start-a-league" className={styles.dropdownItem}>Start a League</Link>
-                <Link to="/about" className={styles.dropdownItem}>About</Link>
+                <Link to="/tournaments" className={styles.dropdownItem}>
+                  Tournaments
+                </Link>
+                <Link to="/charity-events" className={styles.dropdownItem}>
+                  Charity Events
+                </Link>
+                <Link to="/hm-classic" className={styles.dropdownItem}>
+                  HM Classic
+                </Link>
+                <Link to="/start-a-league" className={styles.dropdownItem}>
+                  Start a League
+                </Link>
+                <Link to="/about" className={styles.dropdownItem}>
+                  About
+                </Link>
               </div>
             </div>
           </nav>
@@ -88,8 +108,20 @@ export function PublicLayout() {
             <div className={styles.footerSection}>
               <h4>Connect</h4>
               <a href="mailto:grant@hotmesssports.com">Contact Us</a>
-              <a href="https://instagram.com/hotmesssports" target="_blank" rel="noopener noreferrer">Instagram</a>
-              <a href="https://facebook.com/hotmesssports" target="_blank" rel="noopener noreferrer">Facebook</a>
+              <a
+                href="https://instagram.com/hotmesssports"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Instagram
+              </a>
+              <a
+                href="https://facebook.com/hotmesssports"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Facebook
+              </a>
             </div>
           </div>
           <div className={styles.footerBottom}>

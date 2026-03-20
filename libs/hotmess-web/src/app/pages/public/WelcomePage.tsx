@@ -12,9 +12,7 @@ export function WelcomePage() {
   const { data: cities } = useCities();
   const { data: openSeasons } = useUpcomingLeagues();
 
-  const featuredTournament = upcomingTournaments.find(
-    (t) => t.status === 'registration-open'
-  );
+  const featuredTournament = upcomingTournaments.find((t) => t.status === 'registration-open');
 
   return (
     <div className={styles.page}>
@@ -45,7 +43,10 @@ export function WelcomePage() {
           <div className={styles.container}>
             <Link to="/tournaments" className={styles.tournamentBanner}>
               <img
-                src={tournamentImages['hm-winter-classic-2026'] || getSportImage(featuredTournament.sportSlug)}
+                src={
+                  tournamentImages['hm-winter-classic-2026'] ||
+                  getSportImage(featuredTournament.sportSlug)
+                }
                 alt={featuredTournament.name}
                 className={styles.tournamentImage}
               />

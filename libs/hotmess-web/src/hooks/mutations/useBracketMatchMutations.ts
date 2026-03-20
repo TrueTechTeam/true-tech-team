@@ -27,12 +27,11 @@ export function useBracketMatchMutations() {
     }
 
     try {
-      const { error } = await supabase
-        .from('bracket_matches')
-        .update(updates)
-        .eq('id', matchId);
+      const { error } = await supabase.from('bracket_matches').update(updates).eq('id', matchId);
 
-      if (error) {throw error;}
+      if (error) {
+        throw error;
+      }
     } catch (error) {
       console.error('[useBracketMatchMutations] update error:', error);
       throw error;
@@ -56,9 +55,7 @@ export function useBracketMatchMutations() {
       try {
         // Execute all updates in parallel
         await Promise.all(
-          updates.map(({ id, data }) =>
-            supabase.from('bracket_matches').update(data).eq('id', id)
-          )
+          updates.map(({ id, data }) => supabase.from('bracket_matches').update(data).eq('id', id))
         );
       } catch (error) {
         console.error('[useBracketMatchMutations] bulkUpdate error:', error);
@@ -79,7 +76,12 @@ export function useBracketMatchMutations() {
       match: BracketMatch
     ): Promise<void> => {
       if (USE_MOCK) {
-        console.warn('[useBracketMatchMutations] recordResult (mock):', matchId, team1Score, team2Score);
+        console.warn(
+          '[useBracketMatchMutations] recordResult (mock):',
+          matchId,
+          team1Score,
+          team2Score
+        );
         return;
       }
 
@@ -88,8 +90,8 @@ export function useBracketMatchMutations() {
           team1Score > team2Score
             ? match.team1_id
             : team2Score > team1Score
-            ? match.team2_id
-            : null;
+              ? match.team2_id
+              : null;
 
         const updates: MatchUpdateData = {
           team1_score: team1Score,

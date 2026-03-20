@@ -57,7 +57,15 @@ export function IndoorVolleyballIcon({ size = 24, className }: Props) {
       {/* Outline */}
       <circle cx="12" cy="11" r="9" stroke="#ea580c" strokeWidth="0.6" fill="none" />
       {/* Shine */}
-      <ellipse cx="9" cy="7" rx="2.5" ry="1.2" transform="rotate(-20 9 7)" fill="white" opacity="0.25" />
+      <ellipse
+        cx="9"
+        cy="7"
+        rx="2.5"
+        ry="1.2"
+        transform="rotate(-20 9 7)"
+        fill="white"
+        opacity="0.25"
+      />
     </svg>
   );
 }

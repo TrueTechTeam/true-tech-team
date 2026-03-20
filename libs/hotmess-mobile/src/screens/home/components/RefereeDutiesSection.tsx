@@ -42,9 +42,7 @@ export function RefereeDutiesSection({ games }: RefereeDutiesSectionProps) {
       {nextGame && (
         <TouchableOpacity
           style={styles.gameCard}
-          onPress={() =>
-            navigation.navigate('ScoreEntry' as never, { gameId: nextGame.id } as never)
-          }
+          onPress={() => navigation.navigate('ScoreEntry', { gameId: nextGame.id })}
           activeOpacity={0.7}
         >
           <View style={styles.gameInfo}>

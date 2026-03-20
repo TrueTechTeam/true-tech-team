@@ -18,7 +18,9 @@ export function groupGamesByDate<T extends GameLike>(games: T[]): Array<DateGrou
     const dateA = new Date(a.scheduled_at);
     const dateB = new Date(b.scheduled_at);
     const diff = dateA.getTime() - dateB.getTime();
-    if (diff !== 0) {return diff;}
+    if (diff !== 0) {
+      return diff;
+    }
     return a.venue.name.localeCompare(b.venue.name);
   });
 

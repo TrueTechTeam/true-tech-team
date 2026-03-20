@@ -65,7 +65,7 @@ export default function SignupForm() {
         router.push('/dashboard');
         router.refresh();
       }
-    } catch (err) {
+    } catch {
       setLoading(false);
       setError('An error occurred. Please try again.');
     }

@@ -111,8 +111,7 @@ export async function fetchSERoles(accessToken: string): Promise<SERoleResult[]>
       return [];
     }
 
-    const assignments: SEStaffRole[] =
-      json.data?.currentUser?.staffAssignments ?? [];
+    const assignments: SEStaffRole[] = json.data?.currentUser?.staffAssignments ?? [];
 
     return assignments.map((assignment) => ({
       role: mapSEPermissionToRole(assignment.permissionLevel),
@@ -130,7 +129,9 @@ export async function fetchSERoles(accessToken: string): Promise<SERoleResult[]>
  * Returns the highest role from a list of SE role results.
  */
 export function getHighestSERole(roles: SERoleResult[]): UserRole | null {
-  if (roles.length === 0) return null;
+  if (roles.length === 0) {
+    return null;
+  }
 
   const hierarchy = [
     UserRole.Player,
@@ -144,7 +145,9 @@ export function getHighestSERole(roles: SERoleResult[]): UserRole | null {
   let highest = -1;
   for (const r of roles) {
     const idx = hierarchy.indexOf(r.role);
-    if (idx > highest) highest = idx;
+    if (idx > highest) {
+      highest = idx;
+    }
   }
 
   return highest >= 0 ? hierarchy[highest] : null;

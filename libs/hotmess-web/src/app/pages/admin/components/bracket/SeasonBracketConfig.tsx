@@ -20,7 +20,9 @@ export function SeasonBracketConfig({ config, onUpdate }: SeasonBracketConfigPro
   const [newPlayArea, setNewPlayArea] = useState('');
 
   const handleAddPlayArea = () => {
-    if (!newPlayArea.trim()) { return; }
+    if (!newPlayArea.trim()) {
+      return;
+    }
     onUpdate({
       ...config,
       playAreas: [...config.playAreas, newPlayArea.trim()],
@@ -84,12 +86,7 @@ export function SeasonBracketConfig({ config, onUpdate }: SeasonBracketConfigPro
 
           <div className={styles.tagList}>
             {config.playAreas.map((area, index) => (
-              <Badge
-                key={index}
-                variant="neutral"
-                size="sm"
-                className={styles.tag}
-              >
+              <Badge key={index} variant="neutral" size="sm" className={styles.tag}>
                 {area}
                 <button
                   type="button"
@@ -142,7 +139,9 @@ export function SeasonBracketConfig({ config, onUpdate }: SeasonBracketConfigPro
               type="number"
               label="Buffer (min)"
               value={String(config.bufferMinutes)}
-              onChange={(e) => onUpdate({ ...config, bufferMinutes: parseInt(e.target.value) || 0 })}
+              onChange={(e) =>
+                onUpdate({ ...config, bufferMinutes: parseInt(e.target.value) || 0 })
+              }
             />
           </div>
 
@@ -151,7 +150,9 @@ export function SeasonBracketConfig({ config, onUpdate }: SeasonBracketConfigPro
             {config.timeSlots.length > 0 ? (
               config.timeSlots.map((time, index) => (
                 <div key={index} className={styles.timeSlot}>
-                  <span>Slot {index + 1}: {formatTime(time)}</span>
+                  <span>
+                    Slot {index + 1}: {formatTime(time)}
+                  </span>
                 </div>
               ))
             ) : (

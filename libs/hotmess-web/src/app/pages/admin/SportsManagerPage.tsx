@@ -56,22 +56,22 @@ export function SportsManagerPage() {
     status: [],
   });
 
-  const handleFilterChange = useCallback(
-    (values: Record<string, FilterValue>) => {
-      setFilterValues(values);
-    },
+  const handleFilterChange = useCallback((values: Record<string, FilterValue>) => {
+    setFilterValues(values);
+  }, []);
+
+  const filterDefinitions: FilterDefinition[] = useMemo(
+    () => [
+      {
+        id: 'status',
+        type: 'multi-select' as const,
+        label: 'Status',
+        options: STATUS_OPTIONS,
+        config: { displayMode: 'dropdown' } as MultiSelectFilterConfig,
+      },
+    ],
     []
   );
-
-  const filterDefinitions: FilterDefinition[] = useMemo(() => [
-    {
-      id: 'status',
-      type: 'multi-select' as const,
-      label: 'Status',
-      options: STATUS_OPTIONS,
-      config: { displayMode: 'dropdown' } as MultiSelectFilterConfig,
-    },
-  ], []);
 
   const filteredData = useMemo(() => {
     const status = filterValues.status as string[];

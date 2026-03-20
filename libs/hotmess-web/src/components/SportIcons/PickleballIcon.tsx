@@ -50,14 +50,7 @@ export function PickleballIcon({ size = 24, className }: Props) {
         strokeWidth="0.9"
         transform="rotate(-8 11 10.5)"
       />
-      <ellipse
-        cx="11"
-        cy="10.5"
-        rx="5.5"
-        ry="7"
-        fill="url(#pk-g)"
-        transform="rotate(-8 11 10.5)"
-      />
+      <ellipse cx="11" cy="10.5" rx="5.5" ry="7" fill="url(#pk-g)" transform="rotate(-8 11 10.5)" />
       {/* Paddle edge band */}
       <ellipse
         cx="11"

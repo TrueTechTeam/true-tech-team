@@ -5,7 +5,7 @@ import { sportColors } from '../../../theme/colors';
 
 interface TeamMembership {
   id: string;
-  team_id: string;
+  team_id: string | null;
   role?: string;
   teams?: {
     id: string;
@@ -32,7 +32,9 @@ interface MyTeamsSectionProps {
 }
 
 function getSportColor(sportName: string | undefined): string {
-  if (!sportName) {return colors.primary;}
+  if (!sportName) {
+    return colors.primary;
+  }
   const key = sportName.toLowerCase().replace(/\s+/g, '') as keyof typeof sportColors;
   return sportColors[key] || colors.primary;
 }
@@ -51,7 +53,9 @@ export function MyTeamsSection({ teams }: MyTeamsSectionProps) {
   const displayTeams = currentTeams.slice(0, 3);
   const hasMore = teams.length > displayTeams.length;
 
-  if (displayTeams.length === 0) return null;
+  if (displayTeams.length === 0) {
+    return null;
+  }
 
   return (
     <View style={styles.section}>
@@ -76,7 +80,7 @@ export function MyTeamsSection({ teams }: MyTeamsSectionProps) {
               key={membership.id}
               style={styles.teamCard}
               onPress={() =>
-                navigation.navigate('TeamDetails' as never, { teamId: membership.teams?.id } as never)
+                navigation.navigate('TeamDetails', { teamId: membership.teams?.id ?? '' })
               }
               activeOpacity={0.7}
             >

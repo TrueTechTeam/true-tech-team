@@ -9,6 +9,7 @@
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
+        "maxWarnings": 0,
         "lintFilePatterns": ["libs/landing-app/src/**/*.{ts,tsx,js,jsx}"]
       }
     }

@@ -22,19 +22,31 @@ function mockResult<T>(data: T): QueryResult<T> {
 }
 
 export function useMockCities() {
-  return mockResult(mockCities as unknown as Array<{ id: string; name: string; state: string; is_active: boolean; slug: string }>);
+  return mockResult(
+    mockCities as unknown as Array<{
+      id: string;
+      name: string;
+      state: string;
+      is_active: boolean;
+      slug: string;
+    }>
+  );
 }
 
 export function useMockSports() {
   return mockResult(
-    mockSports as unknown as Array<{ id: string; name: string; description: string; config: Record<string, unknown>; is_active: boolean }>
+    mockSports as unknown as Array<{
+      id: string;
+      name: string;
+      description: string;
+      config: Record<string, unknown>;
+      is_active: boolean;
+    }>
   );
 }
 
 export function useMockLeagues(cityId?: string) {
-  const filtered = cityId
-    ? mockLeagues.filter((l) => l.city_id === cityId)
-    : [...mockLeagues];
+  const filtered = cityId ? mockLeagues.filter((l) => l.city_id === cityId) : [...mockLeagues];
   return mockResult(filtered);
 }
 
@@ -57,19 +69,17 @@ export function useMockUpcomingGames() {
 }
 
 export function useMockUpcomingLeagues() {
-  const upcoming = mockSeasons.filter(
-    (s) => s.status === 'registration' || s.status === 'draft'
-  );
+  const upcoming = mockSeasons.filter((s) => s.status === 'registration' || s.status === 'draft');
   return mockResult(upcoming.slice(0, 6));
 }
 
 export function useMockCity(cityId?: string) {
-  const city = cityId ? mockCities.find((c) => c.id === cityId) ?? null : null;
+  const city = cityId ? (mockCities.find((c) => c.id === cityId) ?? null) : null;
   return mockResult(city);
 }
 
 export function useMockLeague(leagueId?: string) {
-  const league = leagueId ? mockLeagues.find((l) => l.id === leagueId) ?? null : null;
+  const league = leagueId ? (mockLeagues.find((l) => l.id === leagueId) ?? null) : null;
   if (!league) {
     return mockResult(null);
   }
@@ -78,13 +88,17 @@ export function useMockLeague(leagueId?: string) {
   const sport = mockSports.find((s) => s.id === league.sport_id);
   return mockResult({
     ...league,
-    cities: { id: city?.id ?? league.city_id, name: league.cities.name, state: league.cities.state },
+    cities: {
+      id: city?.id ?? league.city_id,
+      name: league.cities.name,
+      state: league.cities.state,
+    },
     sports: { id: sport?.id ?? league.sport_id, name: league.sports.name },
   });
 }
 
 export function useMockSeason(seasonId?: string) {
-  const season = seasonId ? mockSeasons.find((s) => s.id === seasonId) ?? null : null;
+  const season = seasonId ? (mockSeasons.find((s) => s.id === seasonId) ?? null) : null;
   if (!season) {
     return mockResult(null);
   }
@@ -107,7 +121,7 @@ export function useMockSeason(seasonId?: string) {
 }
 
 export function useMockTeam(teamId?: string) {
-  const team = teamId ? mockTeams.find((t) => t.id === teamId) ?? null : null;
+  const team = teamId ? (mockTeams.find((t) => t.id === teamId) ?? null) : null;
   if (!team) {
     return mockResult(null);
   }
@@ -149,12 +163,8 @@ export function useMockTeamMembers(teamId?: string) {
 export function useMockAllTeamsEnriched() {
   const enriched = mockTeams.map((team) => {
     const division = mockDivisions.find((d) => d.id === team.division_id);
-    const season = division
-      ? mockSeasons.find((s) => s.id === division.season_id)
-      : null;
-    const league = season
-      ? mockLeagues.find((l) => l.id === season.league_id)
-      : null;
+    const season = division ? mockSeasons.find((s) => s.id === division.season_id) : null;
+    const league = season ? mockLeagues.find((l) => l.id === season.league_id) : null;
 
     return {
       ...team,
@@ -227,7 +237,7 @@ export function useMockAllBrackets() {
 }
 
 export function useMockBracket(bracketId?: string) {
-  const bracket = bracketId ? mockBrackets.find((b) => b.id === bracketId) ?? null : null;
+  const bracket = bracketId ? (mockBrackets.find((b) => b.id === bracketId) ?? null) : null;
   if (!bracket) {
     return mockResult(null);
   }
@@ -267,9 +277,7 @@ export function useMockSeasonBrackets(seasonId?: string) {
     return mockResult([]);
   }
   const seasonDivisions = mockDivisions.filter((d) => d.season_id === seasonId);
-  const brackets = mockBrackets.filter((b) =>
-    seasonDivisions.some((d) => d.id === b.division_id)
-  );
+  const brackets = mockBrackets.filter((b) => seasonDivisions.some((d) => d.id === b.division_id));
   const enriched = brackets.map((bracket) => {
     const division = mockDivisions.find((d) => d.id === bracket.division_id);
     return {

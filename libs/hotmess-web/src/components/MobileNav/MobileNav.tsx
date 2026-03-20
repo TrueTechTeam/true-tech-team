@@ -28,7 +28,9 @@ export function MobileNav() {
   const location = useLocation();
 
   const isActive = (path: string) => {
-    if (path === '/') {return location.pathname === '/';}
+    if (path === '/') {
+      return location.pathname === '/';
+    }
     return location.pathname.startsWith(path);
   };
 
@@ -80,11 +82,7 @@ export function MobileNav() {
           <div className={styles.divider} />
 
           <div className={styles.section}>
-            <Link
-              to="/login"
-              className={styles.loginButton}
-              onClick={() => setIsOpen(false)}
-            >
+            <Link to="/login" className={styles.loginButton} onClick={() => setIsOpen(false)}>
               Sign In
             </Link>
           </div>

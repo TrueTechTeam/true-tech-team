@@ -43,13 +43,17 @@ export function BracketsManagerPage() {
 
   // Group brackets by season — one row per season
   const seasonRows: SeasonBracketRow[] = useMemo(() => {
-    if (!brackets) { return []; }
+    if (!brackets) {
+      return [];
+    }
 
     const seasonMap = new Map<string, SeasonBracketRow>();
 
     for (const bracket of brackets) {
       const seasonId = bracket.divisions?.seasons?.id;
-      if (!seasonId) { continue; }
+      if (!seasonId) {
+        continue;
+      }
 
       const existing = seasonMap.get(seasonId);
       if (existing) {
@@ -79,14 +83,15 @@ export function BracketsManagerPage() {
   );
 
   // Seasons eligible for new bracket creation (active/completed, no existing brackets)
-  const eligibleSeasons = (seasons?.filter(
-    (s) =>
-      (s.status === 'active' || s.status === 'completed') &&
-      !seasonsWithBrackets.has(s.id)
-  ) || []);
+  const eligibleSeasons =
+    seasons?.filter(
+      (s) => (s.status === 'active' || s.status === 'completed') && !seasonsWithBrackets.has(s.id)
+    ) || [];
 
   useEffect(() => {
-    if (!dialog.isOpen) { setForm(initialForm); }
+    if (!dialog.isOpen) {
+      setForm(initialForm);
+    }
   }, [dialog.isOpen]);
 
   const handleSave = async () => {
@@ -115,7 +120,9 @@ export function BracketsManagerPage() {
       header: 'Status',
       sortable: true,
       render: (_v, row) => {
-        if (!row.status) { return '\u2014'; }
+        if (!row.status) {
+          return '\u2014';
+        }
         return (
           <Badge variant={getStatusBadgeVariant(row.status)} size="sm">
             {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
@@ -163,8 +170,12 @@ export function BracketsManagerPage() {
         size="sm"
         actions={
           <DialogFooter align="end">
-            <Button variant="outline" onClick={dialog.close}>Cancel</Button>
-            <Button variant="primary" onClick={handleSave}>Create</Button>
+            <Button variant="outline" onClick={dialog.close}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleSave}>
+              Create
+            </Button>
           </DialogFooter>
         }
       >

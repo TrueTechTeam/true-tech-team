@@ -61,19 +61,67 @@ export function RootNavigator() {
             component={MainTabNavigator}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="ThreadDetail" component={ThreadDetailScreen} options={({ route }) => ({ title: route.params.threadName })} />
-          <Stack.Screen name="TeamManagement" component={TeamManagementScreen} options={{ title: 'Team Management' }} />
-          <Stack.Screen name="InvitePlayers" component={InvitePlayersScreen} options={{ title: 'Invite Players' }} />
-          <Stack.Screen name="JoinRequests" component={JoinRequestsScreen} options={{ title: 'Join Requests' }} />
-          <Stack.Screen name="FreeAgentRequests" component={FreeAgentRequestsScreen} options={{ title: 'Free Agents' }} />
-          <Stack.Screen name="ScoreEntry" component={ScoreEntryScreen} options={{ title: 'Enter Score' }} />
-          <Stack.Screen name="SuperlativeVoting" component={SuperlativeVotingScreen} options={{ title: 'Superlative Voting' }} />
-          <Stack.Screen name="SuperlativeNominations" component={SuperlativeNominationsScreen} options={{ title: 'Nominations' }} />
-          <Stack.Screen name="NotificationPreferences" component={NotificationPreferencesScreen} options={{ title: 'Notifications' }} />
-          <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: 'Edit Profile' }} />
+          <Stack.Screen
+            name="ThreadDetail"
+            component={ThreadDetailScreen}
+            options={({ route }) => ({ title: route.params.threadName })}
+          />
+          <Stack.Screen
+            name="TeamManagement"
+            component={TeamManagementScreen}
+            options={{ title: 'Team Management' }}
+          />
+          <Stack.Screen
+            name="InvitePlayers"
+            component={InvitePlayersScreen}
+            options={{ title: 'Invite Players' }}
+          />
+          <Stack.Screen
+            name="JoinRequests"
+            component={JoinRequestsScreen}
+            options={{ title: 'Join Requests' }}
+          />
+          <Stack.Screen
+            name="FreeAgentRequests"
+            component={FreeAgentRequestsScreen}
+            options={{ title: 'Free Agents' }}
+          />
+          <Stack.Screen
+            name="ScoreEntry"
+            component={ScoreEntryScreen}
+            options={{ title: 'Enter Score' }}
+          />
+          <Stack.Screen
+            name="SuperlativeVoting"
+            component={SuperlativeVotingScreen}
+            options={{ title: 'Superlative Voting' }}
+          />
+          <Stack.Screen
+            name="SuperlativeNominations"
+            component={SuperlativeNominationsScreen}
+            options={{ title: 'Nominations' }}
+          />
+          <Stack.Screen
+            name="NotificationPreferences"
+            component={NotificationPreferencesScreen}
+            options={{ title: 'Notifications' }}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={EditProfileScreen}
+            options={{ title: 'Edit Profile' }}
+          />
           <Stack.Screen name="Privacy" component={PrivacyScreen} options={{ title: 'Privacy' }} />
-          <Stack.Screen name="TeamDetails" component={TeamDetailsScreen} options={{ title: 'Team Details' }} />
-          <Stack.Screen name="AllTeams" component={AllTeamsScreen} options={{ title: 'All Teams' }} />
+          <Stack.Screen
+            name="TeamDetails"
+            component={TeamDetailsScreen}
+            options={{ title: 'Team Details' }}
+          />
+          <Stack.Screen
+            name="AllTeams"
+            component={AllTeamsScreen}
+            options={{ title: 'All Teams' }}
+          />
         </>
       ) : (
         <Stack.Screen name="Auth" component={AuthNavigator} options={{ headerShown: false }} />

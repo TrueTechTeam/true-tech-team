@@ -5,14 +5,24 @@ import { mockDivisions } from './divisions';
 function futureDate(daysFromNow: number): string {
   const d = new Date();
   d.setDate(d.getDate() + daysFromNow);
-  d.setHours(18 + Math.floor(seededRandom(daysFromNow * 7) * 3), seededRandom(daysFromNow * 11) > 0.5 ? 0 : 30, 0, 0);
+  d.setHours(
+    18 + Math.floor(seededRandom(daysFromNow * 7) * 3),
+    seededRandom(daysFromNow * 11) > 0.5 ? 0 : 30,
+    0,
+    0
+  );
   return d.toISOString();
 }
 
 function pastDate(daysAgo: number): string {
   const d = new Date();
   d.setDate(d.getDate() - daysAgo);
-  d.setHours(18 + Math.floor(seededRandom(daysAgo * 7) * 3), seededRandom(daysAgo * 11) > 0.5 ? 0 : 30, 0, 0);
+  d.setHours(
+    18 + Math.floor(seededRandom(daysAgo * 7) * 3),
+    seededRandom(daysAgo * 11) > 0.5 ? 0 : 30,
+    0,
+    0
+  );
   return d.toISOString();
 }
 
@@ -35,11 +45,13 @@ const scheduledGames = Array.from({ length: 30 }, (_, i) => {
   });
   const divIndex = i % divisionsWithTeams.length;
   const division = divisionsWithTeams[divIndex];
-  const divTeams = teamsByDivision.get(division.id)!;
+  const divTeams = teamsByDivision.get(division.id) ?? [];
 
   const homeIdx = i % divTeams.length;
   let awayIdx = (i + 1) % divTeams.length;
-  if (awayIdx === homeIdx) { awayIdx = (homeIdx + 2) % divTeams.length; }
+  if (awayIdx === homeIdx) {
+    awayIdx = (homeIdx + 2) % divTeams.length;
+  }
 
   const venueIdx = i % mockVenues.length;
 
@@ -49,7 +61,12 @@ const scheduledGames = Array.from({ length: 30 }, (_, i) => {
     status: 'scheduled' as const,
     home_team: { id: divTeams[homeIdx].id, name: divTeams[homeIdx].name },
     away_team: { id: divTeams[awayIdx].id, name: divTeams[awayIdx].name },
-    venue: { name: mockVenues[venueIdx].name },
+    home_team_id: divTeams[homeIdx].id,
+    away_team_id: divTeams[awayIdx].id,
+    venue: {
+      name: mockVenues[venueIdx].name,
+      address: mockVenues[venueIdx].address as string | undefined,
+    },
     play_area: mockVenues[venueIdx].play_areas[0],
     division_id: division.id,
     home_score: null as number | null,
@@ -65,11 +82,13 @@ const completedGames = Array.from({ length: 15 }, (_, i) => {
   });
   const divIndex = (i + 5) % divisionsWithTeams.length;
   const division = divisionsWithTeams[divIndex];
-  const divTeams = teamsByDivision.get(division.id)!;
+  const divTeams = teamsByDivision.get(division.id) ?? [];
 
   const homeIdx = (i * 2) % divTeams.length;
   let awayIdx = (i * 2 + 1) % divTeams.length;
-  if (awayIdx === homeIdx) { awayIdx = (homeIdx + 2) % divTeams.length; }
+  if (awayIdx === homeIdx) {
+    awayIdx = (homeIdx + 2) % divTeams.length;
+  }
 
   const venueIdx = (i + 3) % mockVenues.length;
   const seed = i + 100;
@@ -82,7 +101,12 @@ const completedGames = Array.from({ length: 15 }, (_, i) => {
     status: 'completed' as const,
     home_team: { id: divTeams[homeIdx].id, name: divTeams[homeIdx].name },
     away_team: { id: divTeams[awayIdx].id, name: divTeams[awayIdx].name },
-    venue: { name: mockVenues[venueIdx].name },
+    home_team_id: divTeams[homeIdx].id,
+    away_team_id: divTeams[awayIdx].id,
+    venue: {
+      name: mockVenues[venueIdx].name,
+      address: mockVenues[venueIdx].address as string | undefined,
+    },
     play_area: mockVenues[venueIdx].play_areas[0],
     division_id: division.id,
     home_score: homeScore,

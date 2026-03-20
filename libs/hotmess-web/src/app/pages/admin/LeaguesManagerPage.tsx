@@ -18,12 +18,7 @@ import {
 } from '@true-tech-team/ui-components';
 import { useLeagues, useCities, useSports, useSeasons } from '../../../hooks/useSupabaseQuery';
 import { SportIcon } from '../../../components/SportIcons';
-import {
-  buildAdminBreadcrumbs,
-  useAdminDialog,
-  TIME_RANGE_OPTIONS,
-  getMonthsAgo,
-} from './utils';
+import { buildAdminBreadcrumbs, useAdminDialog, TIME_RANGE_OPTIONS, getMonthsAgo } from './utils';
 import { useLeagueMutations } from '../../../hooks/mutations';
 import styles from './AdminPages.module.scss';
 
@@ -57,23 +52,15 @@ export function LeaguesManagerPage() {
     sport: [],
   });
 
-  const handleFilterChange = useCallback(
-    (values: Record<string, FilterValue>) => {
-      setFilterValues(values);
-    },
-    []
-  );
+  const handleFilterChange = useCallback((values: Record<string, FilterValue>) => {
+    setFilterValues(values);
+  }, []);
 
-  const cityName = cityId
-    ? cities?.find((c) => c.id === cityId)?.name ?? 'City'
-    : null;
+  const cityName = cityId ? (cities?.find((c) => c.id === cityId)?.name ?? 'City') : null;
 
   const breadcrumbs = buildAdminBreadcrumbs(
     cityId
-      ? [
-          { label: 'Cities', href: '/admin/cities' },
-          { label: `${cityName} Leagues` },
-        ]
+      ? [{ label: 'Cities', href: '/admin/cities' }, { label: `${cityName} Leagues` }]
       : [{ label: 'Leagues' }]
   );
 
@@ -138,17 +125,18 @@ export function LeaguesManagerPage() {
     const sportFilter = filterValues.sport as string[];
 
     // Build a set of league IDs that have seasons within the time range
-    const activeLeagueIds = timeRange !== 'all'
-      ? new Set(
-          (seasons || [])
-            .filter((s) => {
-              const months = parseInt(timeRange, 10);
-              const cutoff = getMonthsAgo(months);
-              return new Date(s.season_end_date) >= cutoff;
-            })
-            .map((s) => s.league_id)
-        )
-      : null;
+    const activeLeagueIds =
+      timeRange !== 'all'
+        ? new Set(
+            (seasons || [])
+              .filter((s) => {
+                const months = parseInt(timeRange, 10);
+                const cutoff = getMonthsAgo(months);
+                return new Date(s.season_end_date) >= cutoff;
+              })
+              .map((s) => s.league_id)
+          )
+        : null;
 
     return items.filter((l) => {
       if (activeLeagueIds && !activeLeagueIds.has(l.id)) {
@@ -211,9 +199,7 @@ export function LeaguesManagerPage() {
       <Breadcrumbs items={breadcrumbs} separator="/" size="sm" />
 
       <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>
-          {cityId ? `${cityName} Leagues` : 'All Leagues'}
-        </h1>
+        <h1 className={styles.pageTitle}>{cityId ? `${cityName} Leagues` : 'All Leagues'}</h1>
         <Button variant="primary" onClick={dialog.openCreate}>
           + Add League
         </Button>
@@ -258,7 +244,9 @@ export function LeaguesManagerPage() {
         size="md"
         actions={
           <DialogFooter align="end">
-            <Button variant="outline" onClick={dialog.close}>Cancel</Button>
+            <Button variant="outline" onClick={dialog.close}>
+              Cancel
+            </Button>
             <Button variant="primary" onClick={handleSave}>
               {dialog.mode === 'create' ? 'Create' : 'Save Changes'}
             </Button>

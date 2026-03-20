@@ -144,7 +144,10 @@ export function useLeaguesByCity(cityId: string | undefined) {
 
   const fetchData = useCallback(async () => {
     if (USE_MOCK || !cityId) {
-      if (!USE_MOCK) { setData([]); setLoading(false); }
+      if (!USE_MOCK) {
+        setData([]);
+        setLoading(false);
+      }
       return;
     }
 
@@ -155,7 +158,9 @@ export function useLeaguesByCity(cityId: string | undefined) {
         .select('*, sports(name)')
         .eq('city_id', cityId);
 
-      if (queryError) {throw queryError;}
+      if (queryError) {
+        throw queryError;
+      }
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -165,7 +170,9 @@ export function useLeaguesByCity(cityId: string | undefined) {
   }, [cityId]);
 
   useEffect(() => {
-    if (!USE_MOCK) {fetchData();}
+    if (!USE_MOCK) {
+      fetchData();
+    }
   }, [fetchData]);
 
   return USE_MOCK ? mock : { data, loading, error, refetch: fetchData };
@@ -174,15 +181,25 @@ export function useLeaguesByCity(cityId: string | undefined) {
 // ==========================================
 // Season hooks
 // ==========================================
+interface ActiveSeason {
+  id: string;
+  name: string;
+  status?: string;
+  start_date?: string;
+  leagues?: { name: string; sports?: { name: string }; cities?: { name: string } };
+}
+
 export function useActiveSeasons() {
   const mock = useMockActiveSeasons();
 
-  const [data, setData] = useState<unknown[] | null>(null);
+  const [data, setData] = useState<ActiveSeason[] | null>(null);
   const [loading, setLoading] = useState(!USE_MOCK);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchData = useCallback(async () => {
-    if (USE_MOCK) {return;}
+    if (USE_MOCK) {
+      return;
+    }
     setLoading(true);
     try {
       const { data: result, error: queryError } = await supabase
@@ -191,8 +208,10 @@ export function useActiveSeasons() {
         .in('status', ['registration', 'active'])
         .order('start_date');
 
-      if (queryError) {throw queryError;}
-      setData(result);
+      if (queryError) {
+        throw queryError;
+      }
+      setData(result as ActiveSeason[]);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
     } finally {
@@ -201,7 +220,9 @@ export function useActiveSeasons() {
   }, []);
 
   useEffect(() => {
-    if (!USE_MOCK) {fetchData();}
+    if (!USE_MOCK) {
+      fetchData();
+    }
   }, [fetchData]);
 
   return USE_MOCK ? mock : { data, loading, error, refetch: fetchData };
@@ -225,7 +246,7 @@ export function useTeams() {
 interface TeamMembership {
   id: string;
   user_id: string;
-  team_id: string;
+  team_id: string | null;
   role?: string;
   teams?: {
     id: string;
@@ -256,7 +277,10 @@ export function useMyTeams(userId: string | undefined) {
 
   const fetchData = useCallback(async () => {
     if (USE_MOCK || !userId) {
-      if (!USE_MOCK) { setData([]); setLoading(false); }
+      if (!USE_MOCK) {
+        setData([]);
+        setLoading(false);
+      }
       return;
     }
 
@@ -264,7 +288,8 @@ export function useMyTeams(userId: string | undefined) {
     try {
       const { data: result, error: queryError } = await supabase
         .from('team_members')
-        .select(`
+        .select(
+          `
           *,
           teams(
             *,
@@ -276,10 +301,13 @@ export function useMyTeams(userId: string | undefined) {
               )
             )
           )
-        `)
+        `
+        )
         .eq('user_id', userId);
 
-      if (queryError) {throw queryError;}
+      if (queryError) {
+        throw queryError;
+      }
       setData(result as TeamMembership[]);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -289,7 +317,9 @@ export function useMyTeams(userId: string | undefined) {
   }, [userId]);
 
   useEffect(() => {
-    if (!USE_MOCK) {fetchData();}
+    if (!USE_MOCK) {
+      fetchData();
+    }
   }, [fetchData]);
 
   return USE_MOCK ? mock : { data, loading, error, refetch: fetchData };
@@ -310,6 +340,8 @@ interface Game {
   home_score: number | null;
   away_score: number | null;
   referee_id?: string | null;
+  home_team_id?: string | null;
+  away_team_id?: string | null;
 }
 
 export function useUpcomingGames(userId: string | undefined) {
@@ -321,7 +353,10 @@ export function useUpcomingGames(userId: string | undefined) {
 
   const fetchData = useCallback(async () => {
     if (USE_MOCK || !userId) {
-      if (!USE_MOCK) { setData([]); setLoading(false); }
+      if (!USE_MOCK) {
+        setData([]);
+        setLoading(false);
+      }
       return;
     }
 
@@ -332,7 +367,9 @@ export function useUpcomingGames(userId: string | undefined) {
         .select('team_id')
         .eq('user_id', userId);
 
-      if (teamError) {throw teamError;}
+      if (teamError) {
+        throw teamError;
+      }
       const teamIds = teamMembers?.map((tm) => tm.team_id) || [];
 
       if (teamIds.length === 0) {
@@ -343,17 +380,21 @@ export function useUpcomingGames(userId: string | undefined) {
 
       const { data: games, error: gamesError } = await supabase
         .from('games')
-        .select(`
+        .select(
+          `
           *,
           home_team:teams!games_home_team_id_fkey(name),
           away_team:teams!games_away_team_id_fkey(name),
           venues(name, address)
-        `)
+        `
+        )
         .or(`home_team_id.in.(${teamIds.join(',')}),away_team_id.in.(${teamIds.join(',')})`)
         .gte('scheduled_at', new Date().toISOString())
         .order('scheduled_at');
 
-      if (gamesError) {throw gamesError;}
+      if (gamesError) {
+        throw gamesError;
+      }
       setData(games as Game[]);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -363,7 +404,9 @@ export function useUpcomingGames(userId: string | undefined) {
   }, [userId]);
 
   useEffect(() => {
-    if (!USE_MOCK) {fetchData();}
+    if (!USE_MOCK) {
+      fetchData();
+    }
   }, [fetchData]);
 
   return USE_MOCK ? mock : { data, loading, error, refetch: fetchData };
@@ -378,7 +421,10 @@ export function useRefereeGames(userId: string | undefined) {
 
   const fetchData = useCallback(async () => {
     if (USE_MOCK || !userId) {
-      if (!USE_MOCK) { setData([]); setLoading(false); }
+      if (!USE_MOCK) {
+        setData([]);
+        setLoading(false);
+      }
       return;
     }
 
@@ -386,16 +432,20 @@ export function useRefereeGames(userId: string | undefined) {
     try {
       const { data: games, error: gamesError } = await supabase
         .from('games')
-        .select(`
+        .select(
+          `
           *,
           home_team:teams!games_home_team_id_fkey(id, name),
           away_team:teams!games_away_team_id_fkey(id, name),
           venues(name, address)
-        `)
+        `
+        )
         .eq('referee_id', userId)
         .order('scheduled_at');
 
-      if (gamesError) {throw gamesError;}
+      if (gamesError) {
+        throw gamesError;
+      }
       setData(games as Game[]);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -405,7 +455,9 @@ export function useRefereeGames(userId: string | undefined) {
   }, [userId]);
 
   useEffect(() => {
-    if (!USE_MOCK) {fetchData();}
+    if (!USE_MOCK) {
+      fetchData();
+    }
   }, [fetchData]);
 
   return USE_MOCK ? mock : { data, loading, error, refetch: fetchData };
@@ -431,16 +483,29 @@ export function useTeamMembers(teamId: string | undefined) {
   return USE_MOCK ? mock : real;
 }
 
+interface JoinRequest {
+  id: string;
+  team_id: string;
+  user_id: string;
+  first_name?: string;
+  last_name?: string;
+  role?: string;
+  status?: string;
+}
+
 export function usePendingJoinRequests(teamIds: string[]) {
   const mock = useMockPendingJoinRequests(teamIds);
 
-  const [data, setData] = useState<unknown[] | null>(null);
+  const [data, setData] = useState<JoinRequest[] | null>(null);
   const [loading, setLoading] = useState(!USE_MOCK);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchData = useCallback(async () => {
     if (USE_MOCK || teamIds.length === 0) {
-      if (!USE_MOCK) { setData([]); setLoading(false); }
+      if (!USE_MOCK) {
+        setData([]);
+        setLoading(false);
+      }
       return;
     }
 
@@ -452,8 +517,10 @@ export function usePendingJoinRequests(teamIds: string[]) {
         .in('team_id', teamIds)
         .eq('status', 'requested');
 
-      if (queryError) {throw queryError;}
-      setData(result);
+      if (queryError) {
+        throw queryError;
+      }
+      setData(result as JoinRequest[]);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
     } finally {
@@ -462,7 +529,9 @@ export function usePendingJoinRequests(teamIds: string[]) {
   }, [teamIds]);
 
   useEffect(() => {
-    if (!USE_MOCK) {fetchData();}
+    if (!USE_MOCK) {
+      fetchData();
+    }
   }, [fetchData]);
 
   return USE_MOCK ? mock : { data, loading, error, refetch: fetchData };
@@ -480,7 +549,10 @@ export function useMessageThreads(userId: string | undefined) {
 
   const fetchData = useCallback(async () => {
     if (USE_MOCK || !userId) {
-      if (!USE_MOCK) { setData([]); setLoading(false); }
+      if (!USE_MOCK) {
+        setData([]);
+        setLoading(false);
+      }
       return;
     }
 
@@ -491,7 +563,9 @@ export function useMessageThreads(userId: string | undefined) {
         .select('*, threads(*)')
         .eq('user_id', userId);
 
-      if (queryError) {throw queryError;}
+      if (queryError) {
+        throw queryError;
+      }
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -501,7 +575,9 @@ export function useMessageThreads(userId: string | undefined) {
   }, [userId]);
 
   useEffect(() => {
-    if (!USE_MOCK) {fetchData();}
+    if (!USE_MOCK) {
+      fetchData();
+    }
   }, [fetchData]);
 
   return USE_MOCK ? mock : { data, loading, error, refetch: fetchData };
@@ -516,7 +592,10 @@ export function useThreadMessages(threadId: string | undefined) {
 
   const fetchData = useCallback(async () => {
     if (USE_MOCK || !threadId) {
-      if (!USE_MOCK) { setData([]); setLoading(false); }
+      if (!USE_MOCK) {
+        setData([]);
+        setLoading(false);
+      }
       return;
     }
 
@@ -528,7 +607,9 @@ export function useThreadMessages(threadId: string | undefined) {
         .eq('thread_id', threadId)
         .order('created_at', { ascending: true });
 
-      if (queryError) {throw queryError;}
+      if (queryError) {
+        throw queryError;
+      }
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -538,7 +619,9 @@ export function useThreadMessages(threadId: string | undefined) {
   }, [threadId]);
 
   useEffect(() => {
-    if (!USE_MOCK) {fetchData();}
+    if (!USE_MOCK) {
+      fetchData();
+    }
   }, [fetchData]);
 
   return USE_MOCK ? mock : { data, loading, error, refetch: fetchData };

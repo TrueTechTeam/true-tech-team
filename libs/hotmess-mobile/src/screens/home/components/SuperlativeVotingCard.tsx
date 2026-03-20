@@ -12,13 +12,15 @@ export function SuperlativeVotingCard({ seasonId, seasonName }: SuperlativeVotin
   const navigation = useNavigation();
   const { data: categories } = useSuperlativeCategories(seasonId);
 
-  if (!categories || categories.length === 0) return null;
+  if (!categories || categories.length === 0) {
+    return null;
+  }
 
   return (
     <TouchableOpacity
       style={styles.card}
       activeOpacity={0.85}
-      onPress={() => navigation.navigate('SuperlativeVoting' as never, { seasonId } as never)}
+      onPress={() => navigation.navigate('SuperlativeVoting', { seasonId })}
     >
       <View style={styles.iconBadge}>
         <Text style={styles.icon}>🏆</Text>

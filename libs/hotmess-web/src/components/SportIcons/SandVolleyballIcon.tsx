@@ -19,16 +19,8 @@ export function SandVolleyballIcon({ size = 24, className }: Props) {
         </clipPath>
       </defs>
       {/* Sand ground */}
-      <path
-        d="M0 20c4-1.5 8-.5 12-1s8 .5 12-.5V24H0z"
-        fill="#fbbf24"
-        opacity="0.3"
-      />
-      <path
-        d="M0 21.5c4-1 8 0 12-.5s8 .5 12-.5V24H0z"
-        fill="#f59e0b"
-        opacity="0.2"
-      />
+      <path d="M0 20c4-1.5 8-.5 12-1s8 .5 12-.5V24H0z" fill="#fbbf24" opacity="0.3" />
+      <path d="M0 21.5c4-1 8 0 12-.5s8 .5 12-.5V24H0z" fill="#f59e0b" opacity="0.2" />
       {/* Ball */}
       <circle cx="12" cy="10" r="8.5" fill="#fefce8" />
       <g clipPath="url(#sv-clip)">
@@ -59,7 +51,15 @@ export function SandVolleyballIcon({ size = 24, className }: Props) {
       {/* Outline */}
       <circle cx="12" cy="10" r="8.5" stroke="#ca8a04" strokeWidth="0.6" fill="none" />
       {/* Shine */}
-      <ellipse cx="9" cy="6.5" rx="2.2" ry="1" transform="rotate(-15 9 6.5)" fill="white" opacity="0.25" />
+      <ellipse
+        cx="9"
+        cy="6.5"
+        rx="2.2"
+        ry="1"
+        transform="rotate(-15 9 6.5)"
+        fill="white"
+        opacity="0.25"
+      />
     </svg>
   );
 }

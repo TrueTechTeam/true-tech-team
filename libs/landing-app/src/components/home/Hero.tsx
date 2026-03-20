@@ -9,7 +9,7 @@ export default function Hero() {
     <section className={styles.hero}>
       <div className={styles.container}>
         <h1 className={styles.title}>
-          Building Tomorrow's
+          Building Tomorrow&apos;s
           <span className={styles.highlight}> Tech Solutions</span>
         </h1>
         <p className={styles.subtitle}>

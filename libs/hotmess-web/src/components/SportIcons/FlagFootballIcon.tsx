@@ -59,25 +59,66 @@ export function FlagFootballIcon({ size = 24, className }: Props) {
         stroke="#78350f"
         strokeWidth="0.7"
       />
-      <ellipse
-        cx="12"
-        cy="12"
-        rx="9.5"
-        ry="5"
-        transform="rotate(-35 12 12)"
-        fill="url(#ff-g)"
-      />
+      <ellipse cx="12" cy="12" rx="9.5" ry="5" transform="rotate(-35 12 12)" fill="url(#ff-g)" />
       {/* Laces - center seam line */}
       <g clipPath="url(#ff-c)">
-        <line x1="9" y1="14.5" x2="15" y2="9.5" stroke="white" strokeWidth="0.8" strokeLinecap="round" />
+        <line
+          x1="9"
+          y1="14.5"
+          x2="15"
+          y2="9.5"
+          stroke="white"
+          strokeWidth="0.8"
+          strokeLinecap="round"
+        />
         {/* Cross laces - perpendicular to seam */}
-        <line x1="9.8" y1="13.2" x2="10.8" y2="12.5" stroke="white" strokeWidth="0.6" strokeLinecap="round" />
-        <line x1="10.8" y1="12.8" x2="11.8" y2="12" stroke="white" strokeWidth="0.6" strokeLinecap="round" />
-        <line x1="11.8" y1="12.2" x2="12.8" y2="11.4" stroke="white" strokeWidth="0.6" strokeLinecap="round" />
-        <line x1="12.8" y1="11.5" x2="13.8" y2="10.7" stroke="white" strokeWidth="0.6" strokeLinecap="round" />
+        <line
+          x1="9.8"
+          y1="13.2"
+          x2="10.8"
+          y2="12.5"
+          stroke="white"
+          strokeWidth="0.6"
+          strokeLinecap="round"
+        />
+        <line
+          x1="10.8"
+          y1="12.8"
+          x2="11.8"
+          y2="12"
+          stroke="white"
+          strokeWidth="0.6"
+          strokeLinecap="round"
+        />
+        <line
+          x1="11.8"
+          y1="12.2"
+          x2="12.8"
+          y2="11.4"
+          stroke="white"
+          strokeWidth="0.6"
+          strokeLinecap="round"
+        />
+        <line
+          x1="12.8"
+          y1="11.5"
+          x2="13.8"
+          y2="10.7"
+          stroke="white"
+          strokeWidth="0.6"
+          strokeLinecap="round"
+        />
       </g>
       {/* Shine */}
-      <ellipse cx="9" cy="9.5" rx="2.5" ry="1" transform="rotate(-35 9 9.5)" fill="white" opacity="0.12" />
+      <ellipse
+        cx="9"
+        cy="9.5"
+        rx="2.5"
+        ry="1"
+        transform="rotate(-35 9 9.5)"
+        fill="white"
+        opacity="0.12"
+      />
     </svg>
   );
 }

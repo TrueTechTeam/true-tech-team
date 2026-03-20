@@ -37,9 +37,9 @@ export function HMClassicPage() {
               day of competition, camaraderie, and chaos.
             </p>
             <p>
-              Teams battle through a bracket-style format with the goal of being crowned the
-              HM Classic Champion. It&apos;s the biggest event on the HotMess calendar, featuring
-              food, drinks, music, and the best kickball talent from across the country.
+              Teams battle through a bracket-style format with the goal of being crowned the HM
+              Classic Champion. It&apos;s the biggest event on the HotMess calendar, featuring food,
+              drinks, music, and the best kickball talent from across the country.
             </p>
             <div className={styles.formatDetails}>
               <div className={styles.formatItem}>
@@ -105,14 +105,8 @@ export function HMClassicPage() {
                   <span className={styles.pastDate}>{event.date}</span>
                   <span className={styles.pastLocation}>{event.location}</span>
                 </div>
-                {event.winner && (
-                  <div className={styles.winnerBadge}>
-                    Champion: {event.winner}
-                  </div>
-                )}
-                <div className={styles.pastTeams}>
-                  {event.teamsRegistered} teams competed
-                </div>
+                {event.winner && <div className={styles.winnerBadge}>Champion: {event.winner}</div>}
+                <div className={styles.pastTeams}>{event.teamsRegistered} teams competed</div>
               </div>
             ))}
           </div>

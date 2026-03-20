@@ -197,7 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (error) {
       console.error('OAuth error:', error);
-      window.history.replaceState({}, '', `/login?error=${  error}`);
+      window.history.replaceState({}, '', `/login?error=${error}`);
       setLoading(false);
       return;
     }
@@ -226,13 +226,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Get current access token (refreshes if needed)
   const getAccessToken = async (): Promise<string | null> => {
-    if (!tokens) {return null;}
+    if (!tokens) {
+      return null;
+    }
 
     // Check if token is about to expire (within 5 minutes)
     const expiresIn = tokens.expires_at * 1000 - Date.now();
     if (expiresIn < 5 * 60 * 1000 && tokens.refresh_token) {
       const success = await handleTokenRefresh(tokens.refresh_token);
-      if (!success) {return null;}
+      if (!success) {
+        return null;
+      }
     }
 
     return tokens?.access_token || null;

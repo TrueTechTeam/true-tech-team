@@ -49,7 +49,9 @@ export function useSupabaseQuery<T>(
   const [error, setError] = useState<Error | null>(null);
 
   const fetchData = async () => {
-    if (!enabled) {return;}
+    if (!enabled) {
+      return;
+    }
     setLoading(true);
     setError(null);
 
@@ -80,7 +82,9 @@ export function useSupabaseQuery<T>(
         ? await query.single()
         : await query;
 
-      if (queryError) { throw queryError; }
+      if (queryError) {
+        throw queryError;
+      }
       setData(result as T);
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
@@ -103,24 +107,80 @@ export function useSupabaseQuery<T>(
 // useSupabaseQuery call is disabled via `enabled: false` so it never fires.
 const USE_MOCK = featureFlags.useMockData;
 
-interface CityRow { id: string; name: string; state: string; is_active: boolean; slug: string }
-interface SportRow { id: string; name: string; description: string; config: Record<string, unknown>; is_active: boolean }
-interface LeagueRow { id: string; name: string; city_id: string; sport_id: string; cities: { name: string }; sports: { name: string } }
-interface SeasonRow { id: string; name: string; status: string; season_start_date: string; season_end_date: string; league_id: string; leagues: { name: string } }
-interface TeamRow { id: string; name: string; shirt_color: string; status: string; wins: number; losses: number; ties: number; points_for: number; points_against: number; division_id: string }
-interface GameRow { id: string; scheduled_at: string; status: string; home_team: { id: string; name: string }; away_team: { id: string; name: string }; venue: { name: string }; play_area: string }
+interface CityRow {
+  id: string;
+  name: string;
+  state: string;
+  is_active: boolean;
+  slug: string;
+}
+interface SportRow {
+  id: string;
+  name: string;
+  description: string;
+  config: Record<string, unknown>;
+  is_active: boolean;
+}
+interface LeagueRow {
+  id: string;
+  name: string;
+  city_id: string;
+  sport_id: string;
+  cities: { name: string };
+  sports: { name: string };
+}
+interface SeasonRow {
+  id: string;
+  name: string;
+  status: string;
+  season_start_date: string;
+  season_end_date: string;
+  league_id: string;
+  leagues: { name: string };
+}
+interface TeamRow {
+  id: string;
+  name: string;
+  shirt_color: string;
+  status: string;
+  wins: number;
+  losses: number;
+  ties: number;
+  points_for: number;
+  points_against: number;
+  division_id: string;
+}
+interface GameRow {
+  id: string;
+  scheduled_at: string;
+  status: string;
+  home_team: { id: string; name: string };
+  away_team: { id: string; name: string };
+  venue: { name: string };
+  play_area: string;
+}
 
 // Detail row interfaces with nested parent joins for breadcrumbs
 export interface LeagueDetailRow {
-  id: string; name: string; city_id: string; sport_id: string; is_active: boolean;
+  id: string;
+  name: string;
+  city_id: string;
+  sport_id: string;
+  is_active: boolean;
   cities: { id: string; name: string; state: string };
   sports: { id: string; name: string };
 }
 
 export interface SeasonDetailRow {
-  id: string; name: string; status: string; league_id: string; venue_id: string | null;
-  registration_start_date: string; registration_end_date: string;
-  season_start_date: string; season_end_date: string;
+  id: string;
+  name: string;
+  status: string;
+  league_id: string;
+  venue_id: string | null;
+  registration_start_date: string;
+  registration_end_date: string;
+  season_start_date: string;
+  season_end_date: string;
   schedule_config?: {
     gameDays?: number[];
     firstGameTime?: string;
@@ -136,48 +196,88 @@ export interface SeasonDetailRow {
     blackoutDates?: string[];
   };
   leagues: {
-    id: string; name: string; city_id: string; sport_id: string;
+    id: string;
+    name: string;
+    city_id: string;
+    sport_id: string;
     cities: { id: string; name: string };
-    sports: { id: string; name: string; config?: { gameDurationMinutes?: number; schedulingRule?: string } };
+    sports: {
+      id: string;
+      name: string;
+      config?: { gameDurationMinutes?: number; schedulingRule?: string };
+    };
   };
   venues: {
-    id: string; name: string; address: string; play_areas: string[];
+    id: string;
+    name: string;
+    address: string;
+    play_areas: string[];
   } | null;
 }
 
 export interface TeamDetailRow {
-  id: string; name: string; shirt_color: string; status: string;
-  wins: number; losses: number; ties: number;
-  points_for: number; points_against: number;
-  division_id: string; free_agents_requested: number;
+  id: string;
+  name: string;
+  shirt_color: string;
+  status: string;
+  wins: number;
+  losses: number;
+  ties: number;
+  points_for: number;
+  points_against: number;
+  division_id: string;
+  free_agents_requested: number;
   divisions: {
-    id: string; name: string; season_id: string;
+    id: string;
+    name: string;
+    season_id: string;
     seasons: {
-      id: string; name: string; league_id: string;
+      id: string;
+      name: string;
+      league_id: string;
       leagues: { id: string; name: string; city_id: string; cities: { id: string; name: string } };
     };
   };
 }
 
 export interface BracketDetailRow {
-  id: string; division_id: string; type: string; name: string; team_count: number;
+  id: string;
+  division_id: string;
+  type: string;
+  name: string;
+  team_count: number;
   divisions: {
-    id: string; name: string; season_id: string;
+    id: string;
+    name: string;
+    season_id: string;
     seasons: {
-      id: string; name: string; league_id: string;
+      id: string;
+      name: string;
+      league_id: string;
       leagues: { id: string; name: string; city_id: string };
     };
   };
 }
 
 export interface BracketListRow {
-  id: string; division_id: string; type: string; name: string; team_count: number;
+  id: string;
+  division_id: string;
+  type: string;
+  name: string;
+  team_count: number;
   divisions: {
-    id: string; name: string; season_id: string;
+    id: string;
+    name: string;
+    season_id: string;
     seasons: {
-      id: string; name: string; status: string; league_id: string;
+      id: string;
+      name: string;
+      status: string;
+      league_id: string;
       leagues: {
-        id: string; name: string; city_id: string;
+        id: string;
+        name: string;
+        city_id: string;
         cities: { id: string; name: string };
       } | null;
     } | null;
@@ -185,16 +285,31 @@ export interface BracketListRow {
 }
 
 export interface SeasonBracketRow {
-  id: string; division_id: string; type: string; name: string; team_count: number;
+  id: string;
+  division_id: string;
+  type: string;
+  name: string;
+  team_count: number;
   divisions: { id: string; name: string; season_id: string } | null;
 }
 
-export interface DivisionRow { id: string; name: string; season_id: string; skill_level: number; max_teams: number }
+export interface DivisionRow {
+  id: string;
+  name: string;
+  season_id: string;
+  skill_level: number;
+  max_teams: number;
+}
 
 export interface TeamMemberRow {
-  id: string; team_id: string; user_id: string;
-  first_name: string; last_name: string; email: string;
-  role: 'player' | 'team_captain'; is_rookie: boolean;
+  id: string;
+  team_id: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: 'player' | 'team_captain';
+  is_rookie: boolean;
 }
 
 // ============================================
@@ -261,8 +376,12 @@ export function useLeagues(cityId?: string) {
 
 export function useSeasons(leagueId?: string) {
   const {
-    isAdmin, isCommissioner, commissionerCityIds,
-    effectiveRole, managedSeasonIds, refereeSeasonIds,
+    isAdmin,
+    isCommissioner,
+    commissionerCityIds,
+    effectiveRole,
+    managedSeasonIds,
+    refereeSeasonIds,
   } = usePermissions();
   const mock = useMockSeasons(leagueId);
   const real = useSupabaseQuery<SeasonRow[]>('seasons', {
@@ -292,7 +411,15 @@ export function useSeasons(leagueId?: string) {
     // Captain/Player: show all seasons (they need to see registration-open seasons)
     // Their team-specific filtering happens at the dashboard level
     return result.data;
-  }, [result.data, isAdmin, isCommissioner, commissionerCityIds, effectiveRole, managedSeasonIds, refereeSeasonIds]);
+  }, [
+    result.data,
+    isAdmin,
+    isCommissioner,
+    commissionerCityIds,
+    effectiveRole,
+    managedSeasonIds,
+    refereeSeasonIds,
+  ]);
 
   return { ...result, data: filtered };
 }
@@ -369,7 +496,8 @@ export function useLeague(leagueId?: string) {
 export function useSeason(seasonId?: string) {
   const mock = useMockSeason(seasonId);
   const real = useSupabaseQuery<SeasonDetailRow>('seasons', {
-    select: '*, leagues(id, name, city_id, sport_id, cities(id, name), sports(id, name, config)), venues(id, name, address, play_areas)',
+    select:
+      '*, leagues(id, name, city_id, sport_id, cities(id, name), sports(id, name, config)), venues(id, name, address, play_areas)',
     filter: seasonId ? [{ column: 'id', value: seasonId }] : undefined,
     single: true,
     enabled: !USE_MOCK && !!seasonId,
@@ -380,7 +508,8 @@ export function useSeason(seasonId?: string) {
 export function useTeam(teamId?: string) {
   const mock = useMockTeam(teamId);
   const real = useSupabaseQuery<TeamDetailRow>('teams', {
-    select: '*, divisions(id, name, season_id, seasons(id, name, league_id, leagues(id, name, city_id, cities(id, name))))',
+    select:
+      '*, divisions(id, name, season_id, seasons(id, name, league_id, leagues(id, name, city_id, cities(id, name))))',
     filter: teamId ? [{ column: 'id', value: teamId }] : undefined,
     single: true,
     enabled: !USE_MOCK && !!teamId,
@@ -391,7 +520,8 @@ export function useTeam(teamId?: string) {
 export function useBracket(bracketId?: string) {
   const mock = useMockBracket(bracketId);
   const real = useSupabaseQuery<BracketDetailRow>('brackets', {
-    select: '*, divisions(id, name, season_id, seasons(id, name, league_id, leagues(id, name, city_id)))',
+    select:
+      '*, divisions(id, name, season_id, seasons(id, name, league_id, leagues(id, name, city_id)))',
     filter: bracketId ? [{ column: 'id', value: bracketId }] : undefined,
     single: true,
     enabled: !USE_MOCK && !!bracketId,
@@ -453,7 +583,8 @@ export interface AllTeamRow {
 }
 
 export function useAllBrackets() {
-  const { isAdmin, isCommissioner, commissionerCityIds, effectiveRole, managedSeasonIds } = usePermissions();
+  const { isAdmin, isCommissioner, commissionerCityIds, effectiveRole, managedSeasonIds } =
+    usePermissions();
   const mock = useMockAllBrackets();
   const real = useSupabaseQuery<BracketListRow[]>('brackets', {
     select:
@@ -497,7 +628,14 @@ export function useSeasonBrackets(seasonId?: string) {
 }
 
 export function useAllTeamsEnriched() {
-  const { isAdmin, isCommissioner, commissionerCityIds, effectiveRole, managedSeasonIds, myTeamIds } = usePermissions();
+  const {
+    isAdmin,
+    isCommissioner,
+    commissionerCityIds,
+    effectiveRole,
+    managedSeasonIds,
+    myTeamIds,
+  } = usePermissions();
   const mock = useMockAllTeamsEnriched();
   const real = useSupabaseQuery<AllTeamRow[]>('teams', {
     select:
@@ -527,7 +665,15 @@ export function useAllTeamsEnriched() {
       return result.data.filter((t) => myTeamIds.includes(t.id));
     }
     return result.data;
-  }, [result.data, isAdmin, isCommissioner, commissionerCityIds, effectiveRole, managedSeasonIds, myTeamIds]);
+  }, [
+    result.data,
+    isAdmin,
+    isCommissioner,
+    commissionerCityIds,
+    effectiveRole,
+    managedSeasonIds,
+    myTeamIds,
+  ]);
 
   return { ...result, data: filtered };
 }

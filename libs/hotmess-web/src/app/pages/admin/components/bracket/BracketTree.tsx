@@ -15,7 +15,12 @@ interface BracketTreeProps {
   teamSeedMap?: Map<string, number>;
 }
 
-export function BracketTree({ matches, onMatchClick, editable = false, teamSeedMap }: BracketTreeProps) {
+export function BracketTree({
+  matches,
+  onMatchClick,
+  editable = false,
+  teamSeedMap,
+}: BracketTreeProps) {
   console.warn('[BracketTree] render:', {
     matchCount: matches.length,
     editable,
@@ -87,9 +92,7 @@ export function BracketTree({ matches, onMatchClick, editable = false, teamSeedM
               key={index}
               d={connector.path}
               className={
-                connector.type === 'winner'
-                  ? styles.winnerConnector
-                  : styles.loserConnector
+                connector.type === 'winner' ? styles.winnerConnector : styles.loserConnector
               }
               fill="none"
               strokeWidth="2"

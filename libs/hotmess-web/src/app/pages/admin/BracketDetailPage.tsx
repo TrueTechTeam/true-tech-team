@@ -15,7 +15,11 @@ import {
   useDivisions,
   useTeams,
 } from '../../../hooks/useSupabaseQuery';
-import { useBracketMatches, useAllBracketMatches, type BracketMatch } from '../../../hooks/useBracketMatches';
+import {
+  useBracketMatches,
+  useAllBracketMatches,
+  type BracketMatch,
+} from '../../../hooks/useBracketMatches';
 import { useBracketMutations, useBracketMatchMutations } from '../../../hooks/mutations';
 import { buildAdminBreadcrumbs } from './utils';
 import { BracketTree } from './components/bracket/BracketTree';
@@ -32,7 +36,11 @@ import { BracketExport } from './components/bracket/BracketExport';
 import { MasterSchedule } from './components/bracket/MasterSchedule';
 import { autoScheduleBracket } from './utils/bracketScheduling';
 import { calculateSeeding } from './utils/bracketGeneration';
-import { computeTimeSlots, computeSlotsNeeded, DEFAULT_BUFFER_MINUTES } from './utils/timeSlotComputation';
+import {
+  computeTimeSlots,
+  computeSlotsNeeded,
+  DEFAULT_BUFFER_MINUTES,
+} from './utils/timeSlotComputation';
 import {
   assignDivisionLetters,
   assignGameIds,
@@ -59,17 +67,15 @@ export function BracketDetailPage() {
   const [pendingAutoSchedule, setPendingAutoSchedule] = useState(false);
 
   // Collect all bracket IDs for fetching all matches
-  const allBracketIds = useMemo(
-    () => seasonBrackets?.map((b) => b.id) || [],
-    [seasonBrackets]
-  );
+  const allBracketIds = useMemo(() => seasonBrackets?.map((b) => b.id) || [], [seasonBrackets]);
 
   // Fetch ALL matches across all brackets
   const { data: allMatchesRaw, refetch: refetchAllMatches } = useAllBracketMatches(allBracketIds);
 
   // Also keep per-bracket fetch for detecting if brackets exist
   const firstBracketId = seasonBrackets?.[0]?.id;
-  const { data: firstBracketMatches, refetch: refetchFirstMatches } = useBracketMatches(firstBracketId);
+  const { data: firstBracketMatches, refetch: refetchFirstMatches } =
+    useBracketMatches(firstBracketId);
 
   const refetchMatches = async () => {
     await Promise.all([refetchFirstMatches(), refetchAllMatches()]);
@@ -96,7 +102,9 @@ export function BracketDetailPage() {
 
   // Sync season/sport data into scheduleConfig when it loads
   useEffect(() => {
-    if (!season) { return; }
+    if (!season) {
+      return;
+    }
     setScheduleConfig((prev) => ({
       ...prev,
       tournamentDate: prev.tournamentDate || tournamentDate,
@@ -104,14 +112,16 @@ export function BracketDetailPage() {
       gameDurationMinutes: gameDurationFromSport,
       playAreas: season.venues?.play_areas?.length ? season.venues.play_areas : prev.playAreas,
     }));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [season?.id]);
 
   // Division state for customization
   const [customDivisions, setCustomDivisions] = useState<CustomizableDivision[] | null>(null);
 
   const divisionsWithTeams: CustomizableDivision[] = useMemo(() => {
-    if (customDivisions) { return customDivisions; }
+    if (customDivisions) {
+      return customDivisions;
+    }
     return (
       divisions?.map((div) => ({
         id: div.id,
@@ -150,17 +160,20 @@ export function BracketDetailPage() {
     scheduleConfig,
   });
   if (allMatchesRaw && allMatchesRaw.length > 0) {
-    console.warn('[BracketDetailPage] all matches:', allMatchesRaw.map((m) => ({
-      id: m.id,
-      bracket_id: m.bracket_id,
-      round: m.round,
-      position: m.position,
-      team1: m.team1?.name ?? m.team1_id ?? 'none',
-      team2: m.team2?.name ?? m.team2_id ?? 'none',
-      scheduled_at: m.scheduled_at,
-      play_area: m.play_area,
-      winner_next: m.winner_next_match_id,
-    })));
+    console.warn(
+      '[BracketDetailPage] all matches:',
+      allMatchesRaw.map((m) => ({
+        id: m.id,
+        bracket_id: m.bracket_id,
+        round: m.round,
+        position: m.position,
+        team1: m.team1?.name ?? m.team1_id ?? 'none',
+        team2: m.team2?.name ?? m.team2_id ?? 'none',
+        scheduled_at: m.scheduled_at,
+        play_area: m.play_area,
+        winner_next: m.winner_next_match_id,
+      }))
+    );
   }
 
   // Step A: compute total matches needed (no dependency on timeSlots)
@@ -241,9 +254,13 @@ export function BracketDetailPage() {
       playAreas: scheduleConfig.playAreas,
       tournamentDate: scheduleConfig.tournamentDate,
     });
-    if (!pendingAutoSchedule || !allMatchesRaw || allMatchesRaw.length === 0) { return; }
+    if (!pendingAutoSchedule || !allMatchesRaw || allMatchesRaw.length === 0) {
+      return;
+    }
     if (computedTimeSlots.length === 0 || scheduleConfig.playAreas.length === 0) {
-      console.warn('[BracketDetailPage] auto-schedule skipped: no computed time slots or play areas');
+      console.warn(
+        '[BracketDetailPage] auto-schedule skipped: no computed time slots or play areas'
+      );
       return;
     }
 
@@ -269,21 +286,21 @@ export function BracketDetailPage() {
     if (scheduledUpdates.length > 0) {
       matchMutations
         .bulkUpdate(
-          scheduledUpdates
-            .filter((m) => m.id)
-            .map((m) => ({ id: m.id as string, data: m }))
+          scheduledUpdates.filter((m) => m.id).map((m) => ({ id: m.id as string, data: m }))
         )
         .then(() => refetchMatches())
         .then(() => toast?.success(`Scheduled ${scheduledUpdates.length} matches!`))
         .catch((err) => console.error('Auto-schedule failed:', err));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingAutoSchedule, allMatchesRaw, computedTimeSlots]);
 
   // Build team seed maps per division
   const teamSeedMaps = useMemo(() => {
     const maps = new Map<string, Map<string, number>>();
-    if (!allTeams || !seasonBrackets) { return maps; }
+    if (!allTeams || !seasonBrackets) {
+      return maps;
+    }
 
     for (const bracket of seasonBrackets) {
       const divisionId = bracket.division_id;
@@ -298,7 +315,9 @@ export function BracketDetailPage() {
           pointsFor: 0,
           pointsAgainst: 0,
         })) as Parameters<typeof calculateSeeding>[0];
-      if (divTeams.length === 0) { continue; }
+      if (divTeams.length === 0) {
+        continue;
+      }
 
       const seeded = calculateSeeding(divTeams);
       const seedMap = new Map<string, number>();
@@ -313,7 +332,9 @@ export function BracketDetailPage() {
 
   // Division lettering
   const orderedBracketIds = useMemo(() => {
-    if (divisionOrder) { return divisionOrder; }
+    if (divisionOrder) {
+      return divisionOrder;
+    }
     return allBracketIds;
   }, [divisionOrder, allBracketIds]);
 
@@ -324,7 +345,9 @@ export function BracketDetailPage() {
 
   // Build matches with game IDs for master schedule
   const allMatchesWithGameIds: MatchWithGameId[] = useMemo(() => {
-    if (!allMatchesRaw || !seasonBrackets) { return []; }
+    if (!allMatchesRaw || !seasonBrackets) {
+      return [];
+    }
 
     const matchesByBracket = new Map<string, BracketMatch[]>();
     const bracketIdToDivName = new Map<string, string>();
@@ -371,12 +394,17 @@ export function BracketDetailPage() {
   ]);
 
   const handleGenerateBrackets = async () => {
-    if (!seasonId) { return; }
+    if (!seasonId) {
+      return;
+    }
 
     console.warn('[BracketDetailPage] handleGenerateBrackets called', {
       seasonId,
       scheduleConfig,
-      divisionsWithTeams: divisionsWithTeams.map((d) => ({ name: d.name, teamCount: d.teams.length })),
+      divisionsWithTeams: divisionsWithTeams.map((d) => ({
+        name: d.name,
+        teamCount: d.teams.length,
+      })),
     });
 
     setGenerating(true);
@@ -391,7 +419,9 @@ export function BracketDetailPage() {
         console.warn('[BracketDetailPage] setting pendingAutoSchedule=true');
         setPendingAutoSchedule(true);
       } else {
-        console.warn('[BracketDetailPage] skipping auto-schedule: computedTimeSlots or playAreas empty');
+        console.warn(
+          '[BracketDetailPage] skipping auto-schedule: computedTimeSlots or playAreas empty'
+        );
       }
 
       toast?.success('Brackets generated for all divisions!');
@@ -419,7 +449,9 @@ export function BracketDetailPage() {
         <div>
           <h1 className={adminStyles.pageTitle}>{seasonName}</h1>
           <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-            {bracketFormat ? `${formatBracketType(bracketFormat)} Tournament` : 'Tournament Brackets'}
+            {bracketFormat
+              ? `${formatBracketType(bracketFormat)} Tournament`
+              : 'Tournament Brackets'}
             {leagueName && ` \u2014 ${leagueName}`}
           </p>
         </div>
@@ -476,24 +508,30 @@ export function BracketDetailPage() {
             <div className={detailStyles.validationCard}>
               <h3 className={detailStyles.validationTitle}>Slot Availability</h3>
               <p className={detailStyles.validationSummary}>
-                {scheduleConfig.playAreas.length} play area{scheduleConfig.playAreas.length !== 1 ? 's' : ''} &times; {scheduleConfig.timeSlots.length} time slot{scheduleConfig.timeSlots.length !== 1 ? 's' : ''} = <strong>{validation.availableSlots}</strong> available game slots.{' '}
-                <strong>{validation.totalMatchesNeeded}</strong> matches needed across {divisionsWithTeams.length} division{divisionsWithTeams.length !== 1 ? 's' : ''}.
+                {scheduleConfig.playAreas.length} play area
+                {scheduleConfig.playAreas.length !== 1 ? 's' : ''} &times;{' '}
+                {scheduleConfig.timeSlots.length} time slot
+                {scheduleConfig.timeSlots.length !== 1 ? 's' : ''} ={' '}
+                <strong>{validation.availableSlots}</strong> available game slots.{' '}
+                <strong>{validation.totalMatchesNeeded}</strong> matches needed across{' '}
+                {divisionsWithTeams.length} division{divisionsWithTeams.length !== 1 ? 's' : ''}.
               </p>
               {!validation.isValid && validation.totalMatchesNeeded > 0 && (
                 <p className={detailStyles.validationError}>
-                  Not enough game slots for auto-scheduling. Add more play areas or time slots before scheduling.
+                  Not enough game slots for auto-scheduling. Add more play areas or time slots
+                  before scheduling.
                 </p>
               )}
               {validation.isValid && validation.totalMatchesNeeded > 0 && (
-                <p className={detailStyles.validationSuccess}>
-                  Sufficient game slots available.
-                </p>
+                <p className={detailStyles.validationSuccess}>Sufficient game slots available.</p>
               )}
               <div className={detailStyles.validationBreakdown}>
                 {validation.perDivision.map((d) => (
                   <div key={d.name} className={detailStyles.validationRow}>
                     <span>{d.name}</span>
-                    <span>{d.teams} teams, {d.matches} matches</span>
+                    <span>
+                      {d.teams} teams, {d.matches} matches
+                    </span>
                   </div>
                 ))}
               </div>
@@ -598,9 +636,7 @@ function DivisionBracketTab({
 
   return (
     <div className={adminStyles.section}>
-      <h2 className={adminStyles.sectionTitle}>
-        {divisionName} Bracket
-      </h2>
+      <h2 className={adminStyles.sectionTitle}>{divisionName} Bracket</h2>
 
       {allMatches.length > 0 && (
         <BracketTree

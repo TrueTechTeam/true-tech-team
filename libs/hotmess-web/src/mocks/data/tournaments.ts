@@ -22,7 +22,8 @@ export const tournaments: Tournament[] = [
     status: 'registration-open',
     teamsRegistered: 14,
     maxTeams: 24,
-    description: 'The HotMess Winter Classic returns to St. Pete! Multi-sport national tournament featuring sand volleyball.',
+    description:
+      'The HotMess Winter Classic returns to St. Pete! Multi-sport national tournament featuring sand volleyball.',
   },
   {
     id: 't1',
@@ -46,7 +47,8 @@ export const tournaments: Tournament[] = [
     status: 'registration-open',
     teamsRegistered: 8,
     maxTeams: 12,
-    description: 'Hit the sand for a day of competitive volleyball on the beautiful St. Pete beaches.',
+    description:
+      'Hit the sand for a day of competitive volleyball on the beautiful St. Pete beaches.',
   },
   {
     id: 't3',

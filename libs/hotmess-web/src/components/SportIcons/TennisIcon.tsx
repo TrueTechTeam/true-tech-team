@@ -31,7 +31,15 @@ export function TennisIcon({ size = 24, className }: Props) {
         transform="rotate(-45 3.5 19.1)"
       />
       {/* Racquet shaft */}
-      <line x1="5" y1="17" x2="7.5" y2="14.5" stroke="#a8a29e" strokeWidth="1.2" strokeLinecap="round" />
+      <line
+        x1="5"
+        y1="17"
+        x2="7.5"
+        y2="14.5"
+        stroke="#a8a29e"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
       {/* Racquet head frame */}
       <ellipse
         cx="11.5"

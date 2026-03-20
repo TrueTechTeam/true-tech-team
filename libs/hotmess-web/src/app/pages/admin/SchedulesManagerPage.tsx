@@ -17,19 +17,9 @@ import {
   type FilterValue,
   type MultiSelectFilterConfig,
 } from '@true-tech-team/ui-components';
-import {
-  mockGames,
-  mockDivisions,
-  mockSeasons,
-  mockLeagues,
-} from '../../../mocks/data';
+import { mockGames, mockDivisions, mockSeasons, mockLeagues } from '../../../mocks/data';
 import { useCities, useSports } from '../../../hooks/useSupabaseQuery';
-import {
-  buildAdminBreadcrumbs,
-  useAdminDialog,
-  TIME_RANGE_OPTIONS,
-  getMonthsAgo,
-} from './utils';
+import { buildAdminBreadcrumbs, useAdminDialog, TIME_RANGE_OPTIONS, getMonthsAgo } from './utils';
 import { useScheduleMutations } from '../../../hooks/mutations';
 import styles from './AdminPages.module.scss';
 
@@ -280,7 +270,13 @@ export function SchedulesManagerPage() {
 
   // Group filtered games by city → league
   const cityGroups = useMemo(() => {
-    const cityMap = new Map<string, { cityName: string; leagueMap: Map<string, { leagueName: string; sportName: string; games: EnrichedGameRow[] }> }>();
+    const cityMap = new Map<
+      string,
+      {
+        cityName: string;
+        leagueMap: Map<string, { leagueName: string; sportName: string; games: EnrichedGameRow[] }>;
+      }
+    >();
 
     for (const game of filteredGames) {
       let cityEntry = cityMap.get(game.city_id);
@@ -381,10 +377,7 @@ export function SchedulesManagerPage() {
       key: 'status',
       header: 'Status',
       render: (_v, row) => (
-        <Badge
-          variant={row.status === 'completed' ? 'success' : 'info'}
-          size="sm"
-        >
+        <Badge variant={row.status === 'completed' ? 'success' : 'info'} size="sm">
           {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
         </Badge>
       ),

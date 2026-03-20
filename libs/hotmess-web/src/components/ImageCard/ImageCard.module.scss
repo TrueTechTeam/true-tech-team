@@ -6,7 +6,9 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   text-decoration: none;
   color: white;
 

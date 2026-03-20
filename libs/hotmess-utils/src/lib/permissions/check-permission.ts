@@ -1,5 +1,5 @@
 import { UserRole } from '@true-tech-team/hotmess-types';
-import { Permission, PermissionContext } from './types';
+import { type PermissionContext, Permission } from './types';
 import { getPermissionsForRole } from './role-permissions';
 
 /**

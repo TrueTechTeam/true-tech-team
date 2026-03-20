@@ -32,8 +32,20 @@ export function DodgeballIcon({ size = 24, className }: Props) {
         <path d="M1 8.5Q6 7.5 12 7.5T23 8.5" stroke="#1e3a8a" strokeWidth="1" fill="none" />
         <path d="M1 15.5Q6 16.5 12 16.5T23 15.5" stroke="#1e3a8a" strokeWidth="1" fill="none" />
         {/* Inner accent stripes within the band */}
-        <path d="M1 10Q6 9.2 12 9.2T23 10" stroke="white" strokeWidth="0.35" fill="none" opacity="0.3" />
-        <path d="M1 14Q6 14.8 12 14.8T23 14" stroke="white" strokeWidth="0.35" fill="none" opacity="0.3" />
+        <path
+          d="M1 10Q6 9.2 12 9.2T23 10"
+          stroke="white"
+          strokeWidth="0.35"
+          fill="none"
+          opacity="0.3"
+        />
+        <path
+          d="M1 14Q6 14.8 12 14.8T23 14"
+          stroke="white"
+          strokeWidth="0.35"
+          fill="none"
+          opacity="0.3"
+        />
         {/* Pebbled rubber texture */}
         <circle cx="7" cy="6" r="0.35" fill="#991b1b" opacity="0.2" />
         <circle cx="17" cy="6" r="0.35" fill="#991b1b" opacity="0.2" />
@@ -43,7 +55,15 @@ export function DodgeballIcon({ size = 24, className }: Props) {
       {/* Outline */}
       <circle cx="12" cy="12" r="10" stroke="#991b1b" strokeWidth="0.6" fill="none" />
       {/* Shine */}
-      <ellipse cx="8" cy="6.5" rx="2.8" ry="1.3" transform="rotate(-25 8 6.5)" fill="white" opacity="0.2" />
+      <ellipse
+        cx="8"
+        cy="6.5"
+        rx="2.8"
+        ry="1.3"
+        transform="rotate(-25 8 6.5)"
+        fill="white"
+        opacity="0.2"
+      />
     </svg>
   );
 }

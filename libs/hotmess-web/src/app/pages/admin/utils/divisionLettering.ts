@@ -6,9 +6,7 @@ const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
  * Assign sequential letters (A, B, C...) to divisions based on display order.
  * Returns a map from division/bracket ID to letter.
  */
-export function assignDivisionLetters(
-  orderedIds: string[]
-): Map<string, string> {
+export function assignDivisionLetters(orderedIds: string[]): Map<string, string> {
   const map = new Map<string, string>();
   orderedIds.forEach((id, idx) => {
     map.set(id, LETTERS[idx] || `D${idx + 1}`);
@@ -19,10 +17,7 @@ export function assignDivisionLetters(
 /**
  * Get the division letter for a bracket ID.
  */
-export function getDivisionLetter(
-  bracketId: string,
-  letterMap: Map<string, string>
-): string {
+export function getDivisionLetter(bracketId: string, letterMap: Map<string, string>): string {
   return letterMap.get(bracketId) || '?';
 }
 
@@ -71,9 +66,7 @@ export function assignGameIds(
 /**
  * Build a lookup from match ID to game ID.
  */
-export function buildGameIdLookup(
-  matchesWithIds: MatchWithGameId[]
-): Map<string, string> {
+export function buildGameIdLookup(matchesWithIds: MatchWithGameId[]): Map<string, string> {
   const map = new Map<string, string>();
   for (const m of matchesWithIds) {
     map.set(m.id, m.gameId);
@@ -88,7 +81,9 @@ export function getWinnerGoesToGameId(
   match: BracketMatch,
   gameIdLookup: Map<string, string>
 ): string | null {
-  if (!match.winner_next_match_id) { return null; }
+  if (!match.winner_next_match_id) {
+    return null;
+  }
   return gameIdLookup.get(match.winner_next_match_id) || null;
 }
 
@@ -104,7 +99,9 @@ export function buildFeederLookup(
   const lookup = new Map<string, { homeFeeder?: string; awayFeeder?: string }>();
 
   for (const match of matches) {
-    if (!match.winner_next_match_id) { continue; }
+    if (!match.winner_next_match_id) {
+      continue;
+    }
 
     const existing = lookup.get(match.winner_next_match_id) || {};
     if (match.position % 2 === 0) {

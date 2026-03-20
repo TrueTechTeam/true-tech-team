@@ -46,7 +46,14 @@ const ADMIN_ONLY = [UserRole.Admin];
 const ADMIN_COMMISSIONER = [UserRole.Admin, UserRole.Commissioner];
 const ADMIN_COMMISSIONER_MANAGER = [UserRole.Admin, UserRole.Commissioner, UserRole.Manager];
 const SCHEDULE_ROLES = [UserRole.Admin, UserRole.Commissioner, UserRole.Manager, UserRole.Referee];
-const ALL_ADMIN_ROLES = [UserRole.Admin, UserRole.Commissioner, UserRole.Manager, UserRole.Referee, UserRole.TeamCaptain, UserRole.Player];
+const ALL_ADMIN_ROLES = [
+  UserRole.Admin,
+  UserRole.Commissioner,
+  UserRole.Manager,
+  UserRole.Referee,
+  UserRole.TeamCaptain,
+  UserRole.Player,
+];
 
 export const router = createBrowserRouter([
   {
@@ -94,24 +101,150 @@ export const router = createBrowserRouter([
         ),
         children: [
           { index: true, element: <Navigate to="dashboard" replace /> },
-          { path: 'dashboard', element: <ProtectedRoute allowedRoles={ALL_ADMIN_ROLES}><DashboardPage /></ProtectedRoute> },
-          { path: 'cities', element: <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER}><CitiesManagerPage /></ProtectedRoute> },
-          { path: 'cities/:cityId', element: <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER}><CityDetailPage /></ProtectedRoute> },
-          { path: 'sports', element: <ProtectedRoute allowedRoles={ADMIN_ONLY}><SportsManagerPage /></ProtectedRoute> },
-          { path: 'leagues', element: <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER}><LeaguesManagerPage /></ProtectedRoute> },
-          { path: 'leagues/:leagueId', element: <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER}><LeagueDetailPage /></ProtectedRoute> },
-          { path: 'cities/:cityId/leagues', element: <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER}><LeaguesManagerPage /></ProtectedRoute> },
-          { path: 'seasons', element: <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER_MANAGER}><SeasonsManagerPage /></ProtectedRoute> },
-          { path: 'leagues/:leagueId/seasons', element: <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER_MANAGER}><SeasonsManagerPage /></ProtectedRoute> },
-          { path: 'seasons/:seasonId', element: <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER_MANAGER}><SeasonDetailPage /></ProtectedRoute> },
-          { path: 'teams', element: <ProtectedRoute allowedRoles={[...ADMIN_COMMISSIONER_MANAGER, UserRole.TeamCaptain]}><TeamsManagerPage /></ProtectedRoute> },
-          { path: 'teams/:teamId', element: <ProtectedRoute allowedRoles={[...ADMIN_COMMISSIONER_MANAGER, UserRole.TeamCaptain]}><TeamDetailPage /></ProtectedRoute> },
-          { path: 'seasons/:seasonId/teams', element: <ProtectedRoute allowedRoles={[...ADMIN_COMMISSIONER_MANAGER, UserRole.TeamCaptain]}><TeamsManagerPage /></ProtectedRoute> },
-          { path: 'schedules', element: <ProtectedRoute allowedRoles={SCHEDULE_ROLES}><SchedulesManagerPage /></ProtectedRoute> },
-          { path: 'brackets', element: <ProtectedRoute allowedRoles={SCHEDULE_ROLES}><BracketsManagerPage /></ProtectedRoute> },
-          { path: 'brackets/:seasonId', element: <ProtectedRoute allowedRoles={SCHEDULE_ROLES}><BracketDetailPage /></ProtectedRoute> },
-          { path: 'notifications', element: <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER_MANAGER}><NotificationsManagerPage /></ProtectedRoute> },
-          { path: 'permissions', element: <ProtectedRoute allowedRoles={ADMIN_ONLY}><PermissionsManagerPage /></ProtectedRoute> },
+          {
+            path: 'dashboard',
+            element: (
+              <ProtectedRoute allowedRoles={ALL_ADMIN_ROLES}>
+                <DashboardPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'cities',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER}>
+                <CitiesManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'cities/:cityId',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER}>
+                <CityDetailPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'sports',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_ONLY}>
+                <SportsManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'leagues',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER}>
+                <LeaguesManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'leagues/:leagueId',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER}>
+                <LeagueDetailPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'cities/:cityId/leagues',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER}>
+                <LeaguesManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'seasons',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER_MANAGER}>
+                <SeasonsManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'leagues/:leagueId/seasons',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER_MANAGER}>
+                <SeasonsManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'seasons/:seasonId',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER_MANAGER}>
+                <SeasonDetailPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'teams',
+            element: (
+              <ProtectedRoute allowedRoles={[...ADMIN_COMMISSIONER_MANAGER, UserRole.TeamCaptain]}>
+                <TeamsManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'teams/:teamId',
+            element: (
+              <ProtectedRoute allowedRoles={[...ADMIN_COMMISSIONER_MANAGER, UserRole.TeamCaptain]}>
+                <TeamDetailPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'seasons/:seasonId/teams',
+            element: (
+              <ProtectedRoute allowedRoles={[...ADMIN_COMMISSIONER_MANAGER, UserRole.TeamCaptain]}>
+                <TeamsManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'schedules',
+            element: (
+              <ProtectedRoute allowedRoles={SCHEDULE_ROLES}>
+                <SchedulesManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'brackets',
+            element: (
+              <ProtectedRoute allowedRoles={SCHEDULE_ROLES}>
+                <BracketsManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'brackets/:seasonId',
+            element: (
+              <ProtectedRoute allowedRoles={SCHEDULE_ROLES}>
+                <BracketDetailPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'notifications',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_COMMISSIONER_MANAGER}>
+                <NotificationsManagerPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'permissions',
+            element: (
+              <ProtectedRoute allowedRoles={ADMIN_ONLY}>
+                <PermissionsManagerPage />
+              </ProtectedRoute>
+            ),
+          },
         ],
       },
     ],

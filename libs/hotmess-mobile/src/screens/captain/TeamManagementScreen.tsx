@@ -36,20 +36,24 @@ export function TeamManagementScreen({ route }: Props) {
       <ScrollView
         style={styles.scrollView}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
         }
       >
         {/* Action Buttons */}
         <View style={styles.actions}>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => navigation.navigate('InvitePlayers' as never, { teamId } as never)}
+            onPress={() => navigation.navigate('InvitePlayers', { teamId })}
           >
             <Text style={styles.actionButtonText}>Invite Players</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => navigation.navigate('FreeAgentRequests' as never, { teamId } as never)}
+            onPress={() => navigation.navigate('FreeAgentRequests', { teamId })}
           >
             <Text style={styles.actionButtonText}>Free Agents</Text>
           </TouchableOpacity>
@@ -58,9 +62,7 @@ export function TeamManagementScreen({ route }: Props) {
         {/* Pending Requests */}
         {pendingPlayers.length > 0 && (
           <View style={styles.section}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('JoinRequests' as never, { teamId } as never)}
-            >
+            <TouchableOpacity onPress={() => navigation.navigate('JoinRequests', { teamId })}>
               <View style={styles.pendingBanner}>
                 <Text style={styles.pendingText}>
                   {pendingPlayers.length} pending request{pendingPlayers.length !== 1 ? 's' : ''}
@@ -73,9 +75,7 @@ export function TeamManagementScreen({ route }: Props) {
 
         {/* Roster */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Active Roster ({activePlayers.length})
-          </Text>
+          <Text style={styles.sectionTitle}>Active Roster ({activePlayers.length})</Text>
           {loading && !refreshing ? (
             <LoadingSpinner />
           ) : activePlayers.length > 0 ? (
@@ -84,9 +84,7 @@ export function TeamManagementScreen({ route }: Props) {
                 <TouchableOpacity
                   key={member.id}
                   style={styles.memberCard}
-                  onPress={() =>
-                    navigation.navigate('PlayerProfile' as never, { userId: member.user_id } as never)
-                  }
+                  onPress={() => navigation.navigate('PlayerProfile', { userId: member.user_id })}
                 >
                   <View style={styles.memberAvatar}>
                     <Text style={styles.avatarText}>

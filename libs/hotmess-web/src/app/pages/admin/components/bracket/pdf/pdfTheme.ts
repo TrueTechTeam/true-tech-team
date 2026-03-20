@@ -52,6 +52,6 @@ export const PAGE = {
 };
 
 export const USABLE = {
-  width: PAGE.width - PAGE.margin * 2,   // 540
-  height: PAGE.height - PAGE.margin * 2,  // 720
+  width: PAGE.width - PAGE.margin * 2, // 540
+  height: PAGE.height - PAGE.margin * 2, // 720
 };

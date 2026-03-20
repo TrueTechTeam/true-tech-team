@@ -32,11 +32,13 @@ export function InvitePlayersScreen({ route }: Props) {
     setSearchQuery(query);
     if (query.length >= 2) {
       // Mock search results for dev
-      setResults([
-        { id: 'user-search-1', name: 'Alex Johnson', email: 'alex@example.com' },
-        { id: 'user-search-2', name: 'Sam Williams', email: 'sam@example.com' },
-        { id: 'user-search-3', name: 'Jordan Brown', email: 'jordan@example.com' },
-      ].filter((r) => r.name.toLowerCase().includes(query.toLowerCase())));
+      setResults(
+        [
+          { id: 'user-search-1', name: 'Alex Johnson', email: 'alex@example.com' },
+          { id: 'user-search-2', name: 'Sam Williams', email: 'sam@example.com' },
+          { id: 'user-search-3', name: 'Jordan Brown', email: 'jordan@example.com' },
+        ].filter((r) => r.name.toLowerCase().includes(query.toLowerCase()))
+      );
     } else {
       setResults([]);
     }
@@ -89,7 +91,11 @@ export function InvitePlayersScreen({ route }: Props) {
             })}
           </View>
         ) : searchQuery.length >= 2 ? (
-          <EmptyState icon="🔍" title="No Results" message="No players found matching your search." />
+          <EmptyState
+            icon="🔍"
+            title="No Results"
+            message="No players found matching your search."
+          />
         ) : (
           <EmptyState
             icon="📨"

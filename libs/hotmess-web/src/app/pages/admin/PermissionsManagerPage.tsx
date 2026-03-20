@@ -82,7 +82,9 @@ export function PermissionsManagerPage() {
   }, []);
 
   const handleSave = useCallback(() => {
-    if (!selectedUser) { return; }
+    if (!selectedUser) {
+      return;
+    }
     // TODO: Replace with actual mutation against user_roles table
     console.warn('[PermissionsManager] Save role assignment:', {
       userId: selectedUser.id,
@@ -122,7 +124,9 @@ export function PermissionsManagerPage() {
       key: 'cityAssignments',
       header: 'City Scope',
       render: (_v, row) => {
-        if (row.cityAssignments.length === 0) { return '—'; }
+        if (row.cityAssignments.length === 0) {
+          return '—';
+        }
         const cityNames = row.cityAssignments.map((id) => {
           const city = cities?.find((c) => c.id === id);
           return city ? city.name : id;
@@ -160,8 +164,8 @@ export function PermissionsManagerPage() {
 
       <section className={styles.section} style={{ marginTop: 0 }}>
         <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
-          Manage user roles and city assignments. Sports Engine roles are synced automatically
-          and shown as read-only. Manual assignments enhance SE permissions.
+          Manage user roles and city assignments. Sports Engine roles are synced automatically and
+          shown as read-only. Manual assignments enhance SE permissions.
         </p>
       </section>
 
@@ -182,8 +186,12 @@ export function PermissionsManagerPage() {
         size="md"
         actions={
           <DialogFooter align="end">
-            <Button variant="outline" onClick={handleClose}>Cancel</Button>
-            <Button variant="primary" onClick={handleSave}>Save</Button>
+            <Button variant="outline" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleSave}>
+              Save
+            </Button>
           </DialogFooter>
         }
       >
@@ -220,7 +228,13 @@ export function PermissionsManagerPage() {
                 <Badge variant="info" size="sm">
                   {ROLE_LABELS[selectedUser.effectiveRole]}
                 </Badge>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginLeft: '0.5rem' }}>
+                <span
+                  style={{
+                    color: 'var(--text-muted)',
+                    fontSize: '0.8125rem',
+                    marginLeft: '0.5rem',
+                  }}
+                >
                   (read-only — synced from Sports Engine)
                 </span>
               </div>

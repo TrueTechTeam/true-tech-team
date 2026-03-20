@@ -105,7 +105,8 @@ export function SeasonDetailPage() {
   const dialog = useAdminDialog<typeof initialForm>();
   const mutations = useSeasonMutations();
   const [form, setForm] = useState(initialForm);
-  const [scheduleConfig, setScheduleConfig] = useState<ScheduleConfigState>(DEFAULT_SCHEDULE_CONFIG);
+  const [scheduleConfig, setScheduleConfig] =
+    useState<ScheduleConfigState>(DEFAULT_SCHEDULE_CONFIG);
   const [generatedGames, setGeneratedGames] = useState<GeneratedGame[]>([]);
 
   // Initialize schedule config from season data
@@ -146,7 +147,9 @@ export function SeasonDetailPage() {
   // Venues filtered by city
   const cityVenues = useMemo(() => {
     const cityId = season?.leagues?.city_id;
-    if (!cityId) { return mockVenues; }
+    if (!cityId) {
+      return mockVenues;
+    }
     return mockVenues.filter((v) => v.city_id === cityId);
   }, [season?.leagues?.city_id]);
 
@@ -157,8 +160,15 @@ export function SeasonDetailPage() {
 
   // Computed time slots
   const computedTimeSlots = useMemo(() => {
-    if (!scheduleConfig.firstGameTime || gameDurationMinutes <= 0) { return []; }
-    return computeTimeSlots(scheduleConfig.firstGameTime, gameDurationMinutes, 10, scheduleConfig.bufferMinutes);
+    if (!scheduleConfig.firstGameTime || gameDurationMinutes <= 0) {
+      return [];
+    }
+    return computeTimeSlots(
+      scheduleConfig.firstGameTime,
+      gameDurationMinutes,
+      10,
+      scheduleConfig.bufferMinutes
+    );
   }, [scheduleConfig.firstGameTime, gameDurationMinutes, scheduleConfig.bufferMinutes]);
 
   if (loading) {
@@ -403,8 +413,7 @@ export function SeasonDetailPage() {
             {season.venues && (
               <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
                 Venue: {season.venues.name}
-                {season.venues.play_areas.length > 0 &&
-                  ` (${season.venues.play_areas.join(', ')})`}
+                {season.venues.play_areas.length > 0 && ` (${season.venues.play_areas.join(', ')})`}
               </span>
             )}
           </div>

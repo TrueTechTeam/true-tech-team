@@ -83,15 +83,23 @@ function getTypeIcon(type: string): string {
 }
 
 function formatRelativeTime(dateString: string): string {
-  if (!dateString) {return '';}
+  if (!dateString) {
+    return '';
+  }
   const now = Date.now();
   const then = new Date(dateString).getTime();
   const diffMs = now - then;
   const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) {return 'now';}
-  if (diffMin < 60) {return `${diffMin}m`;}
+  if (diffMin < 1) {
+    return 'now';
+  }
+  if (diffMin < 60) {
+    return `${diffMin}m`;
+  }
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) {return `${diffHr}h`;}
+  if (diffHr < 24) {
+    return `${diffHr}h`;
+  }
   const diffDays = Math.floor(diffHr / 24);
   return `${diffDays}d`;
 }
@@ -122,14 +130,23 @@ export function MessagesScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Ionicons name="chatbubbles" size={24} color={tabColors.Messages} style={styles.headerIcon} />
+        <Ionicons
+          name="chatbubbles"
+          size={24}
+          color={tabColors.Messages}
+          style={styles.headerIcon}
+        />
         <Text style={styles.title}>Messages</Text>
       </View>
 
       <ScrollView
         style={styles.scrollView}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
         }
       >
         {loading && !refreshing ? (
@@ -143,14 +160,19 @@ export function MessagesScreen() {
                   key={data.id}
                   style={styles.threadItem}
                   onPress={() =>
-                    navigation.navigate('ThreadDetail' as never, {
+                    navigation.navigate('ThreadDetail', {
                       threadId: data.id,
                       threadName: data.name,
                       threadType: data.type,
-                    } as never)
+                    })
                   }
                 >
-                  <View style={[styles.avatar, data.type === 'announcement' && styles.avatarAnnouncement]}>
+                  <View
+                    style={[
+                      styles.avatar,
+                      data.type === 'announcement' && styles.avatarAnnouncement,
+                    ]}
+                  >
                     <Text style={styles.avatarText}>{getTypeIcon(data.type)}</Text>
                   </View>
                   <View style={styles.threadContent}>
