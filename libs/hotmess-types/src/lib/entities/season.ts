@@ -3,6 +3,7 @@ import type { SeasonStatus } from '../enums';
 import type { League } from './league';
 import type { Division } from './division';
 import type { User } from './user';
+import type { Venue } from './game';
 
 /**
  * Configuration for schedule generation.
@@ -12,6 +13,8 @@ export interface ScheduleConfig {
   gameDays: number[];
   /** Available time slots */
   timeSlots: string[];
+  /** First game start time (HH:mm format, e.g. '09:00') */
+  firstGameTime?: string;
   /** Number of weeks in regular season */
   totalWeeks: number;
   /** Dates with no games (holidays, etc.) */
@@ -24,6 +27,12 @@ export interface ScheduleConfig {
   minTimeBetweenGames: number;
   /** Maximum games per team per day */
   maxGamesPerDay: number;
+  /** Subset of venue play areas used for this season */
+  selectedPlayAreas?: string[];
+  /** Backup tournament dates in case of bad weather */
+  backupTournamentDates?: Date[];
+  /** Transition time between games in minutes (default 10) */
+  bufferMinutes?: number;
 }
 
 /**
@@ -32,6 +41,7 @@ export interface ScheduleConfig {
  */
 export interface Season extends BaseEntity {
   leagueId: string;
+  venueId?: string;
   managerId?: string;
   name: string;
   status: SeasonStatus;
@@ -43,6 +53,7 @@ export interface Season extends BaseEntity {
 
   // Relations
   league?: League;
+  venue?: Venue;
   manager?: User;
   divisions?: Division[];
 }

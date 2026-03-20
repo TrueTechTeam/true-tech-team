@@ -1,0 +1,299 @@
+@use '../../../styles/variables' as *;
+
+.page {
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+// Hero
+.hero {
+  height: 280px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+
+  @media (max-width: 768px) {
+    height: 200px;
+  }
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.85) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 2rem;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.8125rem;
+}
+
+.crumb {
+  color: rgba(255, 255, 255, 0.7);
+
+  &:hover {
+    color: white;
+  }
+}
+
+.separator {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.crumbCurrent {
+  color: white;
+  font-weight: 500;
+}
+
+.heroContent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.heroIcon {
+  flex-shrink: 0;
+}
+
+.heroTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.1;
+
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+  }
+}
+
+.heroLocation {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.125rem;
+  margin-top: 0.25rem;
+}
+
+// Content Layout
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  padding: 2.5rem 0 4rem;
+
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main {
+  min-width: 0;
+}
+
+// Season Card
+.seasonCard {
+  padding: 2rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+}
+
+.seasonHeader {
+  margin-bottom: 1.5rem;
+}
+
+.badgeOpen {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: rgba(34, 197, 94, 0.15);
+  color: var(--color-success);
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.seasonName {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.seasonDetails {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.seasonDetail {
+  padding: 1rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 0.5rem;
+}
+
+.detailLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.detailValue {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.registerButton {
+  display: inline-block;
+  padding: 0.875rem 2rem;
+  background: var(--gradient-rainbow);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.placeholder {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+// Sections
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+// What to Expect Grid
+.expectGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.expectCard {
+  padding: 1.5rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: 0.75rem;
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+.expectIcon {
+  font-size: 1.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+// Sidebar
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebarCard {
+  padding: 1.5rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: 0.75rem;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.sidebarImage {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.factsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    strong {
+      color: var(--text-primary);
+    }
+  }
+}
+
+.contactText {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.link {
+  color: var(--color-primary);
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.notFound {
+  padding: 4rem 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1.125rem;
+}

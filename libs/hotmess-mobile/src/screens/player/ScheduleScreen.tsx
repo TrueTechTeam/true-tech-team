@@ -8,7 +8,8 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useState, useCallback } from 'react';
-import { colors, spacing, typography } from '../../theme';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, tabColors, spacing, typography } from '../../theme';
 import { useAuth } from '../../contexts';
 import { useUpcomingGames } from '../../hooks';
 
@@ -53,7 +54,10 @@ export function ScheduleScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Schedule</Text>
+        <View style={styles.headerRow}>
+          <Ionicons name="calendar" size={24} color={tabColors.Schedule} style={styles.headerIcon} />
+          <Text style={styles.title}>Schedule</Text>
+        </View>
         <Text style={styles.subtitle}>{getSeasonName()} Season</Text>
       </View>
 
@@ -113,8 +117,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgPrimary,
   },
   header: {
+    backgroundColor: colors.bgSecondary,
     padding: spacing.md,
     paddingTop: spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderDefault,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerIcon: {
+    marginRight: spacing.sm,
   },
   title: {
     fontSize: typography.fontSizes['2xl'],
@@ -129,7 +143,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     padding: spacing.md,
-    paddingTop: 0,
+    paddingTop: spacing.md,
   },
   loadingContainer: {
     padding: spacing.xl,

@@ -15,6 +15,10 @@
   padding: 6rem 0;
   text-align: center;
   background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+
+  @media (max-width: 768px) {
+    padding: 3rem 0;
+  }
 }
 
 .heroTitle {
@@ -29,7 +33,7 @@
 }
 
 .highlight {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background: var(--gradient-rainbow-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -52,7 +56,7 @@
 
 .primaryButton {
   padding: 0.875rem 2rem;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background: var(--gradient-rainbow);
   color: white;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -83,9 +87,98 @@
   }
 }
 
+// Tournament Banner
+.tournamentSection {
+  padding: 3rem 0;
+  background-color: var(--bg-primary);
+}
+
+.tournamentBanner {
+  display: block;
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  transition: all 0.3s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.tournamentImage {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  display: block;
+
+  @media (max-width: 768px) {
+    height: 200px;
+  }
+}
+
+.tournamentOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+}
+
+.tournamentBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--color-success);
+  color: white;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.tournamentTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: white;
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+  }
+}
+
+.tournamentMeta {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9375rem;
+  margin-bottom: 0.5rem;
+}
+
+.tournamentDesc {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+  max-width: 600px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.tournamentCta {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
 // Sections
 .section {
   padding: 5rem 0;
+
+  @media (max-width: 768px) {
+    padding: 3rem 0;
+  }
 }
 
 .sectionTitle {
@@ -102,12 +195,23 @@
   margin-bottom: 3rem;
 }
 
+// Registration Grid
+.registrationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
 // Sports Grid
 .sportsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1.5rem;
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -130,12 +234,28 @@
 }
 
 .sportIcon {
-  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
 }
 
 .sportName {
   font-weight: 600;
   color: var(--text-primary);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+// Cities Grid
+.citiesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
 }
 
 // Features Grid

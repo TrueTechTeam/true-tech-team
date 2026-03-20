@@ -1,11 +1,15 @@
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
-import { colors, spacing, typography } from '../../theme';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, tabColors, spacing, typography } from '../../theme';
 
 export function PhotosScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Photos</Text>
+        <View style={styles.headerLeft}>
+          <Ionicons name="camera" size={24} color={tabColors.Photos} style={styles.headerIcon} />
+          <Text style={styles.title}>Photos</Text>
+        </View>
         <TouchableOpacity style={styles.uploadButton}>
           <Text style={styles.uploadButtonText}>+ Upload</Text>
         </TouchableOpacity>
@@ -33,11 +37,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgPrimary,
   },
   header: {
+    backgroundColor: colors.bgSecondary,
     padding: spacing.md,
     paddingTop: spacing.lg,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderDefault,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerIcon: {
+    marginRight: spacing.sm,
   },
   title: {
     fontSize: typography.fontSizes['2xl'],

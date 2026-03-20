@@ -1,6 +1,15 @@
 import type { BaseEntity } from './base';
 
 /**
+ * Scheduling rule for back-to-back games within a single game day.
+ * - no_rules: teams can play consecutive time slots
+ * - one_game_break: exactly one time slot gap between games
+ * - not_back_to_back: at least one time slot gap between games
+ * - any_schedule: flexible, try to space out but no hard constraint
+ */
+export type SchedulingRule = 'no_rules' | 'one_game_break' | 'not_back_to_back' | 'any_schedule';
+
+/**
  * Configuration for how a sport is played and scored.
  */
 export interface SportConfig {
@@ -16,6 +25,8 @@ export interface SportConfig {
   scoringType: 'points' | 'sets' | 'frames' | 'custom';
   /** Rules for determining team rankings */
   rankingRules: RankingRule[];
+  /** Scheduling rule for back-to-back games */
+  schedulingRule?: SchedulingRule;
 }
 
 /**

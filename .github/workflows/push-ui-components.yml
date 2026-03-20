@@ -29,6 +29,11 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
 
+      - name: Upgrade npm for OIDC support
+        run: |
+          npm install -g npm@latest
+          echo "npm version: $(npm --version)"
+
       - name: Install dependencies
         run: npm ci
 
@@ -71,9 +76,7 @@ jobs:
 
       - name: Publish to npm
         if: steps.check.outputs.skip == 'false'
-        run: npx nx release publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx nx release publish --registry https://registry.npmjs.org --access public
 
       - name: Skip message
         if: steps.check.outputs.skip == 'true'

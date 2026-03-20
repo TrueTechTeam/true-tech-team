@@ -34,7 +34,7 @@
 .logoText {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background: var(--gradient-rainbow-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -143,6 +143,17 @@
 .userName {
   color: var(--text-secondary);
   font-size: 0.875rem;
+}
+
+.roleBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  background-color: var(--color-primary);
+  color: white;
 }
 
 .main {
