@@ -105,6 +105,7 @@ CREATE TABLE public.leagues (
 CREATE TABLE public.seasons (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     league_id UUID NOT NULL REFERENCES public.leagues(id) ON DELETE CASCADE,
+    venue_id UUID REFERENCES public.venues(id),
     manager_id UUID REFERENCES public.profiles(id),
     name TEXT NOT NULL,
     status season_status DEFAULT 'draft',

@@ -111,9 +111,43 @@ jobs:
       - run: npm ci --prefer-offline
       - run: npm run test:ci
 
+  build-hotmess-web:
+    name: Build hotmess-web
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npm ci --prefer-offline
+      - run: npx nx build hotmess-web --configuration=production
+
+  build-hotmess-types:
+    name: Build hotmess-types
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npm ci --prefer-offline
+      - run: npx nx build hotmess-types
+
   ci-success:
     name: CI Success
-    needs: [lint, format, typecheck, test]
+    needs: [lint, format, typecheck, test, build-hotmess-web, build-hotmess-types]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -122,15 +156,18 @@ jobs:
           if [[ "${{ needs.lint.result }}" != "success" ]] || \
              [[ "${{ needs.format.result }}" != "success" ]] || \
              [[ "${{ needs.typecheck.result }}" != "success" ]] || \
-             [[ "${{ needs.test.result }}" != "success" ]]; then
+             [[ "${{ needs.test.result }}" != "success" ]] || \
+             [[ "${{ needs.build-hotmess-web.result }}" != "success" ]] || \
+             [[ "${{ needs.build-hotmess-types.result }}" != "success" ]]; then
             echo "One or more jobs failed"
             exit 1
           fi
           echo "All CI checks passed!"
 
   preview:
+    name: Release Preview
+    needs: setup
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -140,6 +177,11 @@ jobs:
         with:
           node-version: 22
 
-      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - run: npm ci --prefer-offline
 
       - run: npx nx release --dry-run

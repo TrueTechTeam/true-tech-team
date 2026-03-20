@@ -9,18 +9,20 @@ import {
   type SportsEngineUser,
 } from '../lib/sports-engine';
 
-interface Profile {
+export interface Profile {
   id: string;
   email: string;
   first_name: string;
   last_name: string;
   preferred_name?: string;
   avatar_url?: string;
+  location?: string;
+  instagram_url?: string;
   is_onboarded: boolean;
   sports_engine_id?: string;
 }
 
-interface AuthContextType {
+export interface AuthContextType {
   user: SportsEngineUser | null;
   profile: Profile | null;
   loading: boolean;
@@ -31,7 +33,7 @@ interface AuthContextType {
   getAccessToken: () => Promise<string | null>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 // Storage keys
 const TOKEN_KEY = 'hotmess_se_tokens';

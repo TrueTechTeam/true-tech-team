@@ -2,10 +2,10 @@
 
 :root {
   // Background colors
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #171717;
-  --bg-tertiary: #262626;
-  --bg-elevated: #262626;
+  --bg-primary: #0d0a14;
+  --bg-secondary: #16121f;
+  --bg-tertiary: #221d2d;
+  --bg-elevated: #221d2d;
 
   // Text colors
   --text-primary: #fafafa;
@@ -13,8 +13,8 @@
   --text-muted: #737373;
 
   // Border colors
-  --border-default: #404040;
-  --border-subtle: #262626;
+  --border-default: #362f46;
+  --border-subtle: #221d2d;
 
   // Brand colors
   --color-primary: #0ea5e9;
@@ -51,14 +51,62 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 9999px;
+
+  // Logo colors
+  --logo-red: #ef4444;
+  --logo-yellow: #eab308;
+  --logo-green: #22c55e;
+  --logo-blue: #3b82f6;
+  --logo-purple: #a855f7;
+
+  // Logo colors at 25% alpha (for detail page cards)
+  --logo-red-50: rgba(239, 68, 68, 0.5);
+  --logo-yellow-50: rgba(234, 179, 8, 0.5);
+  --logo-green-50: rgba(34, 197, 94, 0.5);
+  --logo-blue-50: rgba(59, 130, 246, 0.5);
+  --logo-purple-50: rgba(168, 85, 247, 0.5);
+
+  // Rainbow gradient
+  --gradient-rainbow: linear-gradient(
+    135deg,
+    #ef4444 0%,
+    #f97316 20%,
+    #eab308 40%,
+    #22c55e 60%,
+    #3b82f6 80%,
+    #a855f7 100%
+  );
+  --gradient-rainbow-text: linear-gradient(
+    135deg,
+    #f87171 0%,
+    #fb923c 20%,
+    #fbbf24 40%,
+    #4ade80 60%,
+    #60a5fa 80%,
+    #c084fc 100%
+  );
+  --gradient-rainbow-horizontal: linear-gradient(
+    90deg,
+    #ef4444 0%,
+    #f97316 20%,
+    #eab308 40%,
+    #22c55e 60%,
+    #3b82f6 80%,
+    #a855f7 100%
+  );
 }
 
 // Sport-specific colors
 $sport-kickball: #ef4444;
-$sport-volleyball: #f97316;
+$sport-dodgeball: #f43f5e;
+$sport-bowling: #06b6d4;
+$sport-indoor-volleyball: #f97316;
+$sport-sand-volleyball: #eab308;
+$sport-grass-volleyball: #84cc16;
+$sport-cornhole: #8b5cf6;
 $sport-pickleball: #22c55e;
 $sport-basketball: #f59e0b;
-$sport-cornhole: #8b5cf6;
-$sport-bowling: #06b6d4;
+$sport-flag-football: #3b82f6;
+$sport-tennis: #14b8a6;
 $sport-softball: #ec4899;
 $sport-soccer: #10b981;

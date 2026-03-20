@@ -8,11 +8,13 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { colors, spacing, typography } from '../../theme';
 import { useAuth } from '../../contexts';
 import { useMyTeams } from '../../hooks';
 
 export function ProfileScreen() {
+  const navigation = useNavigation();
   const { user, profile, signOut } = useAuth();
   const { data: myTeams, loading: teamsLoading } = useMyTeams(user?.id);
 
@@ -89,17 +91,26 @@ export function ProfileScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Settings</Text>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('NotificationPreferences' as never)}
+          >
             <Text style={styles.menuIcon}>🔔</Text>
             <Text style={styles.menuText}>Notifications</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('EditProfile' as never)}
+          >
             <Text style={styles.menuIcon}>👤</Text>
             <Text style={styles.menuText}>Edit Profile</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('Privacy' as never)}
+          >
             <Text style={styles.menuIcon}>🔒</Text>
             <Text style={styles.menuText}>Privacy</Text>
             <Text style={styles.menuArrow}>›</Text>
@@ -125,8 +136,9 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     padding: spacing.xl,
+    backgroundColor: colors.bgSecondary,
     borderBottomWidth: 1,
-    borderBottomColor: colors.borderSubtle,
+    borderBottomColor: colors.borderDefault,
   },
   avatar: {
     width: 80,

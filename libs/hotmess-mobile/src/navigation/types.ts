@@ -9,23 +9,14 @@ export type AuthStackParamList = {
   Welcome: undefined;
 };
 
-// Main Tab Navigator (Player role)
+// Main Tab Navigator (adaptive - shows/hides tabs based on role)
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-export type PlayerTabParamList = {
-  Dashboard: undefined;
+export type MainTabParamList = {
+  Home: undefined;
   Schedule: undefined;
   Messages: undefined;
   Photos: undefined;
-  Profile: undefined;
-};
-
-// Captain Tab Navigator
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-export type CaptainTabParamList = {
-  Dashboard: undefined;
-  Schedule: undefined;
-  Team: undefined;
-  Messages: undefined;
+  Admin: undefined;
   Profile: undefined;
 };
 
@@ -33,14 +24,25 @@ export type CaptainTabParamList = {
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>;
-  PlayerTabs: NavigatorScreenParams<PlayerTabParamList>;
-  CaptainTabs: NavigatorScreenParams<CaptainTabParamList>;
-  // Shared screens
+  MainTabs: NavigatorScreenParams<MainTabParamList>;
+  // Detail screens pushed on top of tabs
   GameDetails: { gameId: string };
   TeamDetails: { teamId: string };
   PlayerProfile: { userId: string };
   Settings: undefined;
   Notifications: undefined;
+  NotificationPreferences: undefined;
+  EditProfile: undefined;
+  Privacy: undefined;
+  ThreadDetail: { threadId: string; threadName: string; threadType: string };
+  TeamManagement: { teamId: string };
+  ScoreEntry: { gameId: string };
+  SuperlativeVoting: { seasonId: string };
+  SuperlativeNominations: { seasonId: string; teamId: string };
+  InvitePlayers: { teamId: string };
+  FreeAgentRequests: { teamId: string };
+  JoinRequests: { teamId: string };
+  AllTeams: undefined;
 };
 
 // Screen props types
@@ -54,8 +56,8 @@ export type AuthStackScreenProps<T extends keyof AuthStackParamList> = Composite
   RootStackScreenProps<keyof RootStackParamList>
 >;
 
-export type PlayerTabScreenProps<T extends keyof PlayerTabParamList> = CompositeScreenProps<
-  BottomTabScreenProps<PlayerTabParamList, T>,
+export type MainTabScreenProps<T extends keyof MainTabParamList> = CompositeScreenProps<
+  BottomTabScreenProps<MainTabParamList, T>,
   RootStackScreenProps<keyof RootStackParamList>
 >;
 
