@@ -48,6 +48,22 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.ViewReports,
   ],
 
+  [UserRole.Commissioner]: [
+    Permission.ManageLeagues,
+    Permission.ManageSeasons,
+    Permission.ManageDivisions,
+    Permission.ManageAllTeams,
+    Permission.ManageAllPlayers,
+    Permission.ManageAllGames,
+    Permission.ManageSchedules,
+    Permission.ManageBrackets,
+    Permission.ManageSuperlatives,
+    Permission.MessageAllTeams,
+    Permission.SendAnnouncements,
+    Permission.ManageAllPhotos,
+    Permission.ViewReports,
+  ],
+
   [UserRole.Admin]: [
     Permission.ManageOrganization,
     Permission.ManageCities,
