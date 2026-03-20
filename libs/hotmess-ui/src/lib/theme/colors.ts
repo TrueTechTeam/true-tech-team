@@ -93,7 +93,7 @@ export const colors = {
     950: '#450a0a',
   },
 
-  // Neutral - dark grays for backgrounds
+  // Neutral - dark purples for backgrounds
   neutral: {
     50: '#fafafa',
     100: '#f5f5f5',
@@ -102,10 +102,10 @@ export const colors = {
     400: '#a3a3a3',
     500: '#737373',
     600: '#525252',
-    700: '#404040',
-    800: '#262626',
-    900: '#171717',
-    950: '#0a0a0a',
+    700: '#362f46',
+    800: '#221d2d',
+    900: '#16121f',
+    950: '#0d0a14',
   },
 } as const;
 
@@ -114,14 +114,31 @@ export const colors = {
  */
 export const sportColors = {
   kickball: '#ef4444', // Red
-  volleyball: '#f97316', // Orange
+  dodgeball: '#f43f5e', // Rose
+  bowling: '#06b6d4', // Cyan
+  'indoor-volleyball': '#f97316', // Orange
+  'sand-volleyball': '#eab308', // Yellow
+  'grass-volleyball': '#84cc16', // Lime
+  cornhole: '#8b5cf6', // Violet
   pickleball: '#22c55e', // Green
   basketball: '#f59e0b', // Amber
-  cornhole: '#8b5cf6', // Violet
-  bowling: '#06b6d4', // Cyan
+  'flag-football': '#3b82f6', // Blue
+  tennis: '#14b8a6', // Teal
   softball: '#ec4899', // Pink
   soccer: '#10b981', // Emerald
 } as const;
+
+/**
+ * Rainbow gradient color stops (red, orange, yellow, green, blue, purple).
+ */
+export const rainbowStops = [
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#3b82f6',
+  '#a855f7',
+] as const;
 
 export type ColorScale = typeof colors.primary;
 export type SportColor = keyof typeof sportColors;

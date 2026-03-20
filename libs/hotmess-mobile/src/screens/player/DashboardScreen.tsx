@@ -41,7 +41,7 @@ export function DashboardScreen() {
               <Text style={styles.gameTime}>
                 {formatGameDate(nextGame.scheduled_at)}, {formatGameTime(nextGame.scheduled_at)}
               </Text>
-              <Text style={styles.gameLocation}>{nextGame.venues?.name || 'TBD'}</Text>
+              <Text style={styles.gameLocation}>{nextGame.venue?.name || 'TBD'}</Text>
             </View>
           ) : (
             <Text style={styles.noData}>No upcoming games scheduled</Text>

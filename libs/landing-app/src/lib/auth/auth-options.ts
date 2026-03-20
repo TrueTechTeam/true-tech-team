@@ -54,17 +54,17 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    jwt({ token, user }) {
       if (user) {
         token.id = user.id;
       }
-      return token;
+      return Promise.resolve(token);
     },
-    async session({ session, token }) {
+    session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
       }
-      return session;
+      return Promise.resolve(session);
     },
   },
 };

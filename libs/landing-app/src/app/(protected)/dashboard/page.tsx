@@ -44,7 +44,7 @@ export default function DashboardPage() {
             </div>
 
             <div className={styles.card}>
-              <h2>What's Next?</h2>
+              <h2>What&apos;s Next?</h2>
               <ul className={styles.list}>
                 <li>Explore our UI Components Library via Storybook</li>
                 <li>Check out the projects showcase on the home page</li>

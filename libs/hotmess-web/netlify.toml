@@ -1,0 +1,30 @@
+# Netlify configuration for hotmess-web (React SPA)
+
+[build]
+  base = "."
+  command = "npx nx build hotmess-web --configuration=production"
+  publish = "dist/libs/hotmess-web"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# SPA fallback — all routes serve index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Immutable cache for hashed static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

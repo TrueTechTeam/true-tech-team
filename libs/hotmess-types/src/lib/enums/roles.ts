@@ -5,6 +5,8 @@
 export enum UserRole {
   /** System administrator with full access */
   Admin = 'admin',
+  /** City commissioner — manages all activity for assigned cities */
+  Commissioner = 'commissioner',
   /** City/league manager with broad permissions */
   Manager = 'manager',
   /** Game referee who can update scores */
@@ -24,5 +26,6 @@ export const ROLE_HIERARCHY: UserRole[] = [
   UserRole.TeamCaptain,
   UserRole.Referee,
   UserRole.Manager,
+  UserRole.Commissioner,
   UserRole.Admin,
 ];

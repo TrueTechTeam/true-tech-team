@@ -1,25 +1,23 @@
 import { Link, useParams } from 'react-router-dom';
 import { useSports } from '../../../hooks/useSupabaseQuery';
+import { getSportImage } from '../../../config/images';
+import { ImageCard } from '../../../components/ImageCard/ImageCard';
+import { SportIcon } from '../../../components/SportIcons';
 import styles from './SportsPage.module.scss';
-
-const sportIcons: Record<string, string> = {
-  Kickball: '⚽',
-  Volleyball: '🏐',
-  Pickleball: '🏓',
-  Basketball: '🏀',
-  Cornhole: '🎯',
-  Bowling: '🎳',
-  Softball: '🥎',
-  Soccer: '⚽',
-};
 
 const sportColors: Record<string, string> = {
   Kickball: '#ef4444',
-  Volleyball: '#f97316',
+  Dodgeball: '#f43f5e',
+  Bowling: '#06b6d4',
+  'Indoor Volleyball': '#f97316',
+  'Sand Volleyball': '#eab308',
+  'Grass Volleyball': '#84cc16',
+  Cornhole: '#8b5cf6',
   Pickleball: '#22c55e',
   Basketball: '#f59e0b',
-  Cornhole: '#8b5cf6',
-  Bowling: '#06b6d4',
+  'Flag Football': '#3b82f6',
+  Tennis: '#14b8a6',
+  'Beer Pong': '#dc2626',
   Softball: '#ec4899',
   Soccer: '#10b981',
 };
@@ -39,7 +37,9 @@ export function SportsPage() {
   }
 
   if (sportSlug) {
-    const sport = sports?.find((s) => s.name.toLowerCase() === sportSlug.toLowerCase());
+    const sport = sports?.find(
+      (s) => s.name.toLowerCase().replace(/\s+/g, '-') === sportSlug.toLowerCase()
+    );
 
     if (!sport) {
       return (
@@ -50,15 +50,18 @@ export function SportsPage() {
     }
 
     const config = sport.config as { teamSize?: number; gameDurationMinutes?: number };
+    const slug = sport.name.toLowerCase().replace(/\s+/g, '-');
 
     return (
       <div className={styles.page}>
         <div className={styles.container}>
           <Link to="/sports" className={styles.backLink}>
-            ← All Sports
+            &larr; All Sports
           </Link>
           <div className={styles.sportHeader}>
-            <span className={styles.sportIcon}>{sportIcons[sport.name] || '🏅'}</span>
+            <span className={styles.sportIcon}>
+              <SportIcon slug={slug} size={48} />
+            </span>
             <h1 className={styles.title}>{sport.name}</h1>
           </div>
           <p className={styles.description}>{sport.description}</p>
@@ -83,8 +86,8 @@ export function SportsPage() {
 
           <section className={styles.section}>
             <h2>Rules</h2>
-            <Link to={`/rules/${sport.name.toLowerCase()}`} className={styles.rulesLink}>
-              View Official Rulebook →
+            <Link to={`/rules/${slug}`} className={styles.rulesLink}>
+              View Official Rulebook &rarr;
             </Link>
           </section>
         </div>
@@ -98,20 +101,20 @@ export function SportsPage() {
         <h1 className={styles.title}>Our Sports</h1>
         <p className={styles.subtitle}>Find your perfect sport and join a league today</p>
         <div className={styles.sportsGrid}>
-          {sports?.map((sport) => (
-            <Link
-              key={sport.id}
-              to={`/sports/${sport.name.toLowerCase()}`}
-              className={styles.sportCard}
-              style={
-                { '--sport-color': sportColors[sport.name] || '#0ea5e9' } as React.CSSProperties
-              }
-            >
-              <span className={styles.cardIcon}>{sportIcons[sport.name] || '🏅'}</span>
-              <h3 className={styles.cardName}>{sport.name}</h3>
-              <p className={styles.cardDescription}>{sport.description}</p>
-            </Link>
-          ))}
+          {sports?.map((sport) => {
+            const slug = sport.name.toLowerCase().replace(/\s+/g, '-');
+            return (
+              <ImageCard
+                key={sport.id}
+                href={`/sports/${slug}`}
+                imageUrl={getSportImage(slug)}
+                imageAlt={sport.name}
+                title={sport.name}
+                subtitle={sport.description}
+                badgeColor={sportColors[sport.name]}
+              />
+            );
+          })}
         </div>
       </div>
     </div>
