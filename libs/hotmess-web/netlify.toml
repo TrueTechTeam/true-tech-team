@@ -6,6 +6,10 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # VITE_SUPABASE_* are intentionally bundled into the client-side JS by Vite (public anon key by design)
+  # .nx/cache and dist contain build artifacts that will always include these values
+  SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_ANON_KEY,VITE_SUPABASE_URL"
+  SECRETS_SCAN_OMIT_PATHS = ".nx/cache,dist"
 
 # SPA fallback — all routes serve index.html
 [[redirects]]
