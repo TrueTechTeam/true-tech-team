@@ -1,7 +1,6 @@
 # Netlify configuration for hotmess-web (React SPA)
 
 [build]
-  base = "."
   command = "npx nx build hotmess-web --configuration=production"
   publish = "dist/libs/hotmess-web"
 

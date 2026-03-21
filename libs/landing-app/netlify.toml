@@ -1,25 +1,18 @@
 # Netlify configuration for True Tech Team landing app
 # Using Next.js runtime for server-side features (authentication, API routes)
+# Package directory set to libs/landing-app in Netlify UI (build still runs from repo root)
 
 [build]
-  # Build command - runs nx from the repo root
   command = "npx nx build landing-app"
-
-  # Publish directory - path to the Next.js output
   publish = "libs/landing-app/.next"
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- libs/landing-app/ libs/ui-components/src/ package.json package-lock.json tsconfig.base.json"
 
-  # Skip build if no relevant files changed
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- libs/landing-app/ libs/ui-components/src/ package.json package-lock.json tsconfig.base.json netlify.toml"
-
-# Environment variables for the build
 [build.environment]
   NODE_VERSION = "20"
 
-# Next.js plugin for Netlify
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Redirect /storybook to separate Storybook deployment
 [[redirects]]
   from = "/storybook/*"
   to = "https://truetechteamcomponents.netlify.app/:splat"
@@ -32,7 +25,6 @@
   status = 301
   force = true
 
-# Headers for security
 [[headers]]
   for = "/*"
   [headers.values]
