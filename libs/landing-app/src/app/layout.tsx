@@ -1,7 +1,4 @@
-'use client';
-
-import { GlobalProvider } from '@true-tech-team/ui-components';
-import { SessionProvider } from 'next-auth/react';
+import { Providers } from '../components/Providers';
 import './globals.scss';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -15,9 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <GlobalProvider themeConfig={{ mode: 'dark' }}>
-          <SessionProvider>{children}</SessionProvider>
-        </GlobalProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

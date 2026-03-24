@@ -1,28 +1,31 @@
-'use client';
-
-import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { Badge } from '@true-tech-team/ui-components';
+import { createClient } from '../../../lib/supabase/server';
+import { getUserPermissions, getProfile } from '../../../lib/auth/permissions';
+import AdminPanel from './AdminPanel';
 import styles from './dashboard.module.scss';
 import Footer from '../../../components/layout/Footer';
 import Header from '../../../components/layout/Header';
 
-export default function DashboardPage() {
-  const { data: session, status } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect('/login');
-    },
-  });
+export default async function DashboardPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (status === 'loading') {
-    return (
-      <div className={styles.loading}>
-        <div className={styles.spinner} />
-        <p>Loading...</p>
-      </div>
-    );
+  if (!user) {
+    redirect('/login');
   }
+
+  const [permissions, profile] = await Promise.all([
+    getUserPermissions(user.id),
+    getProfile(user.id),
+  ]);
+
+  const displayName =
+    profile?.firstName || profile?.lastName
+      ? `${profile.firstName} ${profile.lastName}`.trim()
+      : (user.email ?? 'User');
 
   return (
     <>
@@ -30,38 +33,53 @@ export default function DashboardPage() {
       <main className={styles.main}>
         <div className={styles.container}>
           <div className={styles.welcome}>
-            <h1>Welcome, {session?.user?.name}!</h1>
-            <Badge variant="success">Logged In</Badge>
+            <h1>Welcome, {displayName}!</h1>
+            <Badge variant="success">Member</Badge>
+            {permissions.isAdmin && <Badge variant="warning">Admin</Badge>}
           </div>
 
           <div className={styles.content}>
+            {/* Open tools — available to all authenticated users */}
             <div className={styles.card}>
-              <h2>Your Dashboard</h2>
-              <p>This is a protected page that requires authentication.</p>
+              <h2>Tools &amp; Services</h2>
+              <p>Available to all members.</p>
+              <ul className={styles.list}>
+                <li>UI Components Library (Storybook)</li>
+                <li>Project showcase</li>
+                <li>Team directory</li>
+              </ul>
+            </div>
+
+            {/* Restricted tools — shown only if the user has been granted access */}
+            {permissions.appAccess.includes('analytics') && (
+              <div className={styles.card}>
+                <h2>Analytics</h2>
+                <p>Project analytics and usage metrics.</p>
+              </div>
+            )}
+
+            {permissions.appAccess.includes('internal-tools') && (
+              <div className={styles.card}>
+                <h2>Internal Tools</h2>
+                <p>Internal team tooling and utilities.</p>
+              </div>
+            )}
+
+            {permissions.appAccess.includes('beta-features') && (
+              <div className={styles.card}>
+                <h2>Beta Features</h2>
+                <p>Early access to features in development.</p>
+              </div>
+            )}
+
+            {/* Admin panel — manage users and access grants */}
+            {permissions.isAdmin && <AdminPanel currentUserId={user.id} />}
+
+            <div className={styles.card}>
+              <h2>Account</h2>
               <p className={styles.info}>
-                You are currently logged in as <strong>{session?.user?.email}</strong>
+                Signed in as <strong>{user.email}</strong>
               </p>
-            </div>
-
-            <div className={styles.card}>
-              <h2>What&apos;s Next?</h2>
-              <ul className={styles.list}>
-                <li>Explore our UI Components Library via Storybook</li>
-                <li>Check out the projects showcase on the home page</li>
-                <li>Discover the features and capabilities of our stack</li>
-                <li>Connect with the team</li>
-              </ul>
-            </div>
-
-            <div className={styles.card}>
-              <h2>Placeholder for Future Features</h2>
-              <p>This dashboard will be extended with more features in the future, such as:</p>
-              <ul className={styles.list}>
-                <li>User profile management</li>
-                <li>Project tracking and analytics</li>
-                <li>Team collaboration tools</li>
-                <li>Notifications and updates</li>
-              </ul>
             </div>
           </div>
         </div>
