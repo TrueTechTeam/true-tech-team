@@ -1,13 +1,13 @@
 'use client';
 
 import { Button } from '@true-tech-team/ui-components';
-import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Header.module.scss';
 
 export default function Header() {
-  const { data: session } = useSession();
+  const { user, signOut } = useAuth();
 
   return (
     <header className={styles.header}>
@@ -29,10 +29,10 @@ export default function Header() {
             Storybook
           </a>
 
-          {session ? (
+          {user ? (
             <>
               <Link href="/dashboard">Dashboard</Link>
-              <Button variant="outline" size="sm" onClick={() => signOut()}>
+              <Button variant="outline" size="sm" onClick={signOut}>
                 Sign Out
               </Button>
             </>
