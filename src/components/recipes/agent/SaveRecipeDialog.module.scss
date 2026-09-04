@@ -1,0 +1,35 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--theme-text-primary);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--theme-text-secondary);
+}
+
+.row {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+
+  .field {
+    flex: 1;
+    min-width: 140px;
+  }
+}

@@ -1,0 +1,28 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.intro {
+  margin-bottom: var(--spacing-sm);
+}
+
+.title {
+  margin: 0 0 var(--spacing-xs);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--theme-text-primary);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--theme-text-secondary);
+  line-height: var(--line-height-relaxed);
+
+  em {
+    font-style: normal;
+    color: var(--theme-text-primary);
+    font-weight: var(--font-weight-medium);
+  }
+}

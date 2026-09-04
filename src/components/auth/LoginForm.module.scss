@@ -1,0 +1,39 @@
+.formContainer {
+  width: 100%;
+  max-width: 400px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.error {
+  background-color: var(--theme-error-disabled);
+  border: 1px solid var(--theme-error);
+  color: var(--theme-error);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.footer {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-secondary);
+}
+
+.link {
+  color: var(--theme-primary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+  }
+}

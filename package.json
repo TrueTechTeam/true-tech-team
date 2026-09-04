@@ -1,0 +1,53 @@
+{
+  "name": "true-tech-team",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --max-warnings=0 --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,scss,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,scss,css}\"",
+    "lint:styles": "stylelint \"**/*.{css,scss}\"",
+    "lint:styles:fix": "stylelint \"**/*.{css,scss}\" --fix",
+    "e2e": "playwright test --config=e2e/playwright.config.ts",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.92.0",
+    "@supabase/ssr": "^0.9.0",
+    "@supabase/supabase-js": "^2.95.3",
+    "@true-tech-team/ui-components": "npm:@true-tech-team/react-components@^1.0.1",
+    "cheerio": "^1.2.0",
+    "next": "~16.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.0",
+    "@commitlint/config-conventional": "^20.4.0",
+    "@eslint/js": "^9.8.0",
+    "@playwright/test": "^1.36.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.8.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-import": "2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "postcss-scss": "^4.0.9",
+    "prettier": "~3.6.2",
+    "sass": "^1.77.0",
+    "stylelint": "^16.26.1",
+    "stylelint-config-standard-scss": "^16.0.0",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.0"
+  }
+}
