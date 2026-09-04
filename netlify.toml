@@ -7,6 +7,10 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # NEXT_PUBLIC_* vars are intentionally bundled into client-side JS by Next.js (public anon
+  # key by design) - Netlify's secret scanner otherwise flags them as "leaked" since their
+  # values legitimately appear in the .next build output.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_STORYBOOK_URL"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
