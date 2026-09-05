@@ -1,0 +1,11 @@
+{
+  "name": "@true-tech-team/project-gateway",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "react": "^19.0.0"
+  }
+}

@@ -1,0 +1,183 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+$serif: georgia, 'Times New Roman', cambria, serif;
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 1in;
+  font-family: $serif;
+  font-size: 11pt;
+  line-height: 1.45;
+  color: #201d18;
+  background: #fff;
+}
+
+.header {
+  text-align: center;
+  border-bottom: 1px solid #8a7f6d;
+  padding-bottom: 0.6em;
+  margin-bottom: 1em;
+}
+
+.name {
+  margin: 0;
+  font-size: 1.85em;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.title {
+  margin: 0.2em 0 0;
+  font-size: 1.05em;
+  font-style: italic;
+  color: #3f382d;
+}
+
+.contact {
+  margin: 0.45em 0 0;
+  font-size: 0.85em;
+  color: #4f483d;
+}
+
+.section {
+  margin-bottom: 1.1em;
+}
+
+// Formal, dense small-caps-style headings rather than the bolder sans-serif
+// treatment used elsewhere — this template favors a more traditional,
+// publication-like register.
+.sectionHeading {
+  margin: 0 0 0.5em;
+  font-size: 1em;
+  font-weight: 700;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid #8a7f6d;
+  padding-bottom: 0.25em;
+}
+
+.summary {
+  margin: 0;
+  text-align: justify;
+}
+
+.skillsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.skillRow {
+  @include print.avoid-break;
+
+  font-size: 0.95em;
+  margin-bottom: 0.3em;
+}
+
+.skillCategory {
+  font-weight: 700;
+}
+
+.skillItems {
+  color: #3a3327;
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 0.65em;
+}
+
+.educationLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 700;
+  font-size: 1.03em;
+}
+
+.educationMeta {
+  display: flex;
+  justify-content: space-between;
+  font-style: italic;
+  font-size: 0.92em;
+  color: #4f483d;
+}
+
+.experienceEntry {
+  margin-bottom: 0.85em;
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+}
+
+.experienceTitleLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 700;
+  font-size: 1.02em;
+}
+
+.experienceMeta {
+  display: flex;
+  justify-content: space-between;
+  font-style: italic;
+  font-size: 0.92em;
+  color: #4f483d;
+}
+
+.dates {
+  font-style: normal;
+  color: #4f483d;
+}
+
+.bulletList {
+  margin: 0.4em 0 0;
+  padding-left: 1.3em;
+
+  li {
+    margin-bottom: 0.22em;
+  }
+}
+
+.certList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.certEntry {
+  @include print.avoid-break;
+
+  display: flex;
+  gap: 0.6em;
+  font-size: 0.95em;
+  margin-bottom: 0.35em;
+}
+
+.certTitle {
+  font-weight: 700;
+  font-style: italic;
+}
+
+.certIssuer {
+  color: #3a3327;
+}
+
+.certDate {
+  margin-left: auto;
+  color: #4f483d;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+}

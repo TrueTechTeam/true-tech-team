@@ -1,6 +1,6 @@
 'use client';
 
-import { Avatar } from '@true-tech-team/ui-components';
+import { Avatar } from '@true-tech-team/react-components';
 import styles from './TeamSection.module.scss';
 import { team } from '../../lib/data/team';
 

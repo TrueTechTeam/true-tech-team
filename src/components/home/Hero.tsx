@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@true-tech-team/ui-components';
+import { Button } from '@true-tech-team/react-components';
 import Link from 'next/link';
 import styles from './Hero.module.scss';
 

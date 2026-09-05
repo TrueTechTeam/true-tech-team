@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Input, Button } from '@true-tech-team/ui-components';
+import { Input, Button } from '@true-tech-team/react-components';
 import Link from 'next/link';
 import { createClient } from '../../lib/supabase/client';
 import styles from './LoginForm.module.scss';

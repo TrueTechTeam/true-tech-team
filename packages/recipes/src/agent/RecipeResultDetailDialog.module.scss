@@ -1,0 +1,105 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.tabNav {
+  display: flex;
+  gap: var(--spacing-xs);
+  border-bottom: 1px solid var(--theme-border-primary);
+}
+
+.tabBtn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  background: transparent;
+  color: var(--theme-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+
+  &:hover {
+    color: var(--theme-text-primary);
+  }
+}
+
+.tabBtnActive {
+  color: var(--theme-primary);
+  border-bottom-color: var(--theme-primary);
+}
+
+.tabPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  min-height: 200px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-secondary);
+}
+
+.sourceLink {
+  font-size: var(--font-size-sm);
+  color: var(--theme-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.description {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.tagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.ingredientList {
+  margin: 0;
+  padding-left: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.ingredientItem {
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-primary);
+  line-height: var(--line-height-relaxed);
+}
+
+.directionList {
+  margin: 0;
+  padding-left: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.directionItem {
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-primary);
+  line-height: var(--line-height-relaxed);
+}

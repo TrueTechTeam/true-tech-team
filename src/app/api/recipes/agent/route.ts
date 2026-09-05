@@ -1,8 +1,14 @@
 import { type NextRequest } from 'next/server';
+import { getAppUsage, recordAppUsage } from '@true-tech-team/project-gateway';
 import { createClient } from '../../../../lib/supabase/server';
-import { runRecipeAgent } from '../../../../lib/recipes/agent';
-import { scrapePage } from '../../../../lib/recipes/scraper';
-import { mapProfileRow, type AgentStreamEvent } from '../../../../lib/recipes/types';
+import {
+  runRecipeAgent,
+  scrapePage,
+  mapProfileRow,
+  type AgentStreamEvent,
+} from '@true-tech-team/recipes';
+
+const APP_SLUG = 'recipe-agent';
 
 // Allow up to 60s for the agent to run
 export const maxDuration = 60;
@@ -65,13 +71,19 @@ export async function POST(request: NextRequest) {
       .from('app_permissions')
       .select('id')
       .eq('user_id', user.id)
-      .eq('app_slug', 'recipe-agent')
+      .eq('app_slug', APP_SLUG)
       .maybeSingle(),
     supabase.from('user_roles').select('role').eq('user_id', user.id).maybeSingle(),
   ]);
 
   if (!perm && !roleRow) {
     return new Response('Forbidden', { status: 403 });
+  }
+
+  // 2b. Usage limit check
+  const usage = await getAppUsage(supabase, user.id, APP_SLUG);
+  if (!usage.allowed) {
+    return new Response('Usage limit reached for this period', { status: 429 });
   }
 
   // 3. Parse body
@@ -96,8 +108,9 @@ export async function POST(request: NextRequest) {
 
   const profile = profileRow ? mapProfileRow(profileRow as Record<string, unknown>) : null;
 
-  // 5. Save to search history (fire and forget)
+  // 5. Save to search history and record usage (fire and forget)
   void supabase.from('recipe_searches').insert({ user_id: user.id, query });
+  void recordAppUsage(supabase, user.id, APP_SLUG);
 
   // 6. Stream the agent response
   const encoder = new TextEncoder();

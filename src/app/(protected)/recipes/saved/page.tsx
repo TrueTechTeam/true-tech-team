@@ -1,7 +1,7 @@
-import RecipeApp from '../../../../components/recipes/RecipeApp';
+import { redirect } from 'next/navigation';
 
-export const metadata = { title: 'Saved Recipes' };
-
+// Saved recipes are now shown directly on the main Recipes page, under the
+// search bar — redirect anyone who had this route bookmarked.
 export default function SavedRecipesPage() {
-  return <RecipeApp initialTab="saved" />;
+  redirect('/recipes');
 }

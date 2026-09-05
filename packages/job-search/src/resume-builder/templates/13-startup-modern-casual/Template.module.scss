@@ -1,0 +1,177 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 0.75in;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.55;
+  color: #2b2b2b;
+  background: #fff;
+}
+
+.header {
+  margin-bottom: 1.2em;
+  padding: 1em 1.2em;
+  border-radius: 16px;
+  background: #fff4ec;
+}
+
+.name {
+  margin: 0;
+  font-size: 23pt;
+  font-weight: 800;
+  color: #d9642b;
+}
+
+.title {
+  margin: 0.2em 0 0;
+  font-size: 12.5pt;
+  font-weight: 600;
+  color: #4a4a4a;
+}
+
+.contact {
+  margin: 0.55em 0 0;
+  font-size: 9.5pt;
+  color: #555;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+}
+
+.separator {
+  margin-right: 0.4em;
+  color: #d9642b;
+}
+
+.section {
+  margin-bottom: 1.2em;
+}
+
+.sectionTitle {
+  margin: 0 0 0.55em;
+  font-size: 12.5pt;
+  font-weight: 700;
+  color: #d9642b;
+}
+
+.summary {
+  margin: 0;
+}
+
+.skillsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+
+.skillRow {
+  @include print.avoid-break;
+}
+
+.skillCategory {
+  display: block;
+  font-weight: 700;
+  font-size: 9.5pt;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #4a4a4a;
+  margin-bottom: 0.35em;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.25em 0.75em;
+  border-radius: 999px;
+  background: #ffe4d1;
+  color: #a8441a;
+  font-size: 9.5pt;
+  font-weight: 600;
+}
+
+.experienceEntry {
+  margin-bottom: 1em;
+  padding: 0.8em 1em;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+}
+
+.experienceHeaderLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.role {
+  font-weight: 700;
+  color: #222;
+}
+
+.company {
+  font-weight: 600;
+  color: #d9642b;
+}
+
+.dates,
+.location {
+  color: #666;
+  white-space: nowrap;
+}
+
+.bullets {
+  margin: 0.45em 0 0;
+  padding-left: 1.2em;
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 0.6em;
+  padding: 0.6em 1em;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.certList {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.certTitle {
+  font-weight: 700;
+  color: #d9642b;
+}
+
+.certDate {
+  color: #666;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+
+  .header,
+  .chip,
+  .experienceEntry,
+  .educationEntry {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

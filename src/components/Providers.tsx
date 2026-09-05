@@ -1,6 +1,6 @@
 'use client';
 
-import { GlobalProvider } from '@true-tech-team/ui-components';
+import { GlobalProvider } from '@true-tech-team/react-components';
 import { AuthProvider } from '../context/AuthContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {

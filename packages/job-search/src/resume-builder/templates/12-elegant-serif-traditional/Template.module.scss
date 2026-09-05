@@ -1,0 +1,139 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 0.75in;
+  font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+  font-size: 10.5pt;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 1.3em;
+  padding-bottom: 0.6em;
+  border-bottom: 1px solid #333;
+}
+
+.name {
+  margin: 0;
+  font-size: 22pt;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0.3em 0 0;
+  font-size: 12pt;
+  font-style: italic;
+  color: #333;
+}
+
+.contact {
+  margin: 0.5em 0 0;
+  font-size: 9.5pt;
+  color: #333;
+}
+
+.separator {
+  color: #999;
+}
+
+.section {
+  margin-bottom: 1.2em;
+}
+
+.sectionTitle {
+  margin: 0 0 0.55em;
+  font-size: 10.5pt;
+  font-weight: 700;
+  font-variant: small-caps;
+  letter-spacing: 0.12em;
+  text-align: center;
+  color: #1a1a1a;
+}
+
+.summary {
+  margin: 0;
+  text-align: justify;
+}
+
+.skillsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+}
+
+.skillRow {
+  @include print.avoid-break;
+}
+
+.skillCategory {
+  font-weight: 700;
+}
+
+.experienceEntry {
+  margin-bottom: 1em;
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+}
+
+.experienceHeaderLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.role {
+  font-weight: 700;
+}
+
+.company {
+  font-style: italic;
+}
+
+.dates,
+.location {
+  color: #444;
+  white-space: nowrap;
+}
+
+.bullets {
+  margin: 0.4em 0 0;
+  padding-left: 1.3em;
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 0.6em;
+}
+
+.certList {
+  margin: 0;
+  padding-left: 1.3em;
+}
+
+.certTitle {
+  font-weight: 700;
+}
+
+.certDate {
+  color: #444;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+}

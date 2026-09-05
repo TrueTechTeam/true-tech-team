@@ -8,7 +8,7 @@ authentication and a recipe AI agent behind the login wall.
 - **Next.js 16** (App Router, Turbopack)
 - **Supabase Auth** via `@supabase/ssr`
 - **SCSS Modules** for styling
-- **[@true-tech-team/ui-components](https://github.com/TrueTechTeam/react-components)** for shared UI
+- **[@true-tech-team/react-components](https://github.com/TrueTechTeam/react-components)** for shared UI
 
 ## Getting Started
 

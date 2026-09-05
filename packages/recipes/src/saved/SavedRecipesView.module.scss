@@ -1,0 +1,97 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--theme-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.count {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--theme-text-secondary);
+  background: var(--theme-surface-secondary);
+  border: 1px solid var(--theme-border-primary);
+  padding: 2px var(--spacing-sm);
+  border-radius: var(--radius-full);
+}
+
+// Filters
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--theme-surface-secondary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: var(--radius-md);
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.filterLabel {
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-secondary);
+  white-space: nowrap;
+}
+
+// Grid
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+}
+
+// Pagination
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--spacing-md);
+}
+
+// Loading / empty
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-xxl);
+}
+
+.empty {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  color: var(--theme-text-secondary);
+
+  p {
+    margin: 0 0 var(--spacing-xs);
+  }
+}
+
+.emptyHint {
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-tertiary, var(--theme-text-secondary));
+}

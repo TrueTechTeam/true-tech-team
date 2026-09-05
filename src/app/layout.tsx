@@ -1,10 +1,10 @@
 import { Providers } from '../components/Providers';
-import '@true-tech-team/ui-components/index.css';
+import '@true-tech-team/react-components/index.css';
 import './globals.scss';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth" data-theme="dark">
       <head>
         <title>True Tech Team - Tech Project Portfolio</title>
         <meta

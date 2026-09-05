@@ -1,0 +1,159 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 0.75in;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.45;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+.header {
+  margin-bottom: 1.1em;
+  padding-bottom: 0.5em;
+  border-bottom: 3px solid #0a5c46;
+}
+
+.name {
+  margin: 0;
+  font-size: 22pt;
+  font-weight: 800;
+}
+
+.title {
+  margin: 0.2em 0 0;
+  font-size: 12pt;
+  font-weight: 600;
+  color: #333;
+}
+
+.contact {
+  margin: 0.5em 0 0;
+  font-size: 9.5pt;
+  color: #444;
+}
+
+.separator {
+  margin: 0 0.5em;
+  color: #0a5c46;
+  font-weight: 700;
+}
+
+.section {
+  margin-bottom: 1.1em;
+}
+
+.sectionTitle {
+  margin: 0 0 0.5em;
+  font-size: 12pt;
+  font-weight: 800;
+  color: #0a5c46;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.summary {
+  margin: 0;
+}
+
+.skillsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.skillRow {
+  @include print.avoid-break;
+}
+
+.skillCategory {
+  font-weight: 700;
+}
+
+.experienceEntry {
+  margin-bottom: 0.9em;
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+}
+
+.experienceHeaderLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.role {
+  font-weight: 800;
+}
+
+.company {
+  font-weight: 600;
+  color: #0a5c46;
+}
+
+.dates,
+.location {
+  color: #555;
+  white-space: nowrap;
+}
+
+// Every bullet gets the bolder, tighter "impact" treatment and a distinct
+// accent-colored marker — deliberately uniform rather than parsed out of
+// the bullet text, since detecting "starts with a number" at render time
+// is fragile against currency symbols, ranges, and phrasing variance.
+.bullets {
+  margin: 0.4em 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.impactBullet {
+  position: relative;
+  padding-left: 1.3em;
+  margin-bottom: 0.35em;
+  font-weight: 600;
+  line-height: 1.35;
+
+  &::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: #0a5c46;
+    font-weight: 800;
+  }
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 0.6em;
+}
+
+.certList {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.certTitle {
+  font-weight: 700;
+  color: #0a5c46;
+}
+
+.certDate {
+  color: #555;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+}

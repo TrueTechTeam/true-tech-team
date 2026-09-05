@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Button } from '@true-tech-team/ui-components';
+import { Badge, Button } from '@true-tech-team/react-components';
 import styles from './ProjectCard.module.scss';
 
 interface ProjectCardProps {

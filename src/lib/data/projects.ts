@@ -6,6 +6,9 @@ export interface Project {
   tags: string[];
   demoUrl?: string;
   githubUrl?: string;
+  // Slug of the mini-app in lib/apps/registry.ts this project maps to. When
+  // set, the "View" button only renders for users with access to that app.
+  appSlug?: string;
 }
 
 export const projects: Project[] = [
@@ -21,12 +24,23 @@ export const projects: Project[] = [
   },
   {
     id: '2',
-    title: 'Landing Page Application',
+    title: 'Recipe AI Agent',
     description:
-      'Modern Next.js landing page with NextAuth authentication, showcasing the True Tech Team portfolio and providing access to various projects.',
+      'Search for recipes with AI — filters by your dietary profile, saves favorites, and tracks what you’ve tried.',
     image: '/placeholder-project.png',
-    tags: ['Next.js', 'NextAuth', 'React', 'TypeScript'],
-    githubUrl: 'https://github.com/TrueTechTeam/true-tech-team',
+    tags: ['Next.js', 'AI Agent', 'TypeScript'],
+    demoUrl: '/recipes',
+    appSlug: 'recipe-agent',
+  },
+  {
+    id: '3',
+    title: 'Job Search',
+    description:
+      'AI-powered job search — finds openings matching your profile, tracks your application pipeline, and tailors your resume for each one.',
+    image: '/placeholder-project.png',
+    tags: ['Next.js', 'AI Agent', 'TypeScript'],
+    demoUrl: '/job-search',
+    appSlug: 'job-search',
   },
   // Add more projects as they are created
 ];

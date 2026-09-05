@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { createClient } from '../../../../../lib/supabase/server';
-import { mapRecipeRow, type UpdateRecipePayload } from '../../../../../lib/recipes/types';
+import { mapRecipeRow, type UpdateRecipePayload } from '@true-tech-team/recipes';
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

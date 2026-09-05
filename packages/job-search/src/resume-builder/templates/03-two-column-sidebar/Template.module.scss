@@ -1,0 +1,252 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+$sidebar-bg: #1e293b;
+$sidebar-text: #e2e8f0;
+$sidebar-muted: #94a3b8;
+$accent: #0ea5e9;
+$text: #1e2430;
+$muted: #64748b;
+$rule: #e2e8f0;
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  line-height: 1.5;
+  color: $text;
+  background: #fff;
+}
+
+.header {
+  padding: 0.5in 0.5in 0.25in;
+  border-bottom: 2pt solid $accent;
+}
+
+.name {
+  margin: 0 0 2pt;
+  font-size: 21pt;
+  font-weight: 700;
+  color: $text;
+}
+
+.jobTitle {
+  margin: 0;
+  font-size: 11.5pt;
+  font-weight: 500;
+  color: $accent;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 2.5in 1fr;
+}
+
+.sidebar {
+  background: $sidebar-bg;
+  color: $sidebar-text;
+  padding: 0.35in;
+}
+
+.sidebarSection {
+  margin-bottom: 16pt;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sidebarTitle {
+  margin: 0 0 6pt;
+  font-size: 9.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+  color: $accent;
+}
+
+.contact {
+  margin: 0;
+  font-size: 8.5pt;
+  color: $sidebar-text;
+  overflow-wrap: anywhere;
+}
+
+.skillList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skillRow {
+  @include print.avoid-break;
+
+  margin-bottom: 8pt;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.skillCategory {
+  display: block;
+  font-weight: 700;
+  font-size: 9pt;
+  color: $sidebar-text;
+  margin-bottom: 1pt;
+}
+
+.skillItems {
+  display: block;
+  font-size: 8.5pt;
+  color: $sidebar-muted;
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 8pt;
+  font-size: 8.5pt;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.school {
+  font-weight: 700;
+  color: $sidebar-text;
+}
+
+.degree {
+  color: $sidebar-muted;
+}
+
+.educationMeta {
+  display: flex;
+  flex-direction: column;
+  color: $sidebar-muted;
+  margin-top: 2pt;
+}
+
+.main {
+  padding: 0.4in 0.5in 0.5in;
+}
+
+.section {
+  margin-bottom: 14pt;
+}
+
+.sectionTitle {
+  margin: 0 0 7pt;
+  font-size: 11.5pt;
+  font-weight: 700;
+  color: $text;
+  border-bottom: 1pt solid $rule;
+  padding-bottom: 3pt;
+}
+
+.summary {
+  margin: 0;
+}
+
+.experienceEntry {
+  margin-bottom: 11pt;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1pt 8pt;
+  margin-bottom: 3pt;
+}
+
+.experienceHeading {
+  display: flex;
+  align-items: baseline;
+  gap: 6pt;
+}
+
+.role {
+  font-weight: 700;
+}
+
+.company {
+  color: $accent;
+  font-weight: 600;
+}
+
+.experienceMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 6pt;
+  font-size: 9pt;
+  color: $muted;
+  white-space: nowrap;
+}
+
+.dates {
+  font-weight: 700;
+}
+
+.location {
+  color: $muted;
+}
+
+.bullets {
+  margin: 0;
+  padding-left: 14pt;
+
+  li {
+    margin-bottom: 2pt;
+  }
+}
+
+.certList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.certEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 3pt;
+}
+
+.certTitle {
+  font-weight: 700;
+}
+
+.certIssuer {
+  color: $muted;
+}
+
+.certDate {
+  color: $muted;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+
+  .body {
+    // Keep the two-column layout at print time — collapsing to a single
+    // column here would defeat the purpose of this template.
+    grid-template-columns: 2.5in 1fr;
+  }
+}

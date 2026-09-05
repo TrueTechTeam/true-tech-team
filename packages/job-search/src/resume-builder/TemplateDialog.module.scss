@@ -1,0 +1,83 @@
+.subheading {
+  margin: 0 0 var(--spacing-lg);
+  color: var(--theme-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.card {
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.cardSelected {
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 1px var(--theme-primary);
+}
+
+// Hardcoded white (not a theme variable) so a template with dark text never
+// sits on a dark backdrop in dark mode — a resume is a page of paper.
+.thumbnail {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #fff;
+  border-bottom: 1px solid var(--theme-border-primary);
+}
+
+.thumbnailScale {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400%;
+  height: 400%;
+  transform: scale(0.25);
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.previewButton {
+  position: absolute;
+  top: var(--spacing-xs);
+  right: var(--spacing-xs);
+  background: var(--theme-surface-primary);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgb(0 0 0 / 10%));
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--theme-text-primary);
+}
+
+.cardDescription {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--theme-text-secondary);
+}
+
+.atsWarning {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--theme-warning, #b45309);
+}
+
+.previewSheet {
+  max-height: 75vh;
+  overflow-y: auto;
+  background: #fff;
+}

@@ -1,0 +1,224 @@
+@use 'sass:math';
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+$accent: #4a3fb5;
+$rail-width: 2px;
+$rail-gap: 22px;
+$dot-size: 10px;
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 1in;
+  font-family: 'Helvetica Neue', Arial, system-ui, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.4;
+  color: #201f2b;
+  background: #fff;
+}
+
+.header {
+  margin-bottom: 0.9em;
+}
+
+.name {
+  margin: 0;
+  font-size: 1.9em;
+  font-weight: 700;
+  color: #17162a;
+}
+
+.title {
+  margin: 0.15em 0 0;
+  font-size: 1.05em;
+  color: $accent;
+  font-weight: 500;
+}
+
+.contact {
+  margin: 0.4em 0 0;
+  font-size: 0.85em;
+  color: #514f66;
+}
+
+.section {
+  margin-bottom: 1em;
+}
+
+.sectionHeading {
+  margin: 0 0 0.6em;
+  font-size: 1.02em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #17162a;
+  border-bottom: 2px solid $accent;
+  padding-bottom: 0.2em;
+}
+
+.summary {
+  margin: 0;
+}
+
+.skillsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.skillRow {
+  @include print.avoid-break;
+
+  font-size: 0.92em;
+  margin-bottom: 0.25em;
+}
+
+.skillCategory {
+  font-weight: 700;
+}
+
+.skillItems {
+  color: #33324a;
+}
+
+// The vertical "rail": a border-left on the wrapping container plus a
+// small circular marker (pseudo-element) positioned on each entry so it
+// lines up on the rail. Education reuses the same rail at a lighter scale
+// via .timelineCompact for visual consistency across both sections.
+.timeline {
+  position: relative;
+  margin-left: 4px;
+  padding-left: $rail-gap;
+  border-left: $rail-width solid $accent;
+}
+
+.timelineEntry {
+  position: relative;
+  padding-bottom: 0.9em;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0.35em;
+    left: calc(-#{$rail-gap} - #{math.div($dot-size, 2)} - #{math.div($rail-width, 2)});
+    width: $dot-size;
+    height: $dot-size;
+    border-radius: 50%;
+    background: $accent;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px $accent;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.timelineCompact .timelineEntry {
+  padding-bottom: 0.55em;
+
+  &::before {
+    width: 8px;
+    height: 8px;
+    left: calc(-#{$rail-gap} - 4px - #{math.div($rail-width, 2)});
+  }
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+}
+
+.experienceTitleLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 700;
+}
+
+.role {
+  color: #17162a;
+}
+
+.company {
+  color: $accent;
+}
+
+// Dates are called out prominently next to each marker, per the timeline
+// treatment — bold and set apart from the (secondary) location text.
+.experienceMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  color: #514f66;
+}
+
+.dates {
+  font-weight: 700;
+  color: $accent;
+}
+
+.bulletList {
+  margin: 0.3em 0 0;
+  padding-left: 1.2em;
+
+  li {
+    margin-bottom: 0.15em;
+  }
+}
+
+// Education entries have no bulleted body, so (unlike an experience entry)
+// the whole small block is kept together rather than just its header line.
+.educationEntry {
+  @include print.avoid-break;
+}
+
+.educationLine {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.educationMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  color: #514f66;
+}
+
+.certList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.certEntry {
+  @include print.avoid-break;
+
+  display: flex;
+  gap: 0.5em;
+  font-size: 0.92em;
+  margin-bottom: 0.25em;
+}
+
+.certTitle {
+  font-weight: 700;
+}
+
+.certIssuer {
+  color: $accent;
+}
+
+.certDate {
+  margin-left: auto;
+  color: #514f66;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+}

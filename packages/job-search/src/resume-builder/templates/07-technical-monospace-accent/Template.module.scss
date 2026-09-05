@@ -1,0 +1,220 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+$mono: 'Courier New', ui-monospace, sfmono-regular, menlo, consolas, monospace;
+$accent: #0f6b5c;
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 1in;
+  font-family: 'Helvetica Neue', Arial, system-ui, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.42;
+  color: #1a1f1e;
+  background: #fff;
+}
+
+.header {
+  border-left: 4px solid $accent;
+  padding-left: 0.6em;
+  margin-bottom: 0.9em;
+}
+
+.name {
+  margin: 0;
+  font-family: $mono;
+  font-size: 1.8em;
+  font-weight: 700;
+  color: #10201c;
+}
+
+.title {
+  margin: 0.2em 0 0;
+  font-family: $mono;
+  font-size: 0.95em;
+  color: $accent;
+}
+
+.contact {
+  margin: 0.4em 0 0;
+  font-family: $mono;
+  font-size: 0.8em;
+  color: #4d5854;
+}
+
+.section {
+  margin-bottom: 0.9em;
+}
+
+// `> ` prefix glyph gives each heading a command-prompt feel without
+// touching the actual heading text content (keeps it ATS-clean).
+.sectionHeading {
+  margin: 0 0 0.5em;
+  font-family: $mono;
+  font-size: 1em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $accent;
+  border-left: 3px solid $accent;
+  padding-left: 0.5em;
+
+  &::before {
+    content: '> ';
+    color: #9aa79f;
+  }
+}
+
+.summary {
+  margin: 0;
+}
+
+.skillsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.skillRow {
+  @include print.avoid-break;
+
+  font-family: $mono;
+  font-size: 0.88em;
+  margin-bottom: 0.3em;
+  padding-left: 1em;
+  position: relative;
+
+  &::before {
+    content: '$';
+    position: absolute;
+    left: 0;
+    color: #9aa79f;
+  }
+}
+
+.skillCategory {
+  font-weight: 700;
+  margin-right: 0.4em;
+
+  &::after {
+    content: ':';
+  }
+}
+
+.skillItems {
+  font-family: inherit;
+  color: #33413c;
+}
+
+.experienceEntry {
+  margin-bottom: 0.75em;
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+}
+
+.experienceTitleLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 700;
+}
+
+.role {
+  color: #10201c;
+}
+
+.company {
+  font-family: $mono;
+  font-size: 0.92em;
+  color: $accent;
+}
+
+// Dates read like an inline code comment: muted, italic, monospace.
+.experienceMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82em;
+  color: #7a857f;
+}
+
+.dates {
+  font-family: $mono;
+  font-style: italic;
+
+  &::before {
+    content: '// ';
+  }
+}
+
+.location {
+  font-style: normal;
+}
+
+.bulletList {
+  margin: 0.35em 0 0;
+  padding-left: 1.2em;
+
+  li {
+    margin-bottom: 0.15em;
+  }
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 0.45em;
+}
+
+.educationLine {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.educationMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82em;
+  color: #7a857f;
+}
+
+.certList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.certEntry {
+  @include print.avoid-break;
+
+  display: flex;
+  gap: 0.5em;
+  font-size: 0.9em;
+  margin-bottom: 0.25em;
+}
+
+.certTitle {
+  font-weight: 700;
+}
+
+.certIssuer {
+  color: $accent;
+}
+
+.certDate {
+  margin-left: auto;
+  font-family: $mono;
+  color: #7a857f;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+}

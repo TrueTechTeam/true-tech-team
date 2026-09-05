@@ -1,0 +1,22 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.hint {
+  color: var(--theme-text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.error {
+  flex-basis: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--theme-error-disabled, #fef2f2);
+  border: 1px solid var(--theme-error, #ef4444);
+  border-radius: var(--radius-md);
+  color: var(--theme-error, #dc2626);
+  font-size: var(--font-size-sm);
+}

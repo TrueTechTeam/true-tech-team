@@ -1,0 +1,68 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-md);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-xxl);
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--theme-text-primary);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xxl) var(--spacing-md);
+  text-align: center;
+  color: var(--theme-text-secondary);
+  border: 1px dashed var(--theme-border-primary);
+  border-radius: var(--radius-lg);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.printLink {
+  margin-left: auto;
+  font-size: var(--font-size-sm);
+  color: var(--theme-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+// Deliberately a hardcoded white, not a theme variable — a resume is a page
+// of paper (and this is what generates the PDF), so it must look the same
+// regardless of the app's light/dark theme.
+.preview {
+  border: 1px solid var(--theme-border-primary);
+  border-radius: var(--radius-lg);
+  overflow: auto;
+  background: #fff;
+  padding: var(--spacing-lg);
+}
+
+.missingTemplate {
+  color: var(--theme-text-secondary);
+}

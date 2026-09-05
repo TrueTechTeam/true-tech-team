@@ -1,0 +1,196 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 1in;
+  font-family: 'Helvetica Neue', Arial, system-ui, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.4;
+  color: #1c2530;
+  background: #fff;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 0.85em;
+}
+
+.name {
+  margin: 0;
+  font-size: 1.9em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #12222f;
+}
+
+.title {
+  margin: 0.15em 0 0;
+  font-size: 1.05em;
+  font-weight: 500;
+  color: #35586c;
+}
+
+.contact {
+  margin: 0.4em 0 0;
+  font-size: 0.85em;
+  color: #4a5a68;
+}
+
+.section {
+  margin-bottom: 0.9em;
+}
+
+.sectionHeading {
+  margin: 0 0 0.4em;
+  font-size: 1.02em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #1c4b60;
+  border-bottom: 2px solid #1c4b60;
+  padding-bottom: 0.2em;
+}
+
+.summary {
+  margin: 0;
+}
+
+// Compact 50/50 balance: skills render as a dense, boxed grid rather than a
+// long vertical list, so the section reads as a quick-scan block that does
+// not visually outweigh the experience section below it.
+.competencies {
+  background: #f4f7f8;
+  border: 1px solid #dbe4e8;
+  border-radius: 4px;
+  padding: 0.6em 0.8em;
+}
+
+.competencies .sectionHeading {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.skillsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.3em 1.2em;
+}
+
+.skillRow {
+  @include print.avoid-break;
+
+  font-size: 0.9em;
+  line-height: 1.35;
+}
+
+.skillCategory {
+  font-weight: 700;
+  margin-right: 0.35em;
+
+  &::after {
+    content: ':';
+  }
+}
+
+.skillItems {
+  color: #33424e;
+}
+
+.experienceEntry {
+  margin-bottom: 0.7em;
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+}
+
+.experienceTitleLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 700;
+}
+
+.role {
+  color: #12222f;
+}
+
+.company {
+  color: #1c4b60;
+}
+
+.experienceMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  color: #55636f;
+  font-style: italic;
+}
+
+.bulletList {
+  margin: 0.3em 0 0;
+  padding-left: 1.2em;
+
+  li {
+    margin-bottom: 0.15em;
+  }
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 0.45em;
+}
+
+.educationLine {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.educationMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  color: #55636f;
+}
+
+.certList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.certEntry {
+  @include print.avoid-break;
+
+  display: flex;
+  gap: 0.5em;
+  font-size: 0.92em;
+  margin-bottom: 0.25em;
+}
+
+.certTitle {
+  font-weight: 700;
+}
+
+.certIssuer {
+  color: #35586c;
+}
+
+.certDate {
+  margin-left: auto;
+  color: #55636f;
+  font-style: italic;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+}

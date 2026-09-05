@@ -1,0 +1,209 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+$tone-dark: #14213d; // deep navy — name band
+$tone-light: #e7ebf3; // pale complementary tone — contact sub-band
+$accent: #2952a3;
+$ink: #1c232e;
+$muted: #5a6472;
+$border: #dfe3ea;
+$page-pad-x: 0.85in;
+$page-pad-y: 0.75in;
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: $page-pad-y $page-pad-x;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.45;
+  color: $ink;
+  background: #fff;
+}
+
+.header {
+  margin: (-$page-pad-y) (-$page-pad-x) 0.8rem;
+}
+
+.headerDark {
+  background: $tone-dark;
+  padding: 0.5in $page-pad-x 0.3in;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.name {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #fff;
+}
+
+.headerLight {
+  background: $tone-light;
+  padding: 0.3in $page-pad-x 0.35in;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: $accent;
+}
+
+.contact {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: $muted;
+}
+
+.section {
+  margin-bottom: 0.85rem;
+}
+
+.sectionTitle {
+  margin: 0 0 0.45rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $tone-dark;
+  border-bottom: 1px solid $border;
+  padding-bottom: 0.2rem;
+}
+
+.summary {
+  margin: 0;
+}
+
+.skillList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.skillRow {
+  @include print.avoid-break;
+
+  font-size: 0.9rem;
+}
+
+.skillCategory {
+  font-weight: 700;
+  color: $accent;
+}
+
+.skillItems {
+  color: $ink;
+}
+
+.experienceEntry {
+  margin-bottom: 0.65rem;
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+}
+
+.experienceHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.role {
+  font-weight: 700;
+}
+
+.company {
+  color: $accent;
+  font-weight: 600;
+}
+
+.dates,
+.location {
+  color: $muted;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.bullets {
+  margin: 0.3rem 0 0;
+  padding-left: 1.15rem;
+
+  li {
+    margin-bottom: 0.15rem;
+  }
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 0.45rem;
+}
+
+.educationRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.school {
+  font-weight: 700;
+}
+
+.degree {
+  color: $muted;
+}
+
+.certList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.certEntry {
+  @include print.avoid-break;
+
+  font-size: 0.92rem;
+}
+
+.certTitle {
+  font-weight: 700;
+}
+
+.certIssuer {
+  color: $muted;
+}
+
+.certDate {
+  color: $muted;
+  font-size: 0.85rem;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+
+  .header {
+    margin: 0 0 0.8rem;
+  }
+
+  .headerDark {
+    padding: 0.4in $page-pad-x 0.25in;
+  }
+
+  .headerLight {
+    padding: 0.25in $page-pad-x 0.3in;
+  }
+}

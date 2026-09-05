@@ -1,0 +1,193 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+$accent: #2b8a6b; // friendly, approachable green
+$accent-soft: #e7f6f0;
+$ink: #21302b;
+$muted: #647a71;
+$border: #d7e9e1;
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 0.75in 0.85in;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.45;
+  color: $ink;
+  background: #fff;
+}
+
+.header {
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid $accent;
+}
+
+.name {
+  margin: 0;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: $ink;
+}
+
+.title {
+  margin: 0.15rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: $accent;
+}
+
+.contact {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: $muted;
+}
+
+.section {
+  margin-bottom: 0.85rem;
+}
+
+.sectionTitle {
+  margin: 0 0 0.45rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: $accent;
+  border-bottom: 1px solid $border;
+  padding-bottom: 0.2rem;
+}
+
+.summary {
+  margin: 0;
+}
+
+// Skills get chip-styled treatment for extra visual weight, since a recent
+// grad's coursework/tooling skills may outweigh a thin work history.
+.skillGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.skillRow {
+  @include print.avoid-break;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  background: $accent-soft;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.skillCategory {
+  font-weight: 700;
+  color: $accent;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+.skillItems {
+  color: $ink;
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 0.5rem;
+}
+
+.educationRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.school {
+  font-weight: 700;
+}
+
+.degree {
+  color: $muted;
+}
+
+.experienceEntry {
+  margin-bottom: 0.65rem;
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+}
+
+.experienceHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.role {
+  font-weight: 700;
+}
+
+.company {
+  color: $accent;
+  font-weight: 600;
+}
+
+.dates,
+.location {
+  color: $muted;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.bullets {
+  margin: 0.3rem 0 0;
+  padding-left: 1.15rem;
+
+  li {
+    margin-bottom: 0.15rem;
+  }
+}
+
+.certList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.certEntry {
+  @include print.avoid-break;
+
+  font-size: 0.92rem;
+}
+
+.certTitle {
+  font-weight: 700;
+}
+
+.certIssuer {
+  color: $muted;
+}
+
+.certDate {
+  color: $muted;
+  font-size: 0.85rem;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+}

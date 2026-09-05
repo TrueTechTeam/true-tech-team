@@ -1,0 +1,36 @@
+import type Anthropic from '@anthropic-ai/sdk';
+
+export type AgentStreamEvent<TResult = unknown> =
+  | { type: 'tool_use'; toolName: string; input: Record<string, unknown> }
+  | { type: 'tool_result'; toolName: string; summary: string }
+  | { type: 'text'; text: string }
+  | { type: 'result'; result: TResult }
+  | { type: 'error'; message: string }
+  | { type: 'done' };
+
+export type ToolExecutorFn = (input: Record<string, unknown>) => Promise<unknown>;
+
+export interface ToolExecutorEntry {
+  executor: ToolExecutorFn;
+  /** Shapes the input echoed in the tool_use event (e.g. strip large payloads) */
+  describeInput?: (input: Record<string, unknown>) => Record<string, unknown>;
+  /** Produces the human-readable summary for the tool_result event */
+  describeResult?: (input: Record<string, unknown>, result: unknown) => string;
+}
+
+export interface RunAgentLoopOptions<TResult> {
+  apiKey: string;
+  model: string;
+  systemPrompt: string;
+  // Anthropic.ToolUnion covers both custom tools (Tool, with input_schema) and
+  // native server-executed tools (e.g. WebSearchTool20250305).
+  tools: Anthropic.ToolUnion[];
+  // Keyed by tool name. A tool present in `tools` but absent here is treated
+  // as native/server-executed — see loop.ts.
+  toolExecutors: Record<string, ToolExecutorEntry>;
+  initialMessage: string;
+  maxIterations?: number; // default 8
+  maxTokens?: number; // default 4096
+  resultFenceTag: string; // e.g. 'recipe-json' | 'jobs-json' | 'resume-json' | 'critique-json'
+  parseResult: (json: unknown) => TResult;
+}

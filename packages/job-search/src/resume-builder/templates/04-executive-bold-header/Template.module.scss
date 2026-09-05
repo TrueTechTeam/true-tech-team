@@ -1,0 +1,224 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+$header-bg: #111827;
+$header-text: #f9fafb;
+$header-muted: #9ca3af;
+$bar-color: #b45309;
+$text: #1f2430;
+$muted: #55606f;
+$rule: #d8dce2;
+
+// Root padding is 0 by design: the header band and its color bar need to
+// bleed edge-to-edge for the "bold header" look. Screen/print inset is
+// instead applied via .header/.headerBar/.content padding below, so the
+// @media print reset further down (padding/margin/max-width) is a no-op
+// safety net here rather than the primary print-vs-screen switch.
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.5;
+  color: $text;
+  background: #fff;
+}
+
+.header {
+  background: $header-bg;
+  color: $header-text;
+  padding: 0.55in 0.75in 0.35in;
+}
+
+.name {
+  margin: 0 0 4pt;
+  font-size: 27pt;
+  font-weight: 800;
+  letter-spacing: 0.2pt;
+  color: $header-text;
+}
+
+.jobTitle {
+  margin: 0 0 8pt;
+  font-size: 13pt;
+  font-weight: 500;
+  color: $header-muted;
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+}
+
+.contact {
+  margin: 0;
+  font-size: 9.5pt;
+  color: $header-muted;
+}
+
+.headerBar {
+  height: 6pt;
+  background: $bar-color;
+}
+
+.content {
+  padding: 0.4in 0.75in 0.6in;
+}
+
+.section {
+  margin-bottom: 16pt;
+}
+
+.sectionTitle {
+  margin: 0 0 8pt;
+  font-size: 12.5pt;
+  font-weight: 800;
+  color: $header-bg;
+  text-transform: uppercase;
+  letter-spacing: 0.75pt;
+  border-bottom: 2pt solid $bar-color;
+  padding-bottom: 3pt;
+  display: inline-block;
+}
+
+.summary {
+  margin: 0;
+}
+
+.skillList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skillRow {
+  @include print.avoid-break;
+
+  margin-bottom: 4pt;
+}
+
+.skillCategory {
+  font-weight: 700;
+}
+
+.skillItems {
+  color: $text;
+}
+
+.experienceEntry {
+  margin-bottom: 12pt;
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2pt 10pt;
+  margin-bottom: 4pt;
+}
+
+.experienceHeading {
+  display: flex;
+  align-items: baseline;
+  gap: 8pt;
+}
+
+.role {
+  font-weight: 800;
+  font-size: 11pt;
+}
+
+.company {
+  color: $muted;
+  font-weight: 600;
+}
+
+.experienceMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 6pt;
+  font-size: 9.5pt;
+  color: $muted;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.dates {
+  font-weight: 800;
+  color: $text;
+}
+
+.location {
+  color: $muted;
+}
+
+.bullets {
+  margin: 0;
+  padding-left: 16pt;
+
+  li {
+    margin-bottom: 3pt;
+  }
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 7pt;
+}
+
+.educationHeading {
+  display: flex;
+  justify-content: space-between;
+  gap: 8pt;
+}
+
+.school {
+  font-weight: 700;
+}
+
+.degree {
+  color: $muted;
+}
+
+.educationMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8pt;
+  font-size: 9.5pt;
+  color: $muted;
+}
+
+.certList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.certEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 3pt;
+}
+
+.certTitle {
+  font-weight: 700;
+}
+
+.certIssuer {
+  color: $muted;
+}
+
+.certDate {
+  color: $muted;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+}

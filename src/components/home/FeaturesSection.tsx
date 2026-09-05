@@ -1,6 +1,6 @@
 'use client';
 
-import { Icon } from '@true-tech-team/ui-components';
+import { Icon } from '@true-tech-team/react-components';
 import styles from './FeaturesSection.module.scss';
 import { features } from '../../lib/data/features';
 

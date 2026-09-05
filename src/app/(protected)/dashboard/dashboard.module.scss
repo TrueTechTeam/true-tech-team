@@ -66,7 +66,7 @@
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     color: var(--theme-text-primary);
-    margin-bottom: var(--spacing-md);
+    margin: 0;
   }
 
   p {
@@ -80,99 +80,15 @@
   }
 }
 
-.info {
-  background-color: var(--theme-interactive-focus);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  border-left: 4px solid var(--theme-primary);
-
-  strong {
-    color: var(--theme-primary);
-    font-weight: var(--font-weight-semibold);
-  }
-}
-
-.list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  li {
-    padding-left: var(--spacing-lg);
-    position: relative;
-    color: var(--theme-text-secondary);
-    line-height: var(--line-height-relaxed);
-    margin-bottom: var(--spacing-sm);
-
-    &::before {
-      content: '✓';
-      position: absolute;
-      left: 0;
-      color: var(--theme-primary);
-      font-weight: var(--font-weight-bold);
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.adminTable {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
-}
-
-.adminRow {
+.cardHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background-color: var(--theme-background-primary);
-  border: 1px solid var(--theme-border-primary);
-  border-radius: var(--radius-md);
-  flex-wrap: wrap;
-}
-
-.adminUser {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  min-width: 180px;
-
-  strong {
-    color: var(--theme-text-primary);
-    font-weight: var(--font-weight-semibold);
-  }
-
-  span {
-    color: var(--theme-text-secondary);
-    font-size: var(--font-size-sm);
-  }
-
-  em {
-    color: var(--theme-primary);
-    font-size: var(--font-size-sm);
-    font-style: normal;
-  }
-}
-
-.adminRoles {
-  display: flex;
-  gap: var(--spacing-sm);
-  flex-wrap: wrap;
+  margin-bottom: var(--spacing-md);
 }
 
 @media (width <= 768px) {
   .content {
     grid-template-columns: 1fr;
-  }
-
-  .adminRow {
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
