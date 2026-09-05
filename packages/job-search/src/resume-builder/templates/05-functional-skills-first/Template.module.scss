@@ -1,0 +1,236 @@
+@use '../shared/_print' as print;
+@include print.page-letter(1in);
+
+$accent: #0f766e;
+$accent-tint: #ccfbf1;
+$accent-tint-text: #0f5b54;
+$text: #1e2430;
+$muted: #6b7280;
+$rule: #dfe3e8;
+
+.resume {
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 0.9in;
+  font-family: 'Segoe UI', Roboto, Arial, Helvetica, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.5;
+  color: $text;
+  background: #fff;
+}
+
+.header {
+  margin-bottom: 16pt;
+  padding-bottom: 12pt;
+  border-bottom: 2pt solid $accent;
+}
+
+.name {
+  margin: 0 0 3pt;
+  font-size: 21pt;
+  font-weight: 700;
+  color: $text;
+}
+
+.jobTitle {
+  margin: 0 0 6pt;
+  font-size: 11.5pt;
+  font-weight: 600;
+  color: $accent;
+}
+
+.contact {
+  margin: 0;
+  font-size: 9.5pt;
+  color: $muted;
+}
+
+.section {
+  margin-bottom: 14pt;
+}
+
+.sectionTitle {
+  margin: 0 0 6pt;
+  font-size: 11.5pt;
+  font-weight: 700;
+  color: $text;
+  border-bottom: 1pt solid $rule;
+  padding-bottom: 3pt;
+}
+
+.summary {
+  margin: 0;
+}
+
+// Skills is the star of this template: bigger heading, more breathing room.
+.skillsSection {
+  margin-bottom: 20pt;
+}
+
+.skillsSectionTitle {
+  margin: 0 0 12pt;
+  font-size: 15pt;
+  font-weight: 800;
+  color: $accent;
+  text-transform: uppercase;
+  letter-spacing: 0.5pt;
+}
+
+.skillGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 10pt;
+}
+
+.skillRow {
+  @include print.avoid-break;
+}
+
+.skillCategory {
+  margin: 0 0 5pt;
+  font-size: 11pt;
+  font-weight: 700;
+  color: $text;
+}
+
+.pillRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5pt;
+}
+
+.pill {
+  display: inline-block;
+  padding: 3pt 9pt;
+  border-radius: 10pt;
+  background: $accent-tint;
+  color: $accent-tint-text;
+  font-size: 9pt;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+// Experience is present in full but visually quieter than Skills.
+.experienceEntry {
+  margin-bottom: 9pt;
+  font-size: 9.5pt;
+}
+
+.experienceHeader {
+  @include print.avoid-break;
+  @include print.avoid-break-after;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1pt 8pt;
+  margin-bottom: 3pt;
+}
+
+.experienceHeading {
+  display: flex;
+  align-items: baseline;
+  gap: 6pt;
+}
+
+.role {
+  font-weight: 600;
+  color: $text;
+}
+
+.company {
+  color: $muted;
+}
+
+.experienceMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 6pt;
+  font-size: 9pt;
+  color: $muted;
+  white-space: nowrap;
+}
+
+.dates {
+  color: $muted;
+}
+
+.location {
+  color: $muted;
+}
+
+.bullets {
+  margin: 0;
+  padding-left: 15pt;
+  color: $muted;
+
+  li {
+    margin-bottom: 2pt;
+  }
+}
+
+.educationEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 6pt;
+}
+
+.educationHeading {
+  display: flex;
+  justify-content: space-between;
+  gap: 8pt;
+}
+
+.school {
+  font-weight: 700;
+}
+
+.degree {
+  color: $muted;
+}
+
+.educationMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8pt;
+  font-size: 9.5pt;
+  color: $muted;
+}
+
+.certList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.certEntry {
+  @include print.avoid-break;
+
+  margin-bottom: 3pt;
+}
+
+.certTitle {
+  font-weight: 700;
+}
+
+.certIssuer {
+  color: $muted;
+}
+
+.certDate {
+  color: $muted;
+}
+
+@media print {
+  .resume {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+  }
+
+  .pill {
+    // Keep the tint visible when printed with background graphics off.
+    border: 0.5pt solid $accent;
+  }
+}

@@ -1,0 +1,30 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.intro {
+  margin-bottom: var(--spacing-sm);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--theme-text-secondary);
+  line-height: var(--line-height-relaxed);
+
+  em {
+    font-style: normal;
+    color: var(--theme-text-primary);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+.searchRow {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.searchInput {
+  flex: 1;
+}

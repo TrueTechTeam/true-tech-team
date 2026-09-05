@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { createClient } from '../../../../lib/supabase/server';
-import { mapRecipeRow, type SaveRecipePayload } from '../../../../lib/recipes/types';
+import { mapRecipeRow, type SaveRecipePayload } from '@true-tech-team/recipes';
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();

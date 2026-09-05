@@ -1,0 +1,37 @@
+.printPage {
+  min-height: 100vh;
+  background: var(--theme-surface-secondary, #f3f4f6);
+  padding: var(--spacing-lg);
+}
+
+.printBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 850px;
+  margin: 0 auto var(--spacing-md);
+
+  @media print {
+    display: none;
+  }
+}
+
+.printSheet {
+  max-width: 850px;
+  margin: 0 auto;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
+
+  @media print {
+    box-shadow: none;
+    max-width: none;
+    margin: 0;
+  }
+}
+
+@media print {
+  .printPage {
+    background: #fff;
+    padding: 0;
+  }
+}

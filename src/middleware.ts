@@ -1,7 +1,14 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { createMiddlewareClient } from './lib/supabase/middleware';
 
-const PROTECTED_PATHS = ['/dashboard', '/recipes'];
+const PROTECTED_PATHS = [
+  '/dashboard',
+  '/admin',
+  '/recipes',
+  '/job-search',
+  '/resume-builder',
+  '/resume-print',
+];
 const AUTH_PATHS = ['/login', '/signup'];
 
 export async function middleware(request: NextRequest) {

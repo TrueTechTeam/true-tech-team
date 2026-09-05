@@ -1,0 +1,35 @@
+// Shared print-CSS mixins for resume templates. `@use` this file and
+// `@include` the mixins inside your own selectors — every template has its
+// own class names and visual design, so this file defines print BEHAVIOR
+// (page size, break avoidance), never markup-bound classes.
+// Ported from the print strategy already proven in the legacy standalone
+// resume template: @page margin handles all page whitespace; body padding
+// is for on-screen preview only and must be zeroed under @media print so
+// the margin isn't doubled; break-inside:avoid goes on small header/skill/
+// education blocks only — never on large blocks like a whole job entry,
+// which pushes the entire block to the next page and leaves a gap.
+
+@mixin page-letter($margin: 1in) {
+  @page {
+    size: letter;
+    margin: $margin;
+  }
+}
+
+@mixin print-body-reset {
+  @media print {
+    body {
+      padding: 0;
+      margin: 0;
+      max-width: none;
+    }
+  }
+}
+
+@mixin avoid-break {
+  break-inside: avoid;
+}
+
+@mixin avoid-break-after {
+  break-after: avoid;
+}

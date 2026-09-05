@@ -1,0 +1,39 @@
+.content {
+  max-width: 1600px;
+  width: 100%;
+  min-height: calc(100vh - 220px);
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+}
+
+.accessDenied {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.accessDeniedCard {
+  max-width: 480px;
+  text-align: center;
+  padding: var(--spacing-xl);
+  background: var(--theme-surface-primary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: var(--radius-lg);
+
+  h2 {
+    margin: 0 0 var(--spacing-sm);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--theme-text-primary);
+  }
+
+  p {
+    margin: 0;
+    color: var(--theme-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+}

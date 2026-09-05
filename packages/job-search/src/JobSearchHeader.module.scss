@@ -1,0 +1,32 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  background: var(--theme-surface-secondary);
+  border-bottom: 1px solid var(--theme-border-primary);
+  padding: var(--spacing-lg) var(--spacing-md);
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.topRowActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--theme-text-primary);
+  margin: 0;
+}

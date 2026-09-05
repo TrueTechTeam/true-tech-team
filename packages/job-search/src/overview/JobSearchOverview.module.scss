@@ -1,0 +1,111 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.title {
+  margin: 0 0 var(--spacing-xs);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--theme-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.count {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--theme-text-secondary);
+  background: var(--theme-surface-secondary);
+  border: 1px solid var(--theme-border-primary);
+  padding: 2px var(--spacing-sm);
+  border-radius: var(--radius-full);
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 200px;
+}
+
+.filterLabel {
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-secondary);
+  white-space: nowrap;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-xxl);
+}
+
+.searching {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  color: var(--theme-text-secondary);
+  font-size: var(--font-size-sm);
+  background: var(--theme-surface-secondary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: var(--radius-md);
+}
+
+.configBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  color: var(--theme-warning);
+  font-size: var(--font-size-sm);
+  background: var(--theme-warning-bg);
+  border: 1px solid var(--theme-warning);
+  border-radius: var(--radius-md);
+}
+
+.jobCell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.jobTitle {
+  font-weight: var(--font-weight-medium);
+  color: var(--theme-text-primary);
+  white-space: normal;
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.jobCompany {
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-secondary);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.actionsCell {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}

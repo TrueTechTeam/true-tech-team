@@ -1,0 +1,52 @@
+.tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+}
+
+.sm {
+  width: 28px;
+  height: 28px;
+}
+
+.md {
+  width: 40px;
+  height: 40px;
+}
+
+.primary {
+  background-color: var(--theme-primary-100);
+  color: var(--theme-primary-700);
+}
+
+.secondary {
+  background-color: var(--theme-secondary-100);
+  color: var(--theme-secondary-700);
+}
+
+.success {
+  background-color: var(--theme-success);
+  color: var(--theme-text-on-primary);
+}
+
+.warning {
+  background-color: var(--theme-warning);
+  color: var(--theme-text-contrast);
+}
+
+.danger {
+  background-color: var(--theme-error);
+  color: var(--theme-text-on-primary);
+}
+
+.info {
+  background-color: var(--theme-info);
+  color: var(--theme-text-on-primary);
+}
+
+.neutral {
+  background-color: var(--theme-neutral-100);
+  color: var(--theme-neutral-800);
+}

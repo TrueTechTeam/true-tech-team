@@ -1,0 +1,15 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  max-width: 560px;
+}
+
+.error {
+  padding: var(--spacing-md);
+  background: var(--theme-error-disabled, #fef2f2);
+  border: 1px solid var(--theme-error, #ef4444);
+  border-radius: var(--radius-md);
+  color: var(--theme-error, #dc2626);
+  font-size: var(--font-size-sm);
+}

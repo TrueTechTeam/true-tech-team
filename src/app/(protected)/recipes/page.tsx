@@ -1,5 +1,5 @@
-import RecipeApp from '../../../components/recipes/RecipeApp';
+import { RecipeApp } from '@true-tech-team/recipes';
 
 export default function RecipesPage() {
-  return <RecipeApp initialTab="search" />;
+  return <RecipeApp />;
 }

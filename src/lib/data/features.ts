@@ -1,4 +1,4 @@
-import type { IconName } from '@true-tech-team/ui-components';
+import type { IconName } from '@true-tech-team/react-components';
 
 export interface Feature {
   id: string;

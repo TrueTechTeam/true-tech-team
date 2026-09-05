@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@true-tech-team/ui-components';
+import { Button } from '@true-tech-team/react-components';
 
 interface Props {
   href: string;
@@ -9,7 +9,7 @@ interface Props {
 }
 
 // Client component wrapper — see MembershipBadges.tsx for why this dashboard
-// page never imports @true-tech-team/ui-components directly.
+// page never imports @true-tech-team/react-components directly.
 export default function OpenAppButton({ href, label = 'Open App' }: Props) {
   return (
     <Link href={href}>
