@@ -58,7 +58,7 @@ packages/portfolio-builder/
     ├── index.ts                 # public exports only
     ├── schema/
     │   ├── types.ts             # PortfolioPage, PageSection, SectionRow, GridItem, ComponentType
-    │   └── validate.ts          # runtime validation (zod) for a loaded PortfolioPage
+    │   └── validate.ts          # hand-rolled runtime validation for a loaded PortfolioPage
     ├── grid/
     │   ├── responsive.ts        # pure span-collapsing function + unit tests
     │   └── Grid.module.scss     # shared row/item CSS (12-col, media-query breakpoint switch)
