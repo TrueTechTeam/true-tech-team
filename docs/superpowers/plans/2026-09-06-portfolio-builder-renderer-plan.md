@@ -1742,6 +1742,7 @@ git commit -m "feat(portfolio-builder): add Card wrapper"
 
 - Create: `packages/portfolio-builder/src/components/wrappers/expand.tsx`
 - Test: `packages/portfolio-builder/src/components/wrappers/expand.test.tsx`
+- Modify: `package.json` (root — add `@testing-library/user-event` devDependency, see Step 1)
 
 **Interfaces:**
 
