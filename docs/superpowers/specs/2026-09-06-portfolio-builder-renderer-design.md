@@ -253,3 +253,11 @@ when the registry changes later. This failure mode is asserted directly in tests
   sub-project 4 (editor) and 5 (templates) need each one — this spec defines the registry
   _mechanism_, not every component's final prop list.
 - How `Image`'s URL is obtained (upload, resize, CDN) is entirely sub-project 3's concern.
+- **Theme application is out of `PageRenderer`'s scope.** `GlobalProvider` applies theme tokens as
+  CSS custom properties on `document.documentElement` — a global, unscoped write, not something
+  that can be nested to theme just a subtree. `PageRenderer` therefore renders content assuming
+  the ambient theme already reflects `page.themeOverride`; it never renders `GlobalProvider`
+  itself. Sub-project 6 (publish route) owns its entire document and applies `GlobalProvider` at
+  its own top-level layout. Sub-project 4 (editor) cannot do the same while the builder page is
+  nested inside the dashboard's own themed chrome — it will need an isolated preview surface (an
+  iframe with its own document) rather than nesting a second `GlobalProvider`.
