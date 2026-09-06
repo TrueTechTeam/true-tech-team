@@ -1,4 +1,3 @@
-// packages/portfolio-builder/src/render/NavBar.tsx
 'use client';
 
 import type { MouseEvent } from 'react';
