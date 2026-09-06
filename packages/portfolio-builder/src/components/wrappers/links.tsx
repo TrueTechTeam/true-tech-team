@@ -1,0 +1,65 @@
+import { NavLink, type IconName } from '@true-tech-team/react-components';
+import styles from './links.module.scss';
+
+export interface LinkButtonItemProps {
+  label: string;
+  href: string;
+  icon?: IconName;
+  openInNewTab?: boolean;
+}
+
+export function validateLinkButtonProps(props: Record<string, unknown>): string[] {
+  const errors: string[] = [];
+  if (typeof props.label !== 'string' || props.label.length === 0) {
+    errors.push('label is required and must be a string');
+  }
+  if (typeof props.href !== 'string' || props.href.length === 0) {
+    errors.push('href is required and must be a string');
+  }
+  return errors;
+}
+
+export function LinkButtonItem(props: Record<string, unknown>) {
+  const label = typeof props.label === 'string' ? props.label : '';
+  const href = typeof props.href === 'string' ? props.href : '#';
+  const icon = typeof props.icon === 'string' ? (props.icon as IconName) : undefined;
+  const target = props.openInNewTab === true ? '_blank' : undefined;
+  return (
+    <NavLink href={href} icon={icon} target={target} variant="pill">
+      {label}
+    </NavLink>
+  );
+}
+
+export interface IconLinkButtonItemProps {
+  href: string;
+  icon: IconName;
+  ariaLabel: string;
+  openInNewTab?: boolean;
+}
+
+export function validateIconLinkButtonProps(props: Record<string, unknown>): string[] {
+  const errors: string[] = [];
+  if (typeof props.href !== 'string' || props.href.length === 0) {
+    errors.push('href is required and must be a string');
+  }
+  if (typeof props.icon !== 'string' || props.icon.length === 0) {
+    errors.push('icon is required and must be a string');
+  }
+  if (typeof props.ariaLabel !== 'string' || props.ariaLabel.length === 0) {
+    errors.push('ariaLabel is required and must be a string');
+  }
+  return errors;
+}
+
+export function IconLinkButtonItem(props: Record<string, unknown>) {
+  const href = typeof props.href === 'string' ? props.href : '#';
+  const icon = typeof props.icon === 'string' ? (props.icon as IconName) : 'external-link';
+  const ariaLabel = typeof props.ariaLabel === 'string' ? props.ariaLabel : '';
+  const target = props.openInNewTab === true ? '_blank' : undefined;
+  return (
+    <NavLink href={href} icon={icon} target={target} variant="ghost" aria-label={ariaLabel}>
+      <span className={styles.srOnly}>{ariaLabel}</span>
+    </NavLink>
+  );
+}
