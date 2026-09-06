@@ -1,18 +1,9 @@
-import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import { ItemRenderer } from './ItemRenderer';
 import type { GridItem } from '../schema/types';
 
 describe('ItemRenderer', () => {
-  // vitest.config.ts does not set `test.globals: true`, so @testing-library/react's
-  // auto-cleanup (which detects a global `afterEach`) never registers. Every test here
-  // renders an item with the same id ('item-1'), so without explicit cleanup the DOM
-  // accumulates duplicate `data-testid="item-1"` nodes across tests and
-  // `getByTestId`/`getByRole` fail with "found multiple elements" from the second test on.
-  afterEach(() => {
-    cleanup();
-  });
-
   it('renders a known, validly-configured component', () => {
     const item: GridItem = {
       id: 'item-1',

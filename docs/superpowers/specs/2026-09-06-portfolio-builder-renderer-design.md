@@ -63,7 +63,7 @@ packages/portfolio-builder/
     │   ├── responsive.ts        # pure span-collapsing function + unit tests
     │   └── Grid.module.scss     # shared row/item CSS (12-col, media-query breakpoint switch)
     ├── components/
-    │   ├── registry.ts          # ComponentType -> { component, propSchema }
+    │   ├── registry.ts          # ComponentType -> { component, validate }
     │   ├── primitives/          # custom: Heading, Text, Image, Spacer
     │   └── (re-exports/wrappers around react-components where prop-shaping is needed)
     └── render/
@@ -109,7 +109,7 @@ interface GridItem {
   id: string;
   component: ComponentType;
   span: number; // 1-12, desktop-authored width
-  props: Record<string, unknown>; // shape depends on `component`; validated against its propSchema
+  props: Record<string, unknown>; // shape depends on `component`; validated by its registry entry's `validate` function
 }
 
 type ComponentType =
@@ -199,11 +199,12 @@ is only one responsive implementation to maintain.
 
 ## Component registry & custom components required
 
-The registry maps each `ComponentType` to a React component and a prop-validation schema. Directly
-reusable from `@true-tech-team/react-components` (no wrapping beyond prop-shape adaptation):
-`Card`, `Badge`, `Avatar`, `Chip`, `Pill`, `Icon`, `StatusIndicator`, `ProgressBar`,
-`CircularProgress`, `KPI`, `CountUp`, `Reveal`, `Collapse`, `FlipCard`, `Carousel`,
-`OverflowText`, `TruncatedList`, `Button`, `IconButton`, `Accordion`, `Tabs`.
+The registry maps each `ComponentType` to a React component and a validation function (hand-rolled,
+not a schema-object literal — see Data Schema notes). Directly reusable from
+`@true-tech-team/react-components` (no wrapping beyond prop-shape adaptation): `Card`, `Badge`,
+`Avatar`, `Chip`, `Pill`, `Icon`, `StatusIndicator`, `ProgressBar`, `CircularProgress`, `KPI`,
+`CountUp`, `Reveal`, `Collapse`, `FlipCard`, `Carousel`, `OverflowText`, `TruncatedList`,
+`Accordion`, `Tabs`.
 
 **Must be custom-built for this package** (confirmed gap — the library has no equivalent):
 
@@ -217,8 +218,16 @@ reusable from `@true-tech-team/react-components` (no wrapping beyond prop-shape 
 - `NavBar` — derived-from-sections, smooth-scroll nav; the library's `Navbar` component exists but
   expects manually-supplied nav items, not section-derived + smooth-scroll-anchor behavior, so this
   needs a thin wrapper around it.
+- **`button` / `iconButton`** (link-out components) — confirmed during implementation that the
+  library's own `Button`/`IconButton` are hard-typed to render a native `<button>` with no `href`
+  support at all, so they cannot link anywhere. Both `ComponentType`s are instead built on the
+  library's `NavLink` (which does accept `href`/`target`/`rel` and renders a real `<a>`), styled to
+  look button-like via its `variant` prop. There is deliberately no way to place a non-link
+  "action" button — a static, JSON-rendered portfolio page has nothing for a button to trigger, so
+  every button-shaped element on the page is a link.
 
-Everything else (buttons linking out, badges, avatars, etc.) is the library component used as-is.
+Everything else (badges, avatars, etc. with no interactive/link behavior) is the library component
+used as-is, adapted only to accept `Record<string, unknown>` props.
 
 ## Renderer architecture
 
@@ -249,9 +258,13 @@ when the registry changes later. This failure mode is asserted directly in tests
 
 ## Open items carried to later sub-projects
 
-- Exact `propSchema` per component (what props each accepts) will be filled in incrementally as
-  sub-project 4 (editor) and 5 (templates) need each one — this spec defines the registry
-  _mechanism_, not every component's final prop list.
+- Sub-project 1's implementation already gives every one of the 25 registered components a
+  curated (not exhaustive) prop set with hand-rolled validation — see
+  `packages/portfolio-builder/src/components/registry.ts` and its `wrappers/*`/`primitives/*`
+  source files for the authoritative current list. Sub-project 4 (editor) and 5 (templates) may
+  still need to add more curated props to a given component (e.g. exposing a style variant the
+  editor's property panel wants to offer) as real authoring needs surface — this spec defines the
+  registry _mechanism_, not a frozen prop list.
 - How `Image`'s URL is obtained (upload, resize, CDN) is entirely sub-project 3's concern.
 - **Theme application is out of `PageRenderer`'s scope.** `GlobalProvider` applies theme tokens as
   CSS custom properties on `document.documentElement` — a global, unscoped write, not something

@@ -1,5 +1,5 @@
-import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import { SectionRenderer } from './SectionRenderer';
 import type { PageSection } from '../schema/types';
 
@@ -19,10 +19,6 @@ function makeSection(overrides: Partial<PageSection> = {}): PageSection {
 }
 
 describe('SectionRenderer', () => {
-  afterEach(() => {
-    cleanup();
-  });
-
   it('renders a section element with the section id as its anchor', () => {
     render(<SectionRenderer section={makeSection()} />);
     const section = screen.getByRole('region', { name: 'About' });

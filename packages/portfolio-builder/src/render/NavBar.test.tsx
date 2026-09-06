@@ -1,5 +1,5 @@
-import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import { NavBar } from './NavBar';
 import type { PageSection } from '../schema/types';
 
@@ -12,10 +12,6 @@ function makeSections(): PageSection[] {
 }
 
 describe('NavBar', () => {
-  afterEach(() => {
-    cleanup();
-  });
-
   it('renders one link per section with showInNav true, in order', () => {
     render(<NavBar title="Justin True" sections={makeSections()} />);
     const links = screen.getAllByRole('link');

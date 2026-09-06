@@ -1,5 +1,5 @@
-import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import { PageRenderer } from './PageRenderer';
 import type { PortfolioPage } from '../schema/types';
 
@@ -40,10 +40,6 @@ function makePage(): PortfolioPage {
 }
 
 describe('PageRenderer', () => {
-  afterEach(() => {
-    cleanup();
-  });
-
   it('renders a nav link for every section when showNav is true', () => {
     render(<PageRenderer page={makePage()} />);
     expect(screen.getByRole('link', { name: 'About' })).toBeInTheDocument();
