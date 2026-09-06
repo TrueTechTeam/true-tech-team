@@ -10,3 +10,5 @@ export type {
 export { COMPONENT_TYPES, isComponentType } from './schema/types';
 export { validatePortfolioPage } from './schema/validate';
 export type { ValidationResult } from './schema/validate';
+export { collapsedSpans } from './grid/responsive';
+export type { CollapsedSpans } from './grid/responsive';
