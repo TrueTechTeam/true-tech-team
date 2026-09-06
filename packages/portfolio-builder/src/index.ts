@@ -14,3 +14,5 @@ export { collapsedSpans } from './grid/responsive';
 export type { CollapsedSpans } from './grid/responsive';
 export { getRegistryEntry } from './components/registry';
 export type { RegistryEntry } from './components/registry';
+
+export { PageRenderer } from './render/PageRenderer';
