@@ -1,0 +1,17 @@
+.text {
+  margin: 0;
+  font-family: var(--font-family-primary);
+  color: var(--theme-text-secondary);
+}
+
+.text[data-size='sm'] {
+  font-size: var(--font-size-sm);
+}
+
+.text[data-size='base'] {
+  font-size: var(--font-size-base);
+}
+
+.text[data-size='lg'] {
+  font-size: var(--font-size-lg);
+}
