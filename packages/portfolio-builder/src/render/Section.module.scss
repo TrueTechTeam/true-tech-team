@@ -1,0 +1,22 @@
+.section {
+  padding: var(--spacing-xxl) var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.backgroundPrimary {
+  background: var(--theme-background-primary);
+}
+
+.backgroundSecondary {
+  background: var(--theme-background-secondary);
+}
+
+.backgroundTertiary {
+  background: var(--theme-background-tertiary);
+}
+
+.backgroundTransparent {
+  background: transparent;
+}
