@@ -1,6 +1,6 @@
 import { type NextRequest } from 'next/server';
 import { toNdjsonResponse } from '@true-tech-team/agent-kit';
-import { getAppUsage, recordAppUsage } from '@true-tech-team/project-gateway';
+import { getAppUsage, recordUsageFromStream } from '@true-tech-team/project-gateway';
 import { createClient } from '../../../../lib/supabase/server';
 import { checkAppAccess, JOB_SEARCH_PERMISSION_SLUG } from '../../../../lib/auth/appAccess';
 import { extractTextFromUpload, runResumeFillAgent } from '@true-tech-team/job-search';
@@ -61,12 +61,16 @@ export async function POST(request: NextRequest) {
     return new Response('No text could be extracted from the uploaded file', { status: 400 });
   }
 
-  // 4. Record usage and stream the agent response
-  void recordAppUsage(supabase, user.id, USAGE_SLUG);
-
-  const generator = runResumeFillAgent(
-    { uploadedText: extractedText },
-    process.env.ANTHROPIC_API_KEY ?? ''
+  // 4. Stream the agent response; usage is recorded once it completes.
+  const generator = recordUsageFromStream(
+    runResumeFillAgent(
+      { uploadedText: extractedText },
+      process.env.ANTHROPIC_API_KEY ?? '',
+      user.id
+    ),
+    supabase,
+    user.id,
+    USAGE_SLUG
   );
 
   return toNdjsonResponse(generator);
