@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS public.portfolio_pages (
     template_id TEXT NOT NULL,
     theme_id    TEXT,
     published   BOOLEAN NOT NULL DEFAULT false,
-    data        JSONB NOT NULL DEFAULT '{}',
+    data        JSONB NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(data) = 'object'),
     created_at  TIMESTAMPTZ DEFAULT NOW(),
     updated_at  TIMESTAMPTZ DEFAULT NOW()
 );
