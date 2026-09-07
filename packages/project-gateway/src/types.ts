@@ -13,3 +13,8 @@ export interface UsageStatus {
   remaining: number | null;
   allowed: boolean;
 }
+
+export interface ModelPricing {
+  inputPerMTok: number;
+  outputPerMTok: number;
+}
