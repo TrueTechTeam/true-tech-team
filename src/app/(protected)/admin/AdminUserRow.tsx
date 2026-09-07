@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { Button, Badge, Tooltip } from '@true-tech-team/react-components';
-import type { UsageStatus } from '@true-tech-team/project-gateway';
+import type { UsageStatus, UserUsageHistory } from '@true-tech-team/project-gateway';
 import { ConfirmDialog, AppIcon } from '@true-tech-team/dashboard-kit';
 import AppAccessDialog from './AppAccessDialog';
+import UsageHistoryDialog from './UsageHistoryDialog';
 import { APPS } from '../../../lib/apps/registry';
 import styles from './admin.module.scss';
 
@@ -21,6 +22,7 @@ interface Props {
   isAdmin: boolean;
   grantedSlugs: Set<string>;
   usage: UsageStatus[];
+  usageHistory?: UserUsageHistory;
   onToggleAdmin: () => Promise<void> | void;
   onSaveAppAccess: (slugs: string[]) => Promise<void> | void;
 }
@@ -40,11 +42,13 @@ export default function AdminUserRow({
   isAdmin,
   grantedSlugs,
   usage,
+  usageHistory,
   onToggleAdmin,
   onSaveAppAccess,
 }: Props) {
   const [confirmAdminChange, setConfirmAdminChange] = useState(false);
   const [accessDialogOpen, setAccessDialogOpen] = useState(false);
+  const [usageDialogOpen, setUsageDialogOpen] = useState(false);
 
   const name =
     user.first_name || user.last_name
@@ -85,6 +89,21 @@ export default function AdminUserRow({
             {usage
               .map((u) => `${USAGE_LABELS[u.appSlug] ?? u.appSlug} ${u.used}/${u.limit}`)
               .join(' · ')}
+          </p>
+        )}
+
+        {usageHistory && usageHistory.daily.length > 0 && (
+          <p className={styles.usageCost}>
+            {usageHistory.totalCost === null
+              ? '— (30d)'
+              : `$${usageHistory.totalCost.toFixed(2)} (30d)`}{' '}
+            <button
+              type="button"
+              className={styles.usageCostButton}
+              onClick={() => setUsageDialogOpen(true)}
+            >
+              View usage
+            </button>
           </p>
         )}
       </div>
@@ -129,6 +148,14 @@ export default function AdminUserRow({
             await onSaveAppAccess(slugs);
             setAccessDialogOpen(false);
           }}
+        />
+      )}
+
+      {usageDialogOpen && usageHistory && (
+        <UsageHistoryDialog
+          userName={name}
+          history={usageHistory}
+          onClose={() => setUsageDialogOpen(false)}
         />
       )}
     </div>
