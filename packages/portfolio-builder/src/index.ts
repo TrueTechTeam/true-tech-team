@@ -21,3 +21,6 @@ export { THEME_PRESETS, getThemePreset } from './themes/presets';
 export type { ThemePreset } from './themes/types';
 export { ThemePicker } from './themes/ThemePicker';
 export type { ThemePickerProps } from './themes/ThemePicker';
+
+export type { PortfolioAsset } from './assets/types';
+export { uploadPortfolioAsset, deletePortfolioAsset, listPortfolioAssets } from './assets/upload';
