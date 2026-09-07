@@ -1,7 +1,7 @@
-import type { ColorFamily } from '@true-tech-team/react-components';
+import type { ColorFamily, ColorShade } from '@true-tech-team/react-components';
 import type { ThemePreset } from './types';
 
-function colorVar(family: ColorFamily, shade: number): string {
+function colorVar(family: ColorFamily, shade: ColorShade): string {
   return `var(--color-${family}-${shade})`;
 }
 

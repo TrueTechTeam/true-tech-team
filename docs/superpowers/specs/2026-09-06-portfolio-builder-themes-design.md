@@ -76,7 +76,7 @@ same thing regardless of which visual theme a page uses.
 
 ## Color source: the library's existing palette, not new hex values
 
-`@true-tech-team/react-components` already ships 37 color families × 10 shades (50–900) as CSS
+`@true-tech-team/react-components` already ships 32 color families × 10 shades (50–900) as CSS
 custom properties (`--color-{family}-{shade}`, confirmed shipped in the library's `index.css`;
 e.g. `--color-blue-500`). Every preset's 17 color values are `var(--color-<family>-<shade>)`
 string references into that existing system — not new hardcoded hex codes. This guarantees visual

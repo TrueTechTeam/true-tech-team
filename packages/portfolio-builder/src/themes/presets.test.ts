@@ -29,4 +29,19 @@ describe('getThemePreset', () => {
   it('returns undefined for an unknown id', () => {
     expect(getThemePreset('not-a-real-id')).toBeUndefined();
   });
+
+  it('builds the ocean preset with its documented families', () => {
+    const preset = getThemePreset('ocean');
+    expect(preset?.overrides.colors?.primary).toBe('var(--color-cyan-500)');
+    expect(preset?.overrides.colors?.secondary).toBe('var(--color-navy-500)');
+    expect(preset?.overrides.colors?.backgroundPrimary).toBe('var(--color-slate-50)');
+  });
+
+  it('builds the midnight preset (dark) with its documented families', () => {
+    const preset = getThemePreset('midnight');
+    expect(preset?.mode).toBe('dark');
+    expect(preset?.overrides.colors?.primary).toBe('var(--color-blue-400)');
+    expect(preset?.overrides.colors?.secondary).toBe('var(--color-indigo-400)');
+    expect(preset?.overrides.colors?.backgroundPrimary).toBe('var(--color-slate-900)');
+  });
 });

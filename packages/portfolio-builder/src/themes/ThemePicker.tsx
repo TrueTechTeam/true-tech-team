@@ -1,3 +1,5 @@
+'use client';
+
 import { Card } from '@true-tech-team/react-components';
 import type { ThemePreset } from './types';
 import styles from './ThemePicker.module.scss';
@@ -12,9 +14,21 @@ function Swatch({ preset }: { preset: ThemePreset }) {
   const colors = preset.overrides.colors ?? {};
   return (
     <span className={styles.swatchRow}>
-      <span className={styles.swatch} style={{ background: colors.primary }} />
-      <span className={styles.swatch} style={{ background: colors.secondary }} />
-      <span className={styles.swatch} style={{ background: colors.backgroundPrimary }} />
+      <span
+        className={styles.swatch}
+        data-testid="theme-swatch"
+        style={{ background: colors.primary }}
+      />
+      <span
+        className={styles.swatch}
+        data-testid="theme-swatch"
+        style={{ background: colors.secondary }}
+      />
+      <span
+        className={styles.swatch}
+        data-testid="theme-swatch"
+        style={{ background: colors.backgroundPrimary }}
+      />
     </span>
   );
 }

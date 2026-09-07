@@ -10,13 +10,25 @@ function makePresets(): ThemePreset[] {
       id: 'a',
       name: 'Preset A',
       mode: 'light',
-      overrides: { colors: { primary: 'var(--color-blue-500)' } },
+      overrides: {
+        colors: {
+          primary: 'var(--color-blue-500)',
+          secondary: 'var(--color-slate-500)',
+          backgroundPrimary: 'var(--color-slate-50)',
+        },
+      },
     },
     {
       id: 'b',
       name: 'Preset B',
       mode: 'dark',
-      overrides: { colors: { primary: 'var(--color-violet-400)' } },
+      overrides: {
+        colors: {
+          primary: 'var(--color-violet-400)',
+          secondary: 'var(--color-fuchsia-400)',
+          backgroundPrimary: 'var(--color-zinc-900)',
+        },
+      },
     },
   ];
 }
@@ -45,5 +57,45 @@ describe('ThemePicker', () => {
       'aria-pressed',
       'true'
     );
+  });
+
+  it("renders each swatch from that preset's own override colors, not an ambient theme", () => {
+    const presets = makePresets();
+    render(<ThemePicker presets={presets} onSelect={() => {}} />);
+
+    const swatches = screen.getAllByTestId('theme-swatch');
+    // 3 swatch dots (primary, secondary, backgroundPrimary) per preset, in preset order.
+    expect(swatches).toHaveLength(presets.length * 3);
+
+    const [
+      presetAPrimary,
+      presetASecondary,
+      presetABackground,
+      presetBPrimary,
+      presetBSecondary,
+      presetBBackground,
+    ] = swatches;
+
+    expect(presetAPrimary).toHaveStyle({ background: presets[0].overrides.colors?.primary });
+    expect(presetASecondary).toHaveStyle({ background: presets[0].overrides.colors?.secondary });
+    expect(presetABackground).toHaveStyle({
+      background: presets[0].overrides.colors?.backgroundPrimary,
+    });
+
+    expect(presetBPrimary).toHaveStyle({ background: presets[1].overrides.colors?.primary });
+    expect(presetBSecondary).toHaveStyle({ background: presets[1].overrides.colors?.secondary });
+    expect(presetBBackground).toHaveStyle({
+      background: presets[1].overrides.colors?.backgroundPrimary,
+    });
+
+    // The two presets' swatches must actually differ from each other — proving the colors are
+    // sourced per-preset rather than from a single shared/ambient value.
+    expect(presetAPrimary).not.toHaveStyle({ background: presets[1].overrides.colors?.primary });
+    expect(presetASecondary).not.toHaveStyle({
+      background: presets[1].overrides.colors?.secondary,
+    });
+    expect(presetABackground).not.toHaveStyle({
+      background: presets[1].overrides.colors?.backgroundPrimary,
+    });
   });
 });
