@@ -39,3 +39,5 @@ export { PortfolioPreviewReceiver } from './preview/PortfolioPreviewReceiver';
 export { resolveEffectiveTheme } from './themes/resolveTheme';
 export { PREVIEW_READY_MESSAGE, PREVIEW_UPDATE_MESSAGE } from './preview/messages';
 export type { PreviewReadyMessage, PreviewUpdateMessage } from './preview/messages';
+export { PortfolioPreviewFrame } from './preview/PortfolioPreviewFrame';
+export type { PortfolioPreviewFrameProps } from './preview/PortfolioPreviewFrame';
