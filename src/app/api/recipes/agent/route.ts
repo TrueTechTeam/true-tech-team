@@ -1,5 +1,5 @@
 import { type NextRequest } from 'next/server';
-import { getAppUsage, recordAppUsage } from '@true-tech-team/project-gateway';
+import { getAppUsage, recordUsageFromStream } from '@true-tech-team/project-gateway';
 import { createClient } from '../../../../lib/supabase/server';
 import {
   runRecipeAgent,
@@ -108,9 +108,9 @@ export async function POST(request: NextRequest) {
 
   const profile = profileRow ? mapProfileRow(profileRow as Record<string, unknown>) : null;
 
-  // 5. Save to search history and record usage (fire and forget)
+  // 5. Save to search history (fire and forget) — usage is now recorded
+  // after the stream completes, once token counts are known (see below).
   void supabase.from('recipe_searches').insert({ user_id: user.id, query });
-  void recordAppUsage(supabase, user.id, APP_SLUG);
 
   // 6. Stream the agent response
   const encoder = new TextEncoder();
@@ -118,10 +118,12 @@ export async function POST(request: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        const agentGen = runRecipeAgent(query, profile, {
-          webSearch,
-          scrapePage,
-        });
+        const agentGen = recordUsageFromStream(
+          runRecipeAgent(query, profile, { webSearch, scrapePage }, user.id),
+          supabase,
+          user.id,
+          APP_SLUG
+        );
 
         for await (const event of agentGen) {
           const line = `${JSON.stringify(event)}\n`;

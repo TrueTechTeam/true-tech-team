@@ -44,6 +44,7 @@ export type AgentStreamEvent =
   | { type: 'tool_result'; toolName: string; summary: string }
   | { type: 'recipe'; recipe: AgentRecipe }
   | { type: 'text'; text: string }
+  | { type: 'usage'; model: string; inputTokens: number; outputTokens: number }
   | { type: 'error'; message: string }
   | { type: 'done' };
 
