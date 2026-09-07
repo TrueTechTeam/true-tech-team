@@ -19,3 +19,5 @@ export { PageRenderer } from './render/PageRenderer';
 
 export { THEME_PRESETS, getThemePreset } from './themes/presets';
 export type { ThemePreset } from './themes/types';
+export { ThemePicker } from './themes/ThemePicker';
+export type { ThemePickerProps } from './themes/ThemePicker';

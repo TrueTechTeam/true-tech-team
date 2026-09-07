@@ -1,0 +1,41 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.swatchRow {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.swatch {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--theme-border-secondary);
+}
+
+.name {
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-primary);
+}
+
+.selectedCard {
+  border: 2px solid var(--theme-primary);
+}
