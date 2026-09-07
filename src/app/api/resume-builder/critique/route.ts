@@ -1,6 +1,6 @@
 import { type NextRequest } from 'next/server';
 import { toNdjsonResponse, type AgentStreamEvent } from '@true-tech-team/agent-kit';
-import { getAppUsage, recordAppUsage } from '@true-tech-team/project-gateway';
+import { getAppUsage, recordUsageFromStream } from '@true-tech-team/project-gateway';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '../../../../lib/supabase/server';
 import { checkAppAccess, JOB_SEARCH_PERMISSION_SLUG } from '../../../../lib/auth/appAccess';
@@ -81,14 +81,18 @@ export async function POST(request: NextRequest) {
     return new Response('Missing resumeData', { status: 400 });
   }
 
-  // 4. Record usage and stream the agent response, persisting the critique
-  // once it lands.
-  void recordAppUsage(supabase, user.id, USAGE_SLUG);
-
-  const generator = runResumeCritiqueAgent(
-    body.resumeData,
-    body.targetJobDescription,
-    process.env.ANTHROPIC_API_KEY ?? ''
+  // 4. Stream the agent response, persisting the critique once it lands;
+  // usage is recorded once the stream completes.
+  const generator = recordUsageFromStream(
+    runResumeCritiqueAgent(
+      body.resumeData,
+      body.targetJobDescription,
+      process.env.ANTHROPIC_API_KEY ?? '',
+      user.id
+    ),
+    supabase,
+    user.id,
+    USAGE_SLUG
   );
 
   const persisted = withPersistence(
