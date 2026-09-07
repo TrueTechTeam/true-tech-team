@@ -81,3 +81,7 @@ blob-report/
 
 # Superpowers subagent-driven-development workspace (ledgers, briefs, review packages)
 .superpowers/
+
+# Superpowers brainstorming specs and implementation plans — local working
+# state, not a committed deliverable
+docs/superpowers/
