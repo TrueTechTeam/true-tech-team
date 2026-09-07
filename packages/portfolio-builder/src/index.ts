@@ -24,3 +24,13 @@ export type { ThemePickerProps } from './themes/ThemePicker';
 
 export type { PortfolioAsset } from './assets/types';
 export { uploadPortfolioAsset, deletePortfolioAsset, listPortfolioAssets } from './assets/upload';
+
+export type { PortfolioPageRecord } from './pages/types';
+export {
+  savePortfolioPage,
+  loadPortfolioPage,
+  listPortfolioPages,
+  deletePortfolioPage,
+  setPortfolioPagePublished,
+  checkSlugAvailable,
+} from './pages/crud';
