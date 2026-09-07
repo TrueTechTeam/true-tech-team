@@ -37,4 +37,14 @@ describe('sanitizeFilename', () => {
   it('leaves safe characters unchanged', () => {
     expect(sanitizeFilename('resume-2024.pdf')).toBe('resume-2024.pdf');
   });
+
+  it('truncates a very long filename while preserving the extension', () => {
+    const longName = `${'a'.repeat(2000)}.jpg`;
+
+    const result = sanitizeFilename(longName);
+
+    expect(result.length).toBe(100);
+    expect(result.endsWith('.jpg')).toBe(true);
+    expect(result).toBe(`${'a'.repeat(96)}.jpg`);
+  });
 });

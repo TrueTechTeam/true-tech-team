@@ -24,11 +24,22 @@ function createQueryBuilder(result: QueryResult) {
   return builder;
 }
 
-function createMockSupabase(options: { tableResult: QueryResult; uploadError?: Error | null }) {
+function createMockSupabase(options: {
+  tableResult: QueryResult;
+  uploadError?: Error | null;
+  removeError?: Error | null;
+  /**
+   * Result returned for the *second* `.from(TABLE)` call in a test (e.g. the
+   * `delete().select('id')` call in `deletePortfolioAsset`, which follows an
+   * initial `select().single()` existence check). Falls back to `tableResult`
+   * when omitted, matching the previous single-result mock behavior.
+   */
+  secondTableResult?: QueryResult;
+}) {
   const uploadMock = vi
     .fn()
     .mockResolvedValue({ data: { path: 'x' }, error: options.uploadError ?? null });
-  const removeMock = vi.fn().mockResolvedValue({ data: null, error: null });
+  const removeMock = vi.fn().mockResolvedValue({ data: null, error: options.removeError ?? null });
   const getPublicUrlMock = vi
     .fn()
     .mockReturnValue({ data: { publicUrl: 'https://example.com/asset.jpg' } });
@@ -38,7 +49,15 @@ function createMockSupabase(options: { tableResult: QueryResult; uploadError?: E
     getPublicUrl: getPublicUrlMock,
   });
 
-  const tableFromMock = vi.fn(() => createQueryBuilder(options.tableResult));
+  let tableCallCount = 0;
+  const tableFromMock = vi.fn(() => {
+    tableCallCount += 1;
+    const result =
+      tableCallCount === 2 && options.secondTableResult
+        ? options.secondTableResult
+        : options.tableResult;
+    return createQueryBuilder(result);
+  });
 
   const supabase = {
     storage: { from: storageFromMock },
@@ -105,17 +124,57 @@ describe('uploadPortfolioAsset', () => {
     expect(paths).toHaveLength(1);
     expect(paths[0]).toMatch(/^user-1\//);
   });
+
+  it('rejects with the storage error and never attempts the metadata insert when upload fails', async () => {
+    const uploadError = new Error('storage upload failed');
+    const { supabase, tableFromMock } = createMockSupabase({
+      tableResult: { data: validRow, error: null },
+      uploadError,
+    });
+    const file = makeFile('photo.jpg', 'image/jpeg', 1000);
+
+    await expect(uploadPortfolioAsset(supabase, 'user-1', file)).rejects.toThrow(
+      'storage upload failed'
+    );
+    expect(tableFromMock).not.toHaveBeenCalled();
+  });
 });
 
 describe('deletePortfolioAsset', () => {
   it('deletes the DB row then the storage object', async () => {
     const { supabase, removeMock } = createMockSupabase({
       tableResult: { data: { storage_path: 'user-1/asset-1-photo.jpg' }, error: null },
+      secondTableResult: { data: [{ id: 'asset-1' }], error: null },
     });
 
     await deletePortfolioAsset(supabase, 'asset-1');
 
     expect(removeMock).toHaveBeenCalledWith(['user-1/asset-1-photo.jpg']);
+  });
+
+  it('throws when the row is deleted but the storage remove call fails, without hiding that the file is still public', async () => {
+    const { supabase, removeMock } = createMockSupabase({
+      tableResult: { data: { storage_path: 'user-1/asset-1-photo.jpg' }, error: null },
+      secondTableResult: { data: [{ id: 'asset-1' }], error: null },
+      removeError: new Error('network error'),
+    });
+
+    await expect(deletePortfolioAsset(supabase, 'asset-1')).rejects.toThrow(
+      /still publicly accessible/
+    );
+    expect(removeMock).toHaveBeenCalledWith(['user-1/asset-1-photo.jpg']);
+  });
+
+  it('throws when RLS silently blocks the delete (zero rows affected)', async () => {
+    const { supabase, removeMock } = createMockSupabase({
+      tableResult: { data: { storage_path: 'user-1/asset-1-photo.jpg' }, error: null },
+      secondTableResult: { data: [], error: null },
+    });
+
+    await expect(deletePortfolioAsset(supabase, 'asset-1')).rejects.toThrow(
+      'Asset could not be deleted'
+    );
+    expect(removeMock).not.toHaveBeenCalled();
   });
 });
 

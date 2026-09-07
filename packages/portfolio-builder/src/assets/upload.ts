@@ -68,7 +68,13 @@ export async function uploadPortfolioAsset(
     .single();
 
   if (insertError || !row) {
-    await supabase.storage.from(BUCKET).remove([storagePath]);
+    const { error: cleanupError } = await supabase.storage.from(BUCKET).remove([storagePath]);
+    if (cleanupError) {
+      console.error(
+        `Failed to clean up orphaned upload at ${storagePath} after a failed metadata insert:`,
+        cleanupError
+      );
+    }
     throw insertError ?? new Error('Failed to record uploaded asset');
   }
 
@@ -90,12 +96,27 @@ export async function deletePortfolioAsset(
     throw selectError ?? new Error('Asset not found');
   }
 
-  const { error: deleteRowError } = await supabase.from(TABLE).delete().eq('id', assetId);
+  const { data: deletedRows, error: deleteRowError } = await supabase
+    .from(TABLE)
+    .delete()
+    .eq('id', assetId)
+    .select('id');
+
   if (deleteRowError) {
     throw deleteRowError;
   }
+  if (!deletedRows || deletedRows.length === 0) {
+    throw new Error('Asset could not be deleted');
+  }
 
-  await supabase.storage.from(BUCKET).remove([(row as { storage_path: string }).storage_path]);
+  const { error: removeError } = await supabase.storage
+    .from(BUCKET)
+    .remove([(row as { storage_path: string }).storage_path]);
+  if (removeError) {
+    throw new Error(
+      `Asset record deleted, but the stored file could not be removed and is still publicly accessible: ${removeError.message}`
+    );
+  }
 }
 
 export async function listPortfolioAssets(
