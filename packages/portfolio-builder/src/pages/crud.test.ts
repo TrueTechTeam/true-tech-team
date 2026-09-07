@@ -94,6 +94,39 @@ describe('savePortfolioPage', () => {
     expect(builder.update).toHaveBeenCalled();
     expect(builder.insert).not.toHaveBeenCalled();
     expect(builder.eq).toHaveBeenCalledWith('id', 'page-1');
+    expect(builder.eq).toHaveBeenCalledWith('user_id', 'user-1');
+  });
+
+  it('throws a validation error and never calls supabase when the page is invalid', async () => {
+    const { supabase, tableFromMock } = createMockSupabase({
+      tableResult: { data: validRow, error: null },
+    });
+    const invalidPage = { ...validPage, title: '' } as PortfolioPage;
+
+    await expect(savePortfolioPage(supabase, 'user-1', invalidPage)).rejects.toThrow(
+      /Invalid portfolio page/
+    );
+    expect(tableFromMock).not.toHaveBeenCalled();
+  });
+
+  it('throws a friendly error when the insert hits a unique-violation on slug', async () => {
+    const { supabase } = createMockSupabase({
+      tableResult: { data: null, error: { code: '23505', message: 'duplicate key value' } },
+    });
+
+    await expect(savePortfolioPage(supabase, 'user-1', validPage)).rejects.toThrow(
+      'That slug is already taken. Please choose a different one.'
+    );
+  });
+
+  it('throws a friendly error when the update hits a unique-violation on slug', async () => {
+    const { supabase } = createMockSupabase({
+      tableResult: { data: null, error: { code: '23505', message: 'duplicate key value' } },
+    });
+
+    await expect(savePortfolioPage(supabase, 'user-1', validPage, 'page-1')).rejects.toThrow(
+      'That slug is already taken. Please choose a different one.'
+    );
   });
 });
 
