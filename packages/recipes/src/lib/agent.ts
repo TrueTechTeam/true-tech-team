@@ -127,7 +127,8 @@ export interface AgentTools {
 export async function* runRecipeAgent(
   query: string,
   profile: RecipeProfile | null,
-  tools: AgentTools
+  tools: AgentTools,
+  userId: string
 ): AsyncGenerator<AgentStreamEvent> {
   const toolExecutors: Record<string, ToolExecutorEntry> = {
     web_search: {
@@ -147,6 +148,7 @@ export async function* runRecipeAgent(
 
   const generator = runAgentLoop<AgentRecipe>({
     apiKey: process.env.ANTHROPIC_API_KEY ?? '',
+    userId,
     model: 'claude-opus-4-5',
     systemPrompt: buildSystemPrompt(profile),
     tools: [webSearchTool, scrapePageTool],
@@ -169,6 +171,14 @@ export async function* runRecipeAgent(
         break;
       case 'tool_result':
         yield { type: 'tool_result', toolName: event.toolName, summary: event.summary };
+        break;
+      case 'usage':
+        yield {
+          type: 'usage',
+          model: event.model,
+          inputTokens: event.inputTokens,
+          outputTokens: event.outputTokens,
+        };
         break;
       case 'error':
         yield { type: 'error', message: event.message };
