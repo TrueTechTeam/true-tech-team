@@ -75,3 +75,12 @@ out
 playwright-report/
 test-results/
 blob-report/
+
+# Git worktrees for isolated feature work
+.worktrees/
+
+# Superpowers subagent-driven-development workspace (ledgers, briefs, review packages)
+.superpowers/
+
+# Local planning docs (specs/plans) - not pushed to the remote
+docs/
