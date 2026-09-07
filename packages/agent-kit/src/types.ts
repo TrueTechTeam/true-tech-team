@@ -5,6 +5,7 @@ export type AgentStreamEvent<TResult = unknown> =
   | { type: 'tool_result'; toolName: string; summary: string }
   | { type: 'text'; text: string }
   | { type: 'result'; result: TResult }
+  | { type: 'usage'; model: string; inputTokens: number; outputTokens: number }
   | { type: 'error'; message: string }
   | { type: 'done' };
 
@@ -20,6 +21,7 @@ export interface ToolExecutorEntry {
 
 export interface RunAgentLoopOptions<TResult> {
   apiKey: string;
+  userId?: string;
   model: string;
   systemPrompt: string;
   // Anthropic.ToolUnion covers both custom tools (Tool, with input_schema) and
