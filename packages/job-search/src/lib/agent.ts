@@ -135,10 +135,12 @@ export function buildJobSearchSystemPrompt(
 export function runJobSearchAgent(
   profile: JobSearchProfile,
   excludeUrls: string[],
-  apiKey: string
+  apiKey: string,
+  userId: string
 ): AsyncGenerator<JobSearchAgentStreamEvent> {
   return runAgentLoop<JobsAgentResult>({
     apiKey,
+    userId,
     model: 'claude-opus-4-5',
     systemPrompt: buildJobSearchSystemPrompt(profile, excludeUrls),
     tools: JOB_SEARCH_TOOLS,
