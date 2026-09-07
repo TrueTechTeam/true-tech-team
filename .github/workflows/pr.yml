@@ -20,7 +20,7 @@ jobs:
       - uses: wagoid/commitlint-github-action@v4
 
   ci:
-    name: Lint, format, typecheck, build
+    name: Lint, format, typecheck, test, build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,4 +33,5 @@ jobs:
       - run: npm run lint:styles
       - run: npm run format:check
       - run: npm run typecheck
+      - run: npm test
       - run: npm run build

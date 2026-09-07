@@ -79,13 +79,16 @@ export async function recordAppUsage(
   appSlug: string,
   usage?: RecordedUsage
 ): Promise<void> {
-  await supabase.from('app_usage_events').insert({
+  const { error } = await supabase.from('app_usage_events').insert({
     user_id: userId,
     app_slug: appSlug,
     model: usage?.model ?? null,
     input_tokens: usage?.inputTokens ?? null,
     output_tokens: usage?.outputTokens ?? null,
   });
+  if (error) {
+    console.error('recordAppUsage: failed to insert usage event', error);
+  }
 }
 
 interface UsageStreamEvent {
@@ -189,10 +192,14 @@ export async function getUsageHistory(
   sinceDays = 30
 ): Promise<Record<string, UserUsageHistory>> {
   const since = new Date(Date.now() - sinceDays * 24 * 60 * 60 * 1000);
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('app_usage_events')
     .select('user_id, model, input_tokens, output_tokens, created_at')
     .gte('created_at', since.toISOString());
+
+  if (error) {
+    console.error('getUsageHistory: failed to fetch usage events', error);
+  }
 
   return aggregateUsageRows((data ?? []) as UsageEventRow[]);
 }
