@@ -40,9 +40,18 @@ component. It does not touch rendering, routing, or theme _application_ — see 
 interface ThemePreset {
   id: string;
   name: string;
-  overrides: ThemeOverride; // from @true-tech-team/react-components
+  mode: ThemeMode; // 'light' | 'dark' — from @true-tech-team/react-components
+  overrides: ThemeOverride; // from @true-tech-team/react-components; colors only, see below
 }
 ```
+
+**Correction from initial design:** `ThemeOverride` (verified directly against the installed
+library's type definitions) is `Partial<{ colors, spacing, typography, borderRadius, shadows }>`
+— it has **no `mode` field**. `mode` is a sibling field on `ThemeConfig`
+(`{ mode?: ThemeMode; theme?: ThemeOverride }`), the shape `GlobalProvider`'s `themeConfig` prop
+actually takes. So `ThemePreset.mode` is its own top-level field, not something written into
+`overrides` — whatever applies a preset (a future sub-project) passes
+`themeConfig={{ mode: preset.mode, theme: preset.overrides }}`.
 
 `PortfolioPage.themeId` (already defined in sub-project 1's schema) references a `ThemePreset.id`
 here. `getThemePreset(id): ThemePreset | undefined` is the lookup, mirroring the
@@ -98,8 +107,10 @@ textSecondary = var(--color-<neutralFamily>-600)
 textTertiary  = var(--color-<neutralFamily>-400)
 borderPrimary   = var(--color-<neutralFamily>-200)
 borderSecondary = var(--color-<neutralFamily>-300)
-mode = 'light'
 ```
+
+(`ThemePreset.mode` is set to `'light'` for a preset built by this formula — not part of the
+`overrides` object itself, per the correction above.)
 
 **Dark-mode formula** (accent shades shift lighter so they pop against a dark background):
 
@@ -121,8 +132,9 @@ textSecondary = var(--color-<neutralFamily>-300)
 textTertiary  = var(--color-<neutralFamily>-500)
 borderPrimary   = var(--color-<neutralFamily>-700)
 borderSecondary = var(--color-<neutralFamily>-600)
-mode = 'dark'
 ```
+
+(`ThemePreset.mode` is set to `'dark'` for a preset built by this formula.)
 
 The implementation plan builds these as two small generator functions
 (`buildLightPreset(id, name, primaryFamily, secondaryFamily, neutralFamily)` and
