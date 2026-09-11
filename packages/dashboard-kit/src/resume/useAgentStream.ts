@@ -51,6 +51,13 @@ export function useAgentStream<TResult>({ onResult, onDone }: UseAgentStreamOpti
       const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
       let buffer = '';
       const decoder = new TextDecoder();
+      // Set once we've seen an 'error' or 'done' line — the generator's own
+      // sign-off. If the underlying connection closes before either arrives
+      // (e.g. a server-side function timeout kills the request mid-stream),
+      // reader.read() just resolves with done:true and the while loop below
+      // exits quietly — without this flag, status would stay stuck on
+      // 'streaming' forever with no way for the UI to recover.
+      let reachedTerminal = false;
 
       const handleEvent = (event: AgentStreamEvent<TResult>) => {
         switch (event.type) {
@@ -64,9 +71,11 @@ export function useAgentStream<TResult>({ onResult, onDone }: UseAgentStreamOpti
           case 'error':
             setErrorMessage(event.message);
             setStatus('error');
+            reachedTerminal = true;
             break;
           case 'done':
             setStatus((prev) => (prev === 'error' ? prev : 'done'));
+            reachedTerminal = true;
             break;
           case 'tool_use':
           case 'tool_result':
@@ -124,6 +133,11 @@ export function useAgentStream<TResult>({ onResult, onDone }: UseAgentStreamOpti
           } catch {
             // ignore
           }
+        }
+
+        if (!reachedTerminal) {
+          setErrorMessage('Connection closed before the search finished. Please try again.');
+          setStatus('error');
         }
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
