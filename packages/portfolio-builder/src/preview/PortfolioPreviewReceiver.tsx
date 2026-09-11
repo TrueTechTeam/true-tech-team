@@ -6,10 +6,10 @@ import { PageRenderer } from '../render/PageRenderer';
 import { resolveEffectiveTheme } from '../themes/resolveTheme';
 import {
   PREVIEW_READY_MESSAGE,
-  PREVIEW_UPDATE_MESSAGE,
+  isPreviewUpdateMessage,
   type PreviewReadyMessage,
-  type PreviewUpdateMessage,
 } from './messages';
+import { validatePortfolioPage } from '../schema/validate';
 import type { PortfolioPage } from '../schema/types';
 
 export function PortfolioPreviewReceiver() {
@@ -20,9 +20,8 @@ export function PortfolioPreviewReceiver() {
       if (event.origin !== window.location.origin) {
         return;
       }
-      const data = event.data as PreviewUpdateMessage;
-      if (data?.type === PREVIEW_UPDATE_MESSAGE) {
-        setPage(data.page);
+      if (isPreviewUpdateMessage(event.data) && validatePortfolioPage(event.data.page).valid) {
+        setPage(event.data.page);
       }
     }
 

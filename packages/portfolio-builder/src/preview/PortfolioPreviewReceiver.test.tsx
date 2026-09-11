@@ -73,4 +73,17 @@ describe('PortfolioPreviewReceiver', () => {
     });
     expect(screen.queryByText('Hello preview')).not.toBeInTheDocument();
   });
+
+  it('ignores an update message carrying a structurally invalid page', () => {
+    render(<PortfolioPreviewReceiver />);
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          origin: window.location.origin,
+          data: { type: PREVIEW_UPDATE_MESSAGE, page: { schemaVersion: 1 } },
+        })
+      );
+    });
+    expect(screen.queryByText('Hello preview')).not.toBeInTheDocument();
+  });
 });

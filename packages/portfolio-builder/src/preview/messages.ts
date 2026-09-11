@@ -11,3 +11,19 @@ export interface PreviewUpdateMessage {
   type: typeof PREVIEW_UPDATE_MESSAGE;
   page: PortfolioPage;
 }
+
+export function isPreviewReadyMessage(data: unknown): data is PreviewReadyMessage {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    (data as { type?: unknown }).type === PREVIEW_READY_MESSAGE
+  );
+}
+
+export function isPreviewUpdateMessage(data: unknown): data is PreviewUpdateMessage {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    (data as { type?: unknown }).type === PREVIEW_UPDATE_MESSAGE
+  );
+}
