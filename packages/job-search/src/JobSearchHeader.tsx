@@ -1,8 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Button, ButtonGroup, IconButton, Tooltip } from '@true-tech-team/react-components';
+import {
+  Button,
+  ButtonGroup,
+  IconButton,
+  Tooltip,
+  useToast,
+} from '@true-tech-team/react-components';
 import { useUsageStatus } from '@true-tech-team/dashboard-kit';
 import { useJobSearchSearch } from './JobSearchSearchContext';
 import JobSearchProfileDialog from './settings/JobSearchProfileDialog';
@@ -16,9 +22,23 @@ import styles from './JobSearchHeader.module.scss';
 // the page itself.
 export default function JobSearchHeader() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { isSearching, runSearch, usageRefreshKey, profileConfigured, refreshProfile } =
-    useJobSearchSearch();
+  const {
+    isSearching,
+    runSearch,
+    usageRefreshKey,
+    searchErrorMessage,
+    profileConfigured,
+    refreshProfile,
+  } = useJobSearchSearch();
   const usage = useUsageStatus('/api/job-search/usage', usageRefreshKey);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (searchErrorMessage) {
+      toast.error(searchErrorMessage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- useToast() returns a new object every render, only re-run when the error actually changes
+  }, [searchErrorMessage]);
   // Default to disabled/unknown until we've positively confirmed both
   // signals — never assume "allowed" or "configured" just because we
   // haven't heard back yet.
