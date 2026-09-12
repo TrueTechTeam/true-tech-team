@@ -53,3 +53,9 @@ export const textPropertySchema: PropertySchema = [
     ],
   },
 ];
+
+export const textDefaultProps: Record<string, unknown> = {
+  text: 'New text content goes here.',
+  size: 'base',
+  align: 'left',
+};

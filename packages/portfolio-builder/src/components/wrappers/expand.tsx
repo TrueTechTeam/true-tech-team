@@ -176,3 +176,26 @@ export const flipCardPropertySchema: PropertySchema = [
   { key: 'height', label: 'Height (px)', type: 'number', min: 0 },
   { key: 'width', label: 'Width (px)', type: 'number', min: 0 },
 ];
+
+export const expandableTextDefaultProps: Record<string, unknown> = {
+  title: 'Title',
+  body: 'Expandable content goes here.',
+  defaultOpen: false,
+};
+
+export const accordionDefaultProps: Record<string, unknown> = {
+  header: 'Section',
+  body: 'Accordion content goes here.',
+  defaultOpen: false,
+};
+
+export const revealDefaultProps: Record<string, unknown> = {
+  text: 'Revealed content',
+  animation: 'fade',
+  playOnMount: true,
+};
+
+export const flipCardDefaultProps: Record<string, unknown> = {
+  frontText: 'Front',
+  backText: 'Back',
+};

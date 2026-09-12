@@ -60,3 +60,9 @@ export const headingPropertySchema: PropertySchema = [
     ],
   },
 ];
+
+export const headingDefaultProps: Record<string, unknown> = {
+  text: 'New Heading',
+  level: 2,
+  align: 'left',
+};

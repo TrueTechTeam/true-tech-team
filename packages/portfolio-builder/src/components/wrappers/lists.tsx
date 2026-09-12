@@ -172,3 +172,7 @@ export const overflowTextPropertySchema: PropertySchema = [
   { key: 'text', label: 'Text', type: 'textarea', required: true },
   { key: 'lines', label: 'Max lines', type: 'number', min: 1 },
 ];
+
+export const overflowTextDefaultProps: Record<string, unknown> = {
+  text: 'Long text that may overflow and truncate with a fade or ellipsis.',
+};

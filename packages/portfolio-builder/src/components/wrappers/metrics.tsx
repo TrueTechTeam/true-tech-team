@@ -146,3 +146,27 @@ export const countUpPropertySchema: PropertySchema = [
   { key: 'suffix', label: 'Suffix', type: 'text' },
   { key: 'decimals', label: 'Decimal places', type: 'number', min: 0 },
 ];
+
+export const progressBarDefaultProps: Record<string, unknown> = {
+  value: 50,
+  max: 100,
+  label: 'Progress',
+  showValue: true,
+};
+
+export const circularProgressDefaultProps: Record<string, unknown> = {
+  value: 50,
+  max: 100,
+  label: 'Progress',
+  showValue: true,
+};
+
+export const kpiDefaultProps: Record<string, unknown> = {
+  title: 'Metric',
+  value: '0',
+  changeType: 'neutral',
+};
+
+export const countUpDefaultProps: Record<string, unknown> = {
+  value: 100,
+};

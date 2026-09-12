@@ -56,3 +56,7 @@ export const avatarPropertySchema: PropertySchema = [
     ],
   },
 ];
+
+export const avatarDefaultProps: Record<string, unknown> = {
+  initials: 'AB',
+};

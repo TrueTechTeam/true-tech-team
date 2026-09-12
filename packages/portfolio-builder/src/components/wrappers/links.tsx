@@ -78,3 +78,14 @@ export const iconLinkButtonPropertySchema: PropertySchema = [
   { key: 'ariaLabel', label: 'Accessible label', type: 'text', required: true },
   { key: 'openInNewTab', label: 'Open in new tab', type: 'boolean' },
 ];
+
+export const linkButtonDefaultProps: Record<string, unknown> = {
+  label: 'Click Me',
+  href: 'https://example.com',
+};
+
+export const iconLinkButtonDefaultProps: Record<string, unknown> = {
+  href: 'https://example.com',
+  icon: 'external-link',
+  ariaLabel: 'Open link',
+};

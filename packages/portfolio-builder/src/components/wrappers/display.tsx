@@ -226,3 +226,25 @@ export const iconPropertySchema: PropertySchema = [
   { key: 'ariaLabel', label: 'Accessible label', type: 'text', required: true },
   { key: 'color', label: 'Color', type: 'text' },
 ];
+
+export const badgeDefaultProps: Record<string, unknown> = {
+  label: 'New',
+};
+
+export const chipDefaultProps: Record<string, unknown> = {
+  label: 'Chip',
+};
+
+export const pillDefaultProps: Record<string, unknown> = {
+  label: 'Pill',
+};
+
+export const statusIndicatorDefaultProps: Record<string, unknown> = {
+  status: 'online',
+  label: 'Status',
+};
+
+export const iconDefaultProps: Record<string, unknown> = {
+  name: 'star',
+  ariaLabel: 'Star icon',
+};

@@ -20,3 +20,7 @@ export function SpacerItem(props: Record<string, unknown> & { 'data-testid'?: st
 export const spacerPropertySchema: PropertySchema = [
   { key: 'height', label: 'Height (px)', type: 'number', required: true, min: 0 },
 ];
+
+export const spacerDefaultProps: Record<string, unknown> = {
+  height: 24,
+};
