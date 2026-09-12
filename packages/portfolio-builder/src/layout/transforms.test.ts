@@ -157,6 +157,39 @@ describe('moveItemToNewRow', () => {
     expect(result.sections[1].rows).toHaveLength(2);
     expect(result.sections[1].rows[1].items.map((i) => i.id)).toEqual(['item1']);
   });
+
+  it('adjusts the target index when the source row is pruned and precedes the target', () => {
+    // Section rows: [r0(only itemX), r1(itemY), r2(itemZ)]. Dropping itemX on the gap between
+    // r1 and r2 (rendered index 2, computed pre-removal) should produce [r1, itemX-row, r2] —
+    // not [r1, r2, itemX-row] — since pruning r0 shifts r1/r2 down by one first.
+    const page: PortfolioPage = {
+      schemaVersion: 1,
+      slug: 'test',
+      title: 'Test Page',
+      templateId: 'test',
+      showNav: false,
+      sections: [
+        {
+          id: 'sec1',
+          name: 'Section 1',
+          showInNav: false,
+          rows: [
+            { id: 'r0', items: [{ id: 'itemX', component: 'heading', span: 6, props: {} }] },
+            { id: 'r1', items: [{ id: 'itemY', component: 'text', span: 6, props: {} }] },
+            { id: 'r2', items: [{ id: 'itemZ', component: 'badge', span: 6, props: {} }] },
+          ],
+        },
+      ],
+    };
+
+    const result = moveItemToNewRow(page, 'itemX', 'sec1', 2);
+
+    expect(result.sections[0].rows.map((r) => r.items.map((i) => i.id))).toEqual([
+      ['itemY'],
+      ['itemX'],
+      ['itemZ'],
+    ]);
+  });
 });
 
 describe('removeItem', () => {

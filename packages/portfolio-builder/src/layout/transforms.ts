@@ -158,7 +158,14 @@ export function moveItemToNewRow(
   const sourceSection = page.sections[location.sectionIndex];
   const sourceRow = sourceSection.rows[location.rowIndex];
   const item = sourceRow.items[location.itemIndex];
+  const sourceRowWillBePruned = sourceRow.items.length === 1;
 
   const { page: pageAfterRemoval } = removeItemInternal(page, itemId);
-  return insertItemInNewRow(pageAfterRemoval, targetSectionId, targetIndex, item);
+
+  const adjustedTargetIndex =
+    sourceSection.id === targetSectionId && sourceRowWillBePruned && location.rowIndex < targetIndex
+      ? targetIndex - 1
+      : targetIndex;
+
+  return insertItemInNewRow(pageAfterRemoval, targetSectionId, adjustedTargetIndex, item);
 }
