@@ -60,3 +60,20 @@ export { ImageField } from './properties/ImageField';
 export type { ImageFieldProps } from './properties/ImageField';
 export { IconField } from './properties/IconField';
 export type { IconFieldProps } from './properties/IconField';
+
+export {
+  getRowRemainingCapacity,
+  insertItemInRow,
+  insertItemInNewRow,
+  moveItem,
+  moveItemToNewRow,
+  removeItem,
+} from './layout/transforms';
+export { Palette } from './editor/Palette';
+export type { PaletteProps } from './editor/Palette';
+export { DraggableGridItem } from './editor/DraggableGridItem';
+export type { DraggableGridItemProps } from './editor/DraggableGridItem';
+export { DropZone } from './editor/DropZone';
+export type { DropZoneProps, DropZoneData } from './editor/DropZone';
+export { PageDragDropContainer } from './editor/PageDragDropContainer';
+export type { PageDragDropContainerProps } from './editor/PageDragDropContainer';
