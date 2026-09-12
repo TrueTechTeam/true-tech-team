@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { DndProvider } from '@true-tech-team/react-components';
-import { Palette } from './Palette';
+import { Palette, PALETTE_COMPONENT_TYPES } from './Palette';
 import { COMPONENT_TYPES } from '../schema/types';
+import { getRegistryEntry } from '../components/registry';
 
 const ARRAY_PROP_TYPES = ['carousel', 'tabs', 'truncatedList'];
 
@@ -42,5 +43,15 @@ describe('Palette', () => {
     renderPalette();
     expect(screen.getByText('Heading')).toBeInTheDocument();
     expect(screen.getByText('Button')).toBeInTheDocument();
+  });
+
+  it('renders exactly the component types that have defaultProps in the registry', () => {
+    // Guards against drift: nothing else prevents someone from adding a new schema'd component
+    // (with a `defaultProps` entry in the registry) without also adding it to the Palette, or
+    // vice versa.
+    const expectedTypes = COMPONENT_TYPES.filter((t) => getRegistryEntry(t)?.defaultProps);
+    expect(new Set(PALETTE_COMPONENT_TYPES)).toEqual(new Set(expectedTypes));
+    expect(PALETTE_COMPONENT_TYPES).toHaveLength(expectedTypes.length);
+    expect(expectedTypes.length).toBe(22);
   });
 });

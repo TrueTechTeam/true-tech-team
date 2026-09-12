@@ -38,6 +38,13 @@ const DISPLAY_ENTRIES: PaletteEntry[] = [
   { componentType: 'reveal', label: 'Reveal', icon: 'eye' },
 ];
 
+// Exported so tests can assert the rendered component types stay in sync with the registry's
+// `defaultProps` entries (see Palette.test.tsx) without duplicating this list.
+export const PALETTE_COMPONENT_TYPES: ComponentType[] = [
+  ...INTERACTIVE_ENTRIES,
+  ...DISPLAY_ENTRIES,
+].map((entry) => entry.componentType);
+
 function PaletteEntryButton({ entry }: { entry: PaletteEntry }) {
   const { setNodeRef, attributes, listeners, isDragging } = useDraggable({
     id: `palette:${entry.componentType}`,
