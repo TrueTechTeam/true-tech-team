@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getAppUsage, recordAppUsage } from '@true-tech-team/project-gateway';
+import { getAppUsage, recordAppUsage, logAppError } from '@true-tech-team/project-gateway';
 import { toNdjsonResponse } from '@true-tech-team/agent-kit';
 import { createClient } from '../../../../lib/supabase/server';
 import { checkAppAccess, JOB_SEARCH_PERMISSION_SLUG } from '../../../../lib/auth/appAccess';
@@ -26,19 +26,31 @@ async function* insertJobsOnResult(
 ): AsyncGenerator<JobSearchAgentStreamEvent> {
   const excludeSet = new Set(excludeUrls);
 
-  for await (const event of generator) {
-    if (event.type === 'result') {
-      // Defense in depth — the prompt already asked the agent to exclude
-      // these URLs, but dedupe again before writing to the database.
-      const jobsToInsert = event.result.jobs.filter(
-        (job) => !job.applicationUrl || !excludeSet.has(job.applicationUrl)
-      );
+  try {
+    for await (const event of generator) {
+      // The agent-loop's own error path (timeout, exceeded max iterations,
+      // unparseable JSON) yields this rather than throwing — log it too, not
+      // just exceptions caught below, so every way a search can come back
+      // empty leaves a queryable trace.
+      if (event.type === 'error') {
+        await logAppError(supabase, userId, APP_SLUG, event.message, { stage: 'agent-loop' });
+      }
 
-      if (jobsToInsert.length > 0) {
-        await supabase.from('job_search_jobs').insert(
-          jobsToInsert.map((job) => ({
+      if (event.type === 'result') {
+        // Defense in depth — the prompt already asked the agent to exclude
+        // these URLs, but dedupe again before writing to the database.
+        const jobsToInsert = event.result.jobs
+          .filter((job) => !job.applicationUrl || !excludeSet.has(job.applicationUrl))
+          // The agent's JSON output is never schema-validated (parseResult
+          // just casts it) — title/company are NOT NULL columns and
+          // match_score is constrained to 0-100, so a single malformed job
+          // here would otherwise fail the *entire* insert statement
+          // (Postgres rejects the whole batch, not just the bad row),
+          // silently dropping every job from an otherwise-successful search.
+          .filter((job) => Boolean(job.title?.trim()) && Boolean(job.company?.trim()))
+          .map((job) => ({
             user_id: userId,
-            status: 'suggested',
+            status: 'suggested' as const,
             title: job.title,
             company: job.company,
             company_website: job.companyWebsite,
@@ -47,15 +59,41 @@ async function* insertJobsOnResult(
             location: job.location,
             work_type: job.workType,
             salary: job.salary,
-            match_score: job.matchScore,
+            match_score:
+              typeof job.matchScore === 'number' && job.matchScore >= 0 && job.matchScore <= 100
+                ? Math.round(job.matchScore)
+                : null,
             match_reason: job.matchReason,
             posted_date: job.postedDate,
-          }))
-        );
-      }
-    }
+          }));
 
-    yield event;
+        if (jobsToInsert.length > 0) {
+          const { error } = await supabase.from('job_search_jobs').insert(jobsToInsert);
+          if (error) {
+            // Previously discarded — the search would appear to succeed
+            // (stream completes, status goes to 'done') while every job it
+            // found silently failed to save, with nothing anywhere to show
+            // it happened.
+            throw new Error(
+              `Found ${jobsToInsert.length} job(s) but failed to save them: ${error.message}`
+            );
+          }
+        }
+      }
+
+      yield event;
+    }
+  } catch (err) {
+    await logAppError(
+      supabase,
+      userId,
+      APP_SLUG,
+      err instanceof Error ? err.message : String(err),
+      {
+        stage: 'insertJobsOnResult',
+      }
+    );
+    throw err;
   }
 }
 

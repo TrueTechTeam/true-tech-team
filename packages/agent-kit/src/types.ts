@@ -33,4 +33,13 @@ export interface RunAgentLoopOptions<TResult> {
   maxTokens?: number; // default 4096
   resultFenceTag: string; // e.g. 'recipe-json' | 'jobs-json' | 'resume-json' | 'critique-json'
   parseResult: (json: unknown) => TResult;
+  // Per-request timeout (ms) passed to the Anthropic client. Left undefined
+  // preserves the SDK's own default (10 minutes, retried up to maxRetries
+  // times) — set explicitly for agents that can run long, open-ended
+  // server-tool loops (e.g. web_search) so a stalled request fails fast
+  // with a clear error instead of hanging far longer than any caller expects.
+  timeoutMs?: number;
+  // Overall wall-clock budget (ms) for the whole loop, checked once per
+  // iteration. Left undefined preserves existing behavior (no cap).
+  maxTotalDurationMs?: number;
 }

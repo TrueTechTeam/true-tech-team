@@ -17,6 +17,7 @@ export function toNdjsonResponse<TResult>(
           }
         }
       } catch (err) {
+        console.error('[agent-kit] agent loop threw before completing:', err);
         const errorEvent: AgentStreamEvent<TResult> = {
           type: 'error',
           message: err instanceof Error ? err.message : String(err),

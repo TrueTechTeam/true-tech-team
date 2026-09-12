@@ -19,12 +19,27 @@ export async function* runAgentLoop<TResult>(
     maxTokens = DEFAULT_MAX_TOKENS,
     resultFenceTag,
     parseResult,
+    timeoutMs,
+    maxTotalDurationMs,
   } = options;
 
-  const client = new Anthropic({ apiKey });
+  const client = new Anthropic({ apiKey, timeout: timeoutMs });
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: initialMessage }];
+  const startedAt = Date.now();
 
   for (let i = 0; i < maxIterations; i++) {
+    if (maxTotalDurationMs !== undefined && Date.now() - startedAt > maxTotalDurationMs) {
+      console.error(
+        `[agent-kit] runAgentLoop exceeded maxTotalDurationMs (${maxTotalDurationMs}ms) after ${i} iteration(s)`
+      );
+      yield {
+        type: 'error',
+        message: 'The search took too long and was stopped. Please try again.',
+      };
+      yield { type: 'done' };
+      return;
+    }
+
     const stream = client.messages.stream({
       model,
       max_tokens: maxTokens,
