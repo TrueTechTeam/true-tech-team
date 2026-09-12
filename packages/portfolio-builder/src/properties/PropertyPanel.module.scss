@@ -10,6 +10,18 @@
   font-size: 0.875rem;
 }
 
+.errorSummary {
+  margin: 0;
+  padding-left: var(--spacing-md);
+  color: var(--color-red-500);
+  font-size: 0.875rem;
+}
+
+.uploadError {
+  color: var(--color-red-500);
+  font-size: 0.875rem;
+}
+
 .imageField {
   display: flex;
   flex-direction: column;
@@ -24,7 +36,7 @@
 
 .thumbnail,
 .thumbnailSelected {
-  border: 1px solid var(--color-neutral-300);
+  border: 2px solid transparent;
   border-radius: var(--radius-sm);
   padding: 0;
   cursor: pointer;
@@ -36,7 +48,10 @@
   }
 }
 
+.thumbnail {
+  border-color: var(--color-neutral-300);
+}
+
 .thumbnailSelected {
   border-color: var(--color-primary-500);
-  border-width: 2px;
 }

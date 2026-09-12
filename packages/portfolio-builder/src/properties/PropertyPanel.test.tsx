@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import * as assets from '../assets/upload';
 import { PropertyPanel } from './PropertyPanel';
 import type { SelectedItem } from './types';
 
@@ -12,7 +13,7 @@ function renderPanel(
 ) {
   const onPropsChange = vi.fn();
   const onSpanChange = vi.fn();
-  render(
+  const { rerender } = render(
     <PropertyPanel
       item={item}
       onPropsChange={onPropsChange}
@@ -22,7 +23,21 @@ function renderPanel(
       {...overrides}
     />
   );
-  return { onPropsChange, onSpanChange };
+  return {
+    onPropsChange,
+    onSpanChange,
+    rerender: (nextItem: SelectedItem, nextOverrides: typeof overrides = overrides) =>
+      rerender(
+        <PropertyPanel
+          item={nextItem}
+          onPropsChange={onPropsChange}
+          onSpanChange={onSpanChange}
+          supabase={fakeSupabase}
+          userId="user-1"
+          {...nextOverrides}
+        />
+      ),
+  };
 }
 
 describe('PropertyPanel', () => {
@@ -80,5 +95,33 @@ describe('PropertyPanel', () => {
     });
     fireEvent.change(screen.getByLabelText(/^Text/), { target: { value: '' } });
     expect(screen.getByText('text is required and must be a string')).toBeInTheDocument();
+  });
+
+  it('shows an unclaimed validation error (matching no field key) in the error summary', () => {
+    vi.spyOn(assets, 'listPortfolioAssets').mockResolvedValue([]);
+    renderPanel({
+      componentType: 'avatar',
+      props: {},
+      span: 6,
+    });
+    fireEvent.change(screen.getByLabelText(/^Alt text/), { target: { value: 'New alt' } });
+    expect(screen.getByText('either src or initials is required')).toBeInTheDocument();
+  });
+
+  it('resets errors when the selected item changes', () => {
+    const { rerender } = renderPanel({
+      componentType: 'heading',
+      props: { text: 'Hello', level: 2, align: 'left' },
+      span: 6,
+    });
+    fireEvent.change(screen.getByLabelText(/^Text/), { target: { value: '' } });
+    expect(screen.getByText('text is required and must be a string')).toBeInTheDocument();
+
+    rerender({
+      componentType: 'heading',
+      props: { text: 'Different item', level: 2, align: 'left' },
+      span: 6,
+    });
+    expect(screen.queryByText('text is required and must be a string')).not.toBeInTheDocument();
   });
 });

@@ -6,6 +6,7 @@ export interface IconFieldProps {
   value: string;
   onChange: (name: string) => void;
   label?: string;
+  id?: string;
 }
 
 const ICON_OPTIONS = Object.keys(iconRegistry).map((name) => ({
@@ -18,10 +19,10 @@ const ICON_OPTIONS = Object.keys(iconRegistry).map((name) => ({
   ),
 }));
 
-export function IconField({ value, onChange, label = 'Icon' }: IconFieldProps) {
+export function IconField({ value, onChange, label = 'Icon', id = 'icon-field' }: IconFieldProps) {
   return (
     <Select
-      id="icon-field"
+      id={id}
       label={label}
       searchable
       options={ICON_OPTIONS}

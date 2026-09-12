@@ -12,7 +12,10 @@ export interface ImageFieldProps {
   supabase: SupabaseClient;
   userId: string;
   label?: string;
+  id?: string;
 }
+
+const ACCEPTED_IMAGE_MIME_TYPES = 'image/jpeg,image/png,image/webp,image/gif';
 
 export function ImageField({
   value,
@@ -20,16 +23,24 @@ export function ImageField({
   supabase,
   userId,
   label = 'Image',
+  id = 'image-field-upload',
 }: ImageFieldProps) {
   const [assetList, setAssetList] = useState<PortfolioAsset[]>([]);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    listPortfolioAssets(supabase, userId).then((result) => {
-      if (!cancelled) {
-        setAssetList(result.filter((asset) => asset.kind === 'image'));
-      }
-    });
+    listPortfolioAssets(supabase, userId)
+      .then((result) => {
+        if (!cancelled) {
+          setAssetList(result.filter((asset) => asset.kind === 'image'));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setUploadError("Couldn't load your images");
+        }
+      });
     return () => {
       cancelled = true;
     };
@@ -40,9 +51,14 @@ export function ImageField({
     if (!file) {
       return;
     }
-    const uploaded = await uploadPortfolioAsset(supabase, userId, file);
-    setAssetList((current) => [uploaded, ...current]);
-    onChange(uploaded.publicUrl);
+    setUploadError(null);
+    try {
+      const uploaded = await uploadPortfolioAsset(supabase, userId, file);
+      setAssetList((current) => [uploaded, ...current]);
+      onChange(uploaded.publicUrl);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : 'Failed to upload image');
+    }
   }
 
   return (
@@ -53,6 +69,7 @@ export function ImageField({
           <button
             key={asset.id}
             type="button"
+            aria-pressed={asset.publicUrl === value}
             className={asset.publicUrl === value ? styles.thumbnailSelected : styles.thumbnail}
             onClick={() => onChange(asset.publicUrl)}
           >
@@ -60,8 +77,9 @@ export function ImageField({
           </button>
         ))}
       </div>
-      <label htmlFor="image-field-upload">Upload new image</label>
-      <input id="image-field-upload" type="file" accept="image/*" onChange={handleUpload} />
+      <label htmlFor={id}>Upload new image</label>
+      <input id={id} type="file" accept={ACCEPTED_IMAGE_MIME_TYPES} onChange={handleUpload} />
+      {uploadError && <p className={styles.uploadError}>{uploadError}</p>}
     </div>
   );
 }

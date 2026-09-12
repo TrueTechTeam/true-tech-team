@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { Input, Textarea, NumberInput, Checkbox, Select } from '@true-tech-team/react-components';
 import { getRegistryEntry } from '../components/registry';
@@ -113,6 +113,7 @@ function renderField(
     return (
       <ImageField
         key={field.key}
+        id={field.key}
         label={field.label}
         value={typeof rawValue === 'string' ? rawValue : ''}
         onChange={(url) => onChange(field.key, url)}
@@ -126,6 +127,7 @@ function renderField(
     return (
       <IconField
         key={field.key}
+        id={field.key}
         label={field.label}
         value={typeof rawValue === 'string' ? rawValue : ''}
         onChange={(name) => onChange(field.key, name)}
@@ -147,6 +149,10 @@ export function PropertyPanel({
   const schema = entry?.propertySchema;
   const [errors, setErrors] = useState<string[]>([]);
 
+  useEffect(() => {
+    setErrors([]);
+  }, [item]);
+
   function handleFieldChange(key: string, value: unknown) {
     const newProps = { ...item.props, [key]: value };
     if (entry) {
@@ -154,6 +160,11 @@ export function PropertyPanel({
     }
     onPropsChange(newProps);
   }
+
+  const claimedErrors = new Set(
+    (schema ?? []).flatMap((field) => errors.filter((message) => message.startsWith(field.key)))
+  );
+  const unclaimedErrors = errors.filter((message) => !claimedErrors.has(message));
 
   return (
     <div className={styles.panel}>
@@ -167,6 +178,13 @@ export function PropertyPanel({
       />
       {!schema && (
         <p className={styles.fallback}>Properties for this component aren&apos;t editable yet.</p>
+      )}
+      {unclaimedErrors.length > 0 && (
+        <ul className={styles.errorSummary}>
+          {unclaimedErrors.map((message) => (
+            <li key={message}>{message}</li>
+          ))}
+        </ul>
       )}
       {schema?.map((field) =>
         renderField(field, item.props, errors, handleFieldChange, supabase, userId)

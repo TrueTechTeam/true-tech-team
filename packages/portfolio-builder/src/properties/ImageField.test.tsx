@@ -59,4 +59,26 @@ describe('ImageField', () => {
     await waitFor(() => expect(onChange).toHaveBeenCalledWith('https://cdn.example.com/new.png'));
     expect(assets.uploadPortfolioAsset).toHaveBeenCalledWith(fakeSupabase, 'user-1', file);
   });
+
+  it('shows an error message and does not crash when uploadPortfolioAsset rejects', async () => {
+    vi.spyOn(assets, 'listPortfolioAssets').mockResolvedValue([]);
+    vi.spyOn(assets, 'uploadPortfolioAsset').mockRejectedValue(
+      new Error('Unsupported file type: image/heic')
+    );
+    const onChange = vi.fn();
+    render(<ImageField value="" onChange={onChange} supabase={fakeSupabase} userId="user-1" />);
+    const file = new File(['x'], 'new.heic', { type: 'image/heic' });
+    const input = await screen.findByLabelText('Upload new image');
+    fireEvent.change(input, { target: { files: [file] } });
+    await waitFor(() =>
+      expect(screen.getByText('Unsupported file type: image/heic')).toBeInTheDocument()
+    );
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('does not crash when listPortfolioAssets rejects', async () => {
+    vi.spyOn(assets, 'listPortfolioAssets').mockRejectedValue(new Error('network error'));
+    render(<ImageField value="" onChange={vi.fn()} supabase={fakeSupabase} userId="user-1" />);
+    await waitFor(() => expect(screen.getByText("Couldn't load your images")).toBeInTheDocument());
+  });
 });
