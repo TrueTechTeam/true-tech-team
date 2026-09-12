@@ -1,0 +1,11 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.fallback {
+  color: var(--color-neutral-500);
+  font-size: 0.875rem;
+}
