@@ -1,0 +1,23 @@
+.paletteGroupTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: var(--spacing-md) 0 var(--spacing-sm);
+}
+
+.paletteEntry,
+.paletteEntryDragging {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-50);
+  cursor: grab;
+  text-align: left;
+}
+
+.paletteEntryDragging {
+  opacity: 0.5;
+}
