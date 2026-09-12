@@ -25,13 +25,13 @@ export function DraggableGridItem({
   });
 
   return (
-    <div
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-      className={isDragging ? styles.gridItemDragging : styles.gridItem}
-    >
-      <DragHandle label={`Drag ${item.component}`} />
+    <div className={isDragging ? styles.gridItemDragging : styles.gridItem}>
+      <DragHandle
+        ref={setNodeRef}
+        {...attributes}
+        {...listeners}
+        label={`Drag ${item.component}`}
+      />
       {children}
     </div>
   );
