@@ -72,6 +72,10 @@ function findRow(page: PortfolioPage, sectionId: string, rowId: string) {
   return section?.rows.find((r) => r.id === rowId);
 }
 
+function findGridItem(page: PortfolioPage, sectionId: string, rowId: string, itemId: string) {
+  return findRow(page, sectionId, rowId)?.items.find((i) => i.id === itemId);
+}
+
 export function PageDragDropContainer({
   page,
   onPageChange,
@@ -114,7 +118,7 @@ export function PageDragDropContainer({
             id: crypto.randomUUID(),
             component: componentType,
             span,
-            props: defaultProps,
+            props: { ...defaultProps },
           };
           onPageChange(
             insertItemInRow(page, overData.sectionId, overData.rowId, overData.index, newItem)
@@ -127,7 +131,7 @@ export function PageDragDropContainer({
             id: crypto.randomUUID(),
             component: componentType,
             span: 12,
-            props: defaultProps,
+            props: { ...defaultProps },
           };
           onPageChange(insertItemInNewRow(page, overData.sectionId, overData.index, newItem));
           return;
@@ -138,9 +142,47 @@ export function PageDragDropContainer({
 
       if (isGridItemDragData(activeData)) {
         if (isRowGapData(overData)) {
-          onPageChange(
-            moveItem(page, active.id, overData.sectionId, overData.rowId, overData.index)
-          );
+          const isSameRowReorder =
+            activeData.sectionId === overData.sectionId && activeData.rowId === overData.rowId;
+
+          // `overData.index` is always the rendered gap index (see DropZone.tsx's DropZoneData
+          // comment). `moveItem`'s same-row reorder branch applies its index after the dragged
+          // item has already been filtered out of the row, so a forward move within the same row
+          // (dragging to a later position) needs to be decremented by one to land in the right
+          // gap.
+          let targetIndex = overData.index;
+          if (isSameRowReorder && overData.index > activeData.index) {
+            targetIndex = overData.index - 1;
+          }
+
+          if (isSameRowReorder && activeData.index === targetIndex) {
+            // Dropped back at its own current position — a genuine no-op, not an error. Skip
+            // calling onPageChange so this doesn't spuriously mark editor state as "changed".
+            return;
+          }
+
+          if (!isSameRowReorder) {
+            const targetRow = findRow(page, overData.sectionId, overData.rowId);
+            const draggedItem = findGridItem(
+              page,
+              activeData.sectionId,
+              activeData.rowId,
+              active.id
+            );
+            if (
+              !targetRow ||
+              !draggedItem ||
+              draggedItem.span > getRowRemainingCapacity(targetRow)
+            ) {
+              // Dragging an existing item whose own span is larger than the target row's
+              // remaining capacity is an ordinary user action, not a bug — no-op silently rather
+              // than let it fall through to moveItem's throw. (Same-row reorders never need this
+              // check: the row's total span doesn't change when reordering within itself.)
+              return;
+            }
+          }
+
+          onPageChange(moveItem(page, active.id, overData.sectionId, overData.rowId, targetIndex));
           return;
         }
 
@@ -150,10 +192,11 @@ export function PageDragDropContainer({
         }
       }
     } catch (error) {
-      // The row-capacity guard in the transform functions should never fire in practice — the
-      // DropZone rendering this drop target should already be `disabled` for a row at full
-      // capacity (piece 5's responsibility). If it does fire, fail safe (no page change) rather
-      // than corrupt page data, and surface the bug loudly during development.
+      // Both the palette-item and grid-item branches above pre-check capacity before calling
+      // into the transform functions, so the capacity guards inside those functions should never
+      // fire in practice. This is a last-resort defensive backstop for a scenario that should
+      // never occur given those pre-checks: if it does fire anyway, fail safe (no page change)
+      // rather than corrupt page data, and surface the bug loudly during development.
       console.error('Drag-and-drop operation rejected:', error);
     }
   }

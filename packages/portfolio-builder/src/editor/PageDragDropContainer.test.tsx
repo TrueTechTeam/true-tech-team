@@ -40,10 +40,20 @@ function PaletteDraggable({ componentType }: { componentType: string }) {
   );
 }
 
-function GridItemDraggable({ itemId }: { itemId: string }) {
+function GridItemDraggable({
+  itemId,
+  sectionId = 'sec1',
+  rowId = 'row1',
+  index = 0,
+}: {
+  itemId: string;
+  sectionId?: string;
+  rowId?: string;
+  index?: number;
+}) {
   const { setNodeRef, attributes, listeners } = useDraggable({
     id: itemId,
-    data: { type: 'grid-item', sectionId: 'sec1', rowId: 'row1', index: 0 },
+    data: { type: 'grid-item', sectionId, rowId, index },
   });
   return (
     <button ref={setNodeRef} {...attributes} {...listeners}>
@@ -184,6 +194,91 @@ describe('PageDragDropContainer', () => {
     // In real usage this DropZone would be `disabled` and never render — this test exercises
     // the container's own defensive catch directly by forcing the drop to happen anyway.
     drag(screen.getByText('Drag me'), screen.getByLabelText('Full row'));
+
+    expect(onPageChange).not.toHaveBeenCalled();
+  });
+
+  it('adjusts a forward same-row reorder from the rendered gap index to moveItem convention', () => {
+    // Row [item1, item2, item3]. Dragging item1 (its own current index is 0) onto the row-gap
+    // rendered between item2 and item3 (rendered index 2) should produce [item2, item1, item3] —
+    // not [item2, item3, item1] — because moveItem applies its index after the dragged item has
+    // already been filtered out of the row.
+    const onPageChange = vi.fn();
+    const page = fixturePage();
+    page.sections[0].rows[0].items = [
+      { id: 'item1', component: 'heading', span: 4, props: { text: 'A' } },
+      { id: 'item2', component: 'text', span: 4, props: { text: 'B' } },
+      { id: 'item3', component: 'badge', span: 4, props: { label: 'C' } },
+    ];
+    render(
+      <PageDragDropContainer page={page} onPageChange={onPageChange}>
+        <GridItemDraggable itemId="item1" index={0} />
+        <DropZone
+          id="gap3"
+          data={{ type: 'row-gap', sectionId: 'sec1', rowId: 'row1', index: 2 }}
+          label="Between 2 and 3"
+        />
+      </PageDragDropContainer>
+    );
+
+    drag(screen.getByText('Existing item'), screen.getByLabelText('Between 2 and 3'));
+
+    expect(onPageChange).toHaveBeenCalledTimes(1);
+    const newPage = onPageChange.mock.calls[0][0];
+    expect(newPage.sections[0].rows[0].items.map((i: { id: string }) => i.id)).toEqual([
+      'item2',
+      'item1',
+      'item3',
+    ]);
+  });
+
+  it('does not call onPageChange when dragging an existing item whose own span does not fit the target row', () => {
+    const onPageChange = vi.fn();
+    const page = fixturePage();
+    // row1 (target) has only 2 remaining capacity; row2 (source) holds an item with span 6,
+    // which cannot fit. This is an ordinary user action, not a bug, so it should silently no-op.
+    page.sections[0].rows[0].items = [
+      { id: 'item1', component: 'heading', span: 10, props: { text: 'A' } },
+    ];
+    page.sections[0].rows.push({
+      id: 'row2',
+      items: [{ id: 'item2', component: 'text', span: 6, props: { text: 'B' } }],
+    });
+    render(
+      <PageDragDropContainer page={page} onPageChange={onPageChange}>
+        <GridItemDraggable itemId="item2" sectionId="sec1" rowId="row2" index={0} />
+        <DropZone
+          id="gap4"
+          data={{ type: 'row-gap', sectionId: 'sec1', rowId: 'row1', index: 1 }}
+          label="Nearly full row"
+        />
+      </PageDragDropContainer>
+    );
+
+    drag(screen.getByText('Existing item'), screen.getByLabelText('Nearly full row'));
+
+    expect(onPageChange).not.toHaveBeenCalled();
+  });
+
+  it('does not call onPageChange when an item is dropped back at its own current position', () => {
+    const onPageChange = vi.fn();
+    const page = fixturePage();
+    page.sections[0].rows[0].items = [
+      { id: 'item1', component: 'heading', span: 4, props: { text: 'A' } },
+      { id: 'item2', component: 'text', span: 4, props: { text: 'B' } },
+    ];
+    render(
+      <PageDragDropContainer page={page} onPageChange={onPageChange}>
+        <GridItemDraggable itemId="item1" index={0} />
+        <DropZone
+          id="gap5"
+          data={{ type: 'row-gap', sectionId: 'sec1', rowId: 'row1', index: 0 }}
+          label="Own position"
+        />
+      </PageDragDropContainer>
+    );
+
+    drag(screen.getByText('Existing item'), screen.getByLabelText('Own position'));
 
     expect(onPageChange).not.toHaveBeenCalled();
   });
