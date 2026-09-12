@@ -46,3 +46,17 @@ export {
 export type { PreviewReadyMessage, PreviewUpdateMessage } from './preview/messages';
 export { PortfolioPreviewFrame } from './preview/PortfolioPreviewFrame';
 export type { PortfolioPreviewFrameProps } from './preview/PortfolioPreviewFrame';
+
+export type {
+  PropertyFieldType,
+  PropertyFieldOption,
+  PropertyField,
+  PropertySchema,
+  SelectedItem,
+} from './properties/types';
+export { PropertyPanel } from './properties/PropertyPanel';
+export type { PropertyPanelProps } from './properties/PropertyPanel';
+export { ImageField } from './properties/ImageField';
+export type { ImageFieldProps } from './properties/ImageField';
+export { IconField } from './properties/IconField';
+export type { IconFieldProps } from './properties/IconField';
