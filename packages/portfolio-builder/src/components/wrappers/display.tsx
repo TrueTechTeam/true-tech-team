@@ -9,6 +9,7 @@ import {
   type StatusIndicatorProps,
   type IconName,
 } from '@true-tech-team/react-components';
+import type { PropertySchema } from '../../properties/types';
 
 export interface BadgeItemProps {
   label: string | number;
@@ -138,3 +139,90 @@ export function IconItem(props: Record<string, unknown>) {
   const color = typeof props.color === 'string' ? props.color : undefined;
   return <Icon name={name} aria-label={ariaLabel} color={color} />;
 }
+
+export const badgePropertySchema: PropertySchema = [
+  { key: 'label', label: 'Label', type: 'text', required: true },
+  {
+    key: 'variant',
+    label: 'Variant',
+    type: 'select',
+    options: [
+      { value: 'primary', label: 'Primary' },
+      { value: 'secondary', label: 'Secondary' },
+      { value: 'success', label: 'Success' },
+      { value: 'warning', label: 'Warning' },
+      { value: 'danger', label: 'Danger' },
+      { value: 'info', label: 'Info' },
+      { value: 'neutral', label: 'Neutral' },
+    ],
+  },
+  {
+    key: 'size',
+    label: 'Size',
+    type: 'select',
+    options: [
+      { value: 'sm', label: 'Small' },
+      { value: 'md', label: 'Medium' },
+      { value: 'lg', label: 'Large' },
+    ],
+  },
+];
+
+export const chipPropertySchema: PropertySchema = [
+  { key: 'label', label: 'Label', type: 'text', required: true },
+];
+
+export const pillPropertySchema: PropertySchema = [
+  { key: 'label', label: 'Label', type: 'text', required: true },
+  {
+    key: 'variant',
+    label: 'Variant',
+    type: 'select',
+    options: [
+      { value: 'filled', label: 'Filled' },
+      { value: 'outlined', label: 'Outlined' },
+      { value: 'subtle', label: 'Subtle' },
+    ],
+  },
+  {
+    key: 'color',
+    label: 'Color',
+    type: 'select',
+    options: [
+      { value: 'primary', label: 'Primary' },
+      { value: 'secondary', label: 'Secondary' },
+      { value: 'success', label: 'Success' },
+      { value: 'warning', label: 'Warning' },
+      { value: 'danger', label: 'Danger' },
+      { value: 'info', label: 'Info' },
+      { value: 'neutral', label: 'Neutral' },
+    ],
+  },
+];
+
+export const statusIndicatorPropertySchema: PropertySchema = [
+  {
+    key: 'status',
+    label: 'Status',
+    type: 'select',
+    options: [
+      { value: 'online', label: 'Online' },
+      { value: 'offline', label: 'Offline' },
+      { value: 'away', label: 'Away' },
+      { value: 'busy', label: 'Busy' },
+      { value: 'success', label: 'Success' },
+      { value: 'warning', label: 'Warning' },
+      { value: 'error', label: 'Error' },
+      { value: 'info', label: 'Info' },
+      { value: 'neutral', label: 'Neutral' },
+      { value: 'processing', label: 'Processing' },
+    ],
+  },
+  { key: 'label', label: 'Label', type: 'text' },
+];
+
+export const iconPropertySchema: PropertySchema = [
+  { key: 'name', label: 'Icon', type: 'icon', required: true },
+  { key: 'ariaLabel', label: 'Accessible label', type: 'text', required: true },
+  { key: 'color', label: 'Color', type: 'text' },
+];

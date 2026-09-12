@@ -9,6 +9,7 @@ import {
   FlipCard,
   type RevealProps,
 } from '@true-tech-team/react-components';
+import type { PropertySchema } from '../../properties/types';
 
 export interface ExpandableTextItemProps {
   title: string;
@@ -136,3 +137,42 @@ export function FlipCardItem(props: Record<string, unknown>) {
     />
   );
 }
+
+export const expandableTextPropertySchema: PropertySchema = [
+  { key: 'title', label: 'Title', type: 'text', required: true },
+  { key: 'body', label: 'Body', type: 'textarea', required: true },
+  { key: 'defaultOpen', label: 'Open by default', type: 'boolean' },
+];
+
+export const accordionPropertySchema: PropertySchema = [
+  { key: 'header', label: 'Header', type: 'text', required: true },
+  { key: 'body', label: 'Body', type: 'textarea', required: true },
+  { key: 'defaultOpen', label: 'Open by default', type: 'boolean' },
+];
+
+export const revealPropertySchema: PropertySchema = [
+  { key: 'text', label: 'Text', type: 'text', required: true },
+  {
+    key: 'animation',
+    label: 'Animation',
+    type: 'select',
+    options: [
+      { value: 'fade', label: 'Fade' },
+      { value: 'slideUp', label: 'Slide up' },
+      { value: 'slideDown', label: 'Slide down' },
+      { value: 'slideLeft', label: 'Slide left' },
+      { value: 'slideRight', label: 'Slide right' },
+      { value: 'zoom', label: 'Zoom' },
+      { value: 'zoomIn', label: 'Zoom in' },
+      { value: 'zoomOut', label: 'Zoom out' },
+    ],
+  },
+  { key: 'playOnMount', label: 'Play on mount', type: 'boolean' },
+];
+
+export const flipCardPropertySchema: PropertySchema = [
+  { key: 'frontText', label: 'Front text', type: 'textarea', required: true },
+  { key: 'backText', label: 'Back text', type: 'textarea', required: true },
+  { key: 'height', label: 'Height (px)', type: 'number', min: 0 },
+  { key: 'width', label: 'Width (px)', type: 'number', min: 0 },
+];

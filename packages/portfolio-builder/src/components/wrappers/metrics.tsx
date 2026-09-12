@@ -5,6 +5,7 @@ import {
   CountUp,
   type KPIProps,
 } from '@true-tech-team/react-components';
+import type { PropertySchema } from '../../properties/types';
 
 export interface ProgressBarItemProps {
   value: number;
@@ -107,3 +108,41 @@ export function CountUpItem(props: Record<string, unknown>) {
   const decimals = typeof props.decimals === 'number' ? props.decimals : undefined;
   return <CountUp value={value} prefix={prefix} suffix={suffix} decimals={decimals} />;
 }
+
+export const progressBarPropertySchema: PropertySchema = [
+  { key: 'value', label: 'Value', type: 'number', required: true, min: 0 },
+  { key: 'max', label: 'Max', type: 'number', min: 0 },
+  { key: 'label', label: 'Label', type: 'text' },
+  { key: 'showValue', label: 'Show value', type: 'boolean' },
+];
+
+export const circularProgressPropertySchema: PropertySchema = [
+  { key: 'value', label: 'Value', type: 'number', required: true, min: 0 },
+  { key: 'max', label: 'Max', type: 'number', min: 0 },
+  { key: 'label', label: 'Label', type: 'text' },
+  { key: 'showValue', label: 'Show value', type: 'boolean' },
+];
+
+export const kpiPropertySchema: PropertySchema = [
+  { key: 'title', label: 'Title', type: 'text', required: true },
+  { key: 'value', label: 'Value', type: 'text', required: true },
+  { key: 'subtitle', label: 'Subtitle', type: 'text' },
+  { key: 'changeText', label: 'Change text', type: 'text' },
+  {
+    key: 'changeType',
+    label: 'Change type',
+    type: 'select',
+    options: [
+      { value: 'increase', label: 'Increase' },
+      { value: 'decrease', label: 'Decrease' },
+      { value: 'neutral', label: 'Neutral' },
+    ],
+  },
+];
+
+export const countUpPropertySchema: PropertySchema = [
+  { key: 'value', label: 'Value', type: 'number', required: true },
+  { key: 'prefix', label: 'Prefix', type: 'text' },
+  { key: 'suffix', label: 'Suffix', type: 'text' },
+  { key: 'decimals', label: 'Decimal places', type: 'number', min: 0 },
+];

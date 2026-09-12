@@ -1,3 +1,5 @@
+import type { PropertySchema } from '../../properties/types';
+
 export interface ImageItemProps {
   src: string;
   alt: string;
@@ -34,3 +36,18 @@ export function ImageItem(props: Record<string, unknown>) {
     />
   );
 }
+
+export const imagePropertySchema: PropertySchema = [
+  { key: 'src', label: 'Image', type: 'image', required: true },
+  { key: 'alt', label: 'Alt text', type: 'text', required: true },
+  { key: 'rounded', label: 'Rounded corners', type: 'boolean' },
+  {
+    key: 'objectFit',
+    label: 'Fit',
+    type: 'select',
+    options: [
+      { value: 'cover', label: 'Cover' },
+      { value: 'contain', label: 'Contain' },
+    ],
+  },
+];

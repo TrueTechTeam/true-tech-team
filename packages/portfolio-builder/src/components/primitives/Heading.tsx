@@ -1,4 +1,5 @@
 import styles from './Heading.module.scss';
+import type { PropertySchema } from '../../properties/types';
 
 export interface HeadingItemProps {
   text: string;
@@ -33,3 +34,29 @@ export function HeadingItem(props: Record<string, unknown>) {
     </Tag>
   );
 }
+
+export const headingPropertySchema: PropertySchema = [
+  { key: 'text', label: 'Text', type: 'text', required: true },
+  {
+    key: 'level',
+    label: 'Level',
+    type: 'select',
+    optionValueType: 'number',
+    options: [
+      { value: '1', label: 'Heading 1' },
+      { value: '2', label: 'Heading 2' },
+      { value: '3', label: 'Heading 3' },
+      { value: '4', label: 'Heading 4' },
+    ],
+  },
+  {
+    key: 'align',
+    label: 'Alignment',
+    type: 'select',
+    options: [
+      { value: 'left', label: 'Left' },
+      { value: 'center', label: 'Center' },
+      { value: 'right', label: 'Right' },
+    ],
+  },
+];

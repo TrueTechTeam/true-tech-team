@@ -1,4 +1,5 @@
 import { NavLink, type IconName } from '@true-tech-team/react-components';
+import type { PropertySchema } from '../../properties/types';
 import styles from './links.module.scss';
 
 export interface LinkButtonItemProps {
@@ -63,3 +64,17 @@ export function IconLinkButtonItem(props: Record<string, unknown>) {
     </NavLink>
   );
 }
+
+export const linkButtonPropertySchema: PropertySchema = [
+  { key: 'label', label: 'Label', type: 'text', required: true },
+  { key: 'href', label: 'Link URL', type: 'text', required: true },
+  { key: 'icon', label: 'Icon', type: 'icon' },
+  { key: 'openInNewTab', label: 'Open in new tab', type: 'boolean' },
+];
+
+export const iconLinkButtonPropertySchema: PropertySchema = [
+  { key: 'href', label: 'Link URL', type: 'text', required: true },
+  { key: 'icon', label: 'Icon', type: 'icon', required: true },
+  { key: 'ariaLabel', label: 'Accessible label', type: 'text', required: true },
+  { key: 'openInNewTab', label: 'Open in new tab', type: 'boolean' },
+];

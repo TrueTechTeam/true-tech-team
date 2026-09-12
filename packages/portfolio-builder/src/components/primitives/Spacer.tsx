@@ -1,3 +1,5 @@
+import type { PropertySchema } from '../../properties/types';
+
 export interface SpacerItemProps {
   height: number;
 }
@@ -14,3 +16,7 @@ export function SpacerItem(props: Record<string, unknown> & { 'data-testid'?: st
   const height = typeof props.height === 'number' ? props.height : 0;
   return <div data-testid={props['data-testid']} style={{ height: `${height}px` }} />;
 }
+
+export const spacerPropertySchema: PropertySchema = [
+  { key: 'height', label: 'Height (px)', type: 'number', required: true, min: 0 },
+];

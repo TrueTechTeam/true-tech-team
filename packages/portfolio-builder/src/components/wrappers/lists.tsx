@@ -9,6 +9,7 @@ import {
   OverflowText,
   TruncatedList,
 } from '@true-tech-team/react-components';
+import type { PropertySchema } from '../../properties/types';
 import { ImageItem } from '../primitives/Image';
 import { PillItem } from './display';
 
@@ -166,3 +167,8 @@ export function TruncatedListItem(props: Record<string, unknown>) {
     />
   );
 }
+
+export const overflowTextPropertySchema: PropertySchema = [
+  { key: 'text', label: 'Text', type: 'textarea', required: true },
+  { key: 'lines', label: 'Max lines', type: 'number', min: 1 },
+];

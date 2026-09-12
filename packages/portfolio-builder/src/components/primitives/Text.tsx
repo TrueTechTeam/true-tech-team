@@ -1,4 +1,5 @@
 import styles from './Text.module.scss';
+import type { PropertySchema } from '../../properties/types';
 
 export interface TextItemProps {
   text: string;
@@ -28,3 +29,27 @@ export function TextItem(props: Record<string, unknown>) {
     </p>
   );
 }
+
+export const textPropertySchema: PropertySchema = [
+  { key: 'text', label: 'Text', type: 'textarea', required: true },
+  {
+    key: 'size',
+    label: 'Size',
+    type: 'select',
+    options: [
+      { value: 'sm', label: 'Small' },
+      { value: 'base', label: 'Base' },
+      { value: 'lg', label: 'Large' },
+    ],
+  },
+  {
+    key: 'align',
+    label: 'Alignment',
+    type: 'select',
+    options: [
+      { value: 'left', label: 'Left' },
+      { value: 'center', label: 'Center' },
+      { value: 'right', label: 'Right' },
+    ],
+  },
+];

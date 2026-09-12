@@ -1,4 +1,5 @@
 import { Card, type CardProps } from '@true-tech-team/react-components';
+import type { PropertySchema } from '../../properties/types';
 import { HeadingItem } from '../primitives/Heading';
 import { ImageItem } from '../primitives/Image';
 import { TextItem } from '../primitives/Text';
@@ -40,3 +41,21 @@ export function CardItem(props: Record<string, unknown>) {
     </Card>
   );
 }
+
+export const cardPropertySchema: PropertySchema = [
+  { key: 'header', label: 'Header', type: 'text' },
+  { key: 'body', label: 'Body', type: 'textarea', required: true },
+  { key: 'footer', label: 'Footer', type: 'text' },
+  { key: 'imageSrc', label: 'Image', type: 'image' },
+  { key: 'imageAlt', label: 'Image alt text', type: 'text' },
+  {
+    key: 'variant',
+    label: 'Variant',
+    type: 'select',
+    options: [
+      { value: 'outlined', label: 'Outlined' },
+      { value: 'elevated', label: 'Elevated' },
+      { value: 'filled', label: 'Filled' },
+    ],
+  },
+];
