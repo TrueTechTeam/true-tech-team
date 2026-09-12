@@ -6,6 +6,7 @@ import { Input, Textarea, NumberInput, Checkbox, Select } from '@true-tech-team/
 import { getRegistryEntry } from '../components/registry';
 import type { PropertyField, SelectedItem } from './types';
 import { ImageField } from './ImageField';
+import { IconField } from './IconField';
 import styles from './PropertyPanel.module.scss';
 
 export interface PropertyPanelProps {
@@ -121,7 +122,17 @@ function renderField(
     );
   }
 
-  // 'icon' is rendered by IconField, wired in Task 5.
+  if (field.type === 'icon') {
+    return (
+      <IconField
+        key={field.key}
+        label={field.label}
+        value={typeof rawValue === 'string' ? rawValue : ''}
+        onChange={(name) => onChange(field.key, name)}
+      />
+    );
+  }
+
   return null;
 }
 
