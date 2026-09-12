@@ -5,6 +5,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { Input, Textarea, NumberInput, Checkbox, Select } from '@true-tech-team/react-components';
 import { getRegistryEntry } from '../components/registry';
 import type { PropertyField, SelectedItem } from './types';
+import { ImageField } from './ImageField';
 import styles from './PropertyPanel.module.scss';
 
 export interface PropertyPanelProps {
@@ -23,7 +24,9 @@ function renderField(
   field: PropertyField,
   props: Record<string, unknown>,
   errors: string[],
-  onChange: (key: string, value: unknown) => void
+  onChange: (key: string, value: unknown) => void,
+  supabase: SupabaseClient,
+  userId: string
 ) {
   const rawValue = props[field.key];
   const fieldError = errors.find((message) => message.startsWith(field.key));
@@ -105,11 +108,30 @@ function renderField(
     );
   }
 
-  // 'image' and 'icon' are rendered by ImageField/IconField, wired in Tasks 4 and 5.
+  if (field.type === 'image') {
+    return (
+      <ImageField
+        key={field.key}
+        label={field.label}
+        value={typeof rawValue === 'string' ? rawValue : ''}
+        onChange={(url) => onChange(field.key, url)}
+        supabase={supabase}
+        userId={userId}
+      />
+    );
+  }
+
+  // 'icon' is rendered by IconField, wired in Task 5.
   return null;
 }
 
-export function PropertyPanel({ item, onPropsChange, onSpanChange }: PropertyPanelProps) {
+export function PropertyPanel({
+  item,
+  onPropsChange,
+  onSpanChange,
+  supabase,
+  userId,
+}: PropertyPanelProps) {
   const entry = getRegistryEntry(item.componentType);
   const schema = entry?.propertySchema;
   const [errors, setErrors] = useState<string[]>([]);
@@ -135,7 +157,9 @@ export function PropertyPanel({ item, onPropsChange, onSpanChange }: PropertyPan
       {!schema && (
         <p className={styles.fallback}>Properties for this component aren&apos;t editable yet.</p>
       )}
-      {schema?.map((field) => renderField(field, item.props, errors, handleFieldChange))}
+      {schema?.map((field) =>
+        renderField(field, item.props, errors, handleFieldChange, supabase, userId)
+      )}
     </div>
   );
 }

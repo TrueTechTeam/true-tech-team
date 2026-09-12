@@ -9,3 +9,34 @@
   color: var(--color-neutral-500);
   font-size: 0.875rem;
 }
+
+.imageField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.thumbnailGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-xs);
+}
+
+.thumbnail,
+.thumbnailSelected {
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  padding: 0;
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+}
+
+.thumbnailSelected {
+  border-color: var(--color-primary-500);
+  border-width: 2px;
+}
