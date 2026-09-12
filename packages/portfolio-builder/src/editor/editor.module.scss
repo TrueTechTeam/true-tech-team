@@ -21,3 +21,24 @@
 .paletteEntryDragging {
   opacity: 0.5;
 }
+
+.gridItem,
+.gridItemDragging {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+}
+
+.gridItemDragging {
+  opacity: 0.5;
+}
+
+.dropZone,
+.dropZoneActive {
+  min-height: 8px;
+  border-radius: var(--radius-sm);
+}
+
+.dropZoneActive {
+  background: var(--color-primary-100);
+}
