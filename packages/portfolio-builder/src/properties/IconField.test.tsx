@@ -6,15 +6,17 @@ import { IconField } from './IconField';
 // NOTE on query choices — verified against the real rendered markup (see task-5-report.md):
 // - `Select`'s closed trigger is a `<div role="button" id={id} aria-label={label}>`, not a
 //   native <select> and not `role="combobox"`. Its dropdown is a portal-rendered
-//   `<div role="popover">` containing `<ul role="menu"><li role="menuitem" data-testid=
-//   "menu-item-<value>">`, not `role="listbox"`/`role="option"`.
+//   `<div data-component="popover">` (no `role` attribute) containing `<ul role="menu">
+//   <li role="menuitem">`, not `role="listbox"`/`role="option"`.
 // - The popover starts `visibility: hidden` and only becomes visible after two nested
 //   `requestAnimationFrame` callbacks resolve (real positioning logic), so the menu must be
-//   awaited with `findByRole`/`findByTestId` rather than queried synchronously after the click.
+//   awaited with `findByRole` rather than queried synchronously after the click.
 // - Because each option's label renders an `<Icon>` (role="img", aria-label=<name>) followed by
 //   the same name as visible text, the ARIA *accessible name* of a menuitem is the name
 //   duplicated (e.g. "star star") — so `getByRole('menuitem', { name: /^star$/ })` never matches.
-//   `data-testid="menu-item-<value>"` is used instead to click a specific option unambiguously.
+//   That duplication only affects the ARIA-computed name, not `.textContent` (which stays just
+//   "star"), so picking a specific item uses the public `role="menuitem"` contract plus a
+//   `.textContent` filter instead of an internal, undocumented `data-testid` convention.
 describe('IconField', () => {
   it("offers every icon name from the library's iconRegistry as an option", async () => {
     render(<IconField value="" onChange={vi.fn()} />);
@@ -32,8 +34,10 @@ describe('IconField', () => {
     const onChange = vi.fn();
     render(<IconField value="" onChange={onChange} />);
     fireEvent.click(screen.getByRole('button', { name: 'Icon' }));
-    await screen.findByRole('menu');
-    fireEvent.click(screen.getByTestId('menu-item-star'));
+    const menu = await screen.findByRole('menu');
+    const items = within(menu).getAllByRole('menuitem');
+    const starItem = items.find((item) => item.textContent === 'star');
+    fireEvent.click(starItem!);
     expect(onChange).toHaveBeenCalledWith('star');
   });
 
