@@ -5,6 +5,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { Icon, Button, Dialog } from '@true-tech-team/react-components';
 import { loadPortfolioPage, savePortfolioPage } from '../pages/crud';
+import { recordToPage } from '../pages/mapping';
 import type { PortfolioPage, GridItem } from '../schema/types';
 import { collapsedSpans } from '../grid/responsive';
 import {
@@ -73,16 +74,7 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
           setLoadState('missing');
           return;
         }
-        setPage({
-          schemaVersion: 1,
-          slug: record.slug,
-          title: record.title,
-          templateId: record.templateId,
-          themeId: record.themeId,
-          themeOverride: record.themeOverride,
-          showNav: record.showNav,
-          sections: record.sections,
-        });
+        setPage(recordToPage(record));
         setLoadState('ready');
       })
       .catch(() => {
