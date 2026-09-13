@@ -172,7 +172,7 @@ export function updateItemSpan(page: PortfolioPage, itemId: string, span: number
   const { sectionIndex, rowIndex, itemIndex } = location;
   const section = page.sections[sectionIndex];
   const row = section.rows[rowIndex];
-  const maxSpan = getRowRemainingCapacity(row, itemId);
+  const maxSpan = Math.max(1, getRowRemainingCapacity(row, itemId));
   const clampedSpan = Math.min(12, Math.max(1, Math.round(span)), maxSpan);
   const newItems = row.items.map((item, i) =>
     i === itemIndex ? { ...item, span: clampedSpan } : item
