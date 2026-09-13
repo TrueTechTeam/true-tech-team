@@ -46,7 +46,7 @@ export const APPS: AppDefinition[] = [
       'Build and publish a personal portfolio site — pick a template, customize the theme and content, and share it with a link.',
     icon: 'monitor',
     accent: 'primary',
-    href: null,
+    href: '/portfolio-builder',
   },
   {
     slug: 'analytics',
