@@ -72,8 +72,22 @@ describe('PortfolioPagesList', () => {
       title: 'New Page',
       templateId: 'blank',
       showNav: true,
-      sections: [],
+      sections: [{ id: expect.any(String), name: 'Main', showInNav: false, rows: [] }],
     });
+  });
+
+  it('disables the Create button until both title and slug are filled in', () => {
+    render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    const createButton = screen.getByRole('button', { name: /create/i });
+    expect(createButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'New Page' } });
+    expect(createButton).not.toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText(/slug/i), { target: { value: '' } });
+    expect(createButton).toBeDisabled();
   });
 
   it('shows an error when the slug is already taken', async () => {

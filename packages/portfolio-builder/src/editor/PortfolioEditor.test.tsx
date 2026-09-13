@@ -147,4 +147,89 @@ describe('PortfolioEditor', () => {
 
     expect(await screen.findByText('Slug taken')).toBeInTheDocument();
   });
+
+  // F1: the Palette must actually be rendered somewhere the editor's DndProvider (via
+  // PageDragDropContainer) can reach - otherwise dragging a palette entry onto the canvas is
+  // impossible even though both pieces exist in isolation.
+  it('renders the component palette so items can be dragged onto the canvas', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+
+    expect(screen.getByText('Heading')).toBeInTheDocument();
+    expect(screen.getByText('Button')).toBeInTheDocument();
+  });
+
+  // F2: a brand-new page (one empty section, no rows) must render a droppable, non-broken-looking
+  // canvas rather than an empty void.
+  it('renders a drop zone and empty-state message for a page with an empty section', async () => {
+    const record = makeRecord();
+    record.sections = [{ id: 'sec1', name: 'Main', showInNav: false, rows: [] }];
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(record);
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+
+    expect(await screen.findByLabelText('Add a new row at the start of Main')).toBeInTheDocument();
+    expect(screen.getByText(/drag a component here to get started/i)).toBeInTheDocument();
+  });
+
+  // F4: `selectedItem` is a fresh object literal every render, so PropertyPanel must be keyed by
+  // selection (not left to re-render in place) or its internally-tracked validation errors get
+  // wiped moments after being set. This only manifests through PortfolioEditor's render pattern -
+  // a standalone PropertyPanel test can't catch it.
+  it('keeps a validation error visible after clearing a required field', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    const item = await screen.findByText('Hello');
+    fireEvent.click(item);
+
+    const textField = await screen.findByLabelText(/^Text/);
+    fireEvent.change(textField, { target: { value: '' } });
+
+    expect(await screen.findByText('text is required and must be a string')).toBeInTheDocument();
+  });
+
+  // F5/F6: a record that resolves successfully but belongs to another user must be treated the
+  // same as "not found", not silently loaded into the current user's editor.
+  it('shows a not-found message when the loaded record belongs to a different user', async () => {
+    const record = makeRecord();
+    record.userId = 'someone-else';
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(record);
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+
+    expect(await screen.findByText(/doesn.t exist or you don.t have access/i)).toBeInTheDocument();
+    expect(screen.queryByText('Hello')).not.toBeInTheDocument();
+  });
+
+  it('shows a not-found message when the page does not exist', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(null);
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+
+    expect(await screen.findByText(/doesn.t exist or you don.t have access/i)).toBeInTheDocument();
+  });
+
+  it('shows an error message when loading the page fails', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockRejectedValue(new Error('network error'));
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+
+    expect(await screen.findByText(/couldn.t load this page/i)).toBeInTheDocument();
+  });
+
+  // F10: once saved, further edits should un-stick the "Saved" indicator since there are once
+  // again unsaved changes.
+  it('resets the save indicator back to idle after a further edit', async () => {
+    const record = makeRecord();
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(record);
+    vi.spyOn(crud, 'savePortfolioPage').mockResolvedValue(record);
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+    expect(await screen.findByText(/saved/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Hello'));
+    const textField = await screen.findByLabelText(/^Text/);
+    fireEvent.change(textField, { target: { value: 'Changed' } });
+
+    await waitFor(() => expect(screen.queryByText(/^saved$/i)).not.toBeInTheDocument());
+  });
 });

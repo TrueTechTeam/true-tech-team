@@ -50,7 +50,7 @@ export function PortfolioPagesList({
         title,
         templateId: 'blank',
         showNav: true,
-        sections: [],
+        sections: [{ id: crypto.randomUUID(), name: 'Main', showInNav: false, rows: [] }],
       });
       onCreated?.(record);
     } catch (err) {
@@ -94,7 +94,11 @@ export function PortfolioPagesList({
             onChange={(event) => setSlug(event.target.value)}
           />
           {error && <p className={styles.errorText}>{error}</p>}
-          <Button type="button" onClick={handleCreate} disabled={isSubmitting}>
+          <Button
+            type="button"
+            onClick={handleCreate}
+            disabled={isSubmitting || !title.trim() || !slug.trim()}
+          >
             Create
           </Button>
         </div>

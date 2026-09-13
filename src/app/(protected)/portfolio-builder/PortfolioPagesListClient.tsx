@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { createClient } from '../../../lib/supabase/client';
 import { PortfolioPagesList, type PortfolioPageRecord } from '@true-tech-team/portfolio-builder';
 
@@ -11,5 +12,13 @@ export function PortfolioPagesListClient({
   userId: string;
 }) {
   const supabase = createClient();
-  return <PortfolioPagesList pages={pages} userId={userId} supabase={supabase} />;
+  const router = useRouter();
+  return (
+    <PortfolioPagesList
+      pages={pages}
+      userId={userId}
+      supabase={supabase}
+      onCreated={(record) => router.push(`/portfolio-builder/edit/${record.id}`)}
+    />
+  );
 }

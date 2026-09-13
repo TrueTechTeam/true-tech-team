@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import Link from 'next/link';
 import { Icon, Button, Dialog } from '@true-tech-team/react-components';
 import { loadPortfolioPage, savePortfolioPage } from '../pages/crud';
 import type { PortfolioPage, GridItem } from '../schema/types';
@@ -18,6 +19,7 @@ import type { SelectedItem } from '../properties/types';
 import { ThemePicker } from '../themes/ThemePicker';
 import { THEME_PRESETS } from '../themes/presets';
 import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
+import { Palette } from './Palette';
 import { DraggableGridItem } from './DraggableGridItem';
 import { DropZone } from './DropZone';
 import { PageDragDropContainer } from './PageDragDropContainer';
@@ -29,6 +31,8 @@ export interface PortfolioEditorProps {
   userId: string;
   supabase: SupabaseClient;
 }
+
+type LoadState = 'loading' | 'ready' | 'missing' | 'error';
 
 /** Finds the `GridItem` matching `itemId` anywhere in `page`, or `undefined` if not found. */
 export function findSelectedItem(page: PortfolioPage, itemId: string | null): GridItem | undefined {
@@ -48,6 +52,7 @@ export function findSelectedItem(page: PortfolioPage, itemId: string | null): Gr
 
 export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorProps) {
   const [page, setPage] = useState<PortfolioPage | null>(null);
+  const [loadState, setLoadState] = useState<LoadState>('loading');
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -55,25 +60,68 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
 
   useEffect(() => {
     let cancelled = false;
-    loadPortfolioPage(supabase, pageId).then((record) => {
-      if (cancelled || !record) {
-        return;
-      }
-      setPage({
-        schemaVersion: 1,
-        slug: record.slug,
-        title: record.title,
-        templateId: record.templateId,
-        themeId: record.themeId,
-        themeOverride: record.themeOverride,
-        showNav: record.showNav,
-        sections: record.sections,
+    setLoadState('loading');
+    loadPortfolioPage(supabase, pageId)
+      .then((record) => {
+        if (cancelled) {
+          return;
+        }
+        // RLS intentionally allows reading PUBLISHED rows regardless of owner (for a future
+        // public route), so a record can resolve successfully yet belong to someone else -
+        // treat that the same as "not found" rather than silently loading their content.
+        if (!record || record.userId !== userId) {
+          setLoadState('missing');
+          return;
+        }
+        setPage({
+          schemaVersion: 1,
+          slug: record.slug,
+          title: record.title,
+          templateId: record.templateId,
+          themeId: record.themeId,
+          themeOverride: record.themeOverride,
+          showNav: record.showNav,
+          sections: record.sections,
+        });
+        setLoadState('ready');
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setLoadState('error');
+        }
       });
-    });
     return () => {
       cancelled = true;
     };
-  }, [supabase, pageId]);
+  }, [supabase, pageId, userId]);
+
+  /** Applies a page mutation and marks the page as having unsaved changes again. */
+  function updatePage(updater: (current: PortfolioPage) => PortfolioPage) {
+    setPage((current) => (current ? updater(current) : current));
+    setSaveState('idle');
+    setSaveError(null);
+  }
+
+  if (loadState === 'loading') {
+    return <p>Loading…</p>;
+  }
+
+  if (loadState === 'missing') {
+    return (
+      <div className={styles.stateMessage}>
+        <p>This page doesn&apos;t exist or you don&apos;t have access to it.</p>
+        <Link href="/portfolio-builder">Back to Portfolio Builder</Link>
+      </div>
+    );
+  }
+
+  if (loadState === 'error') {
+    return (
+      <div className={styles.stateMessage}>
+        <p>Couldn&apos;t load this page. Please try again.</p>
+      </div>
+    );
+  }
 
   if (!page) {
     return <p>Loading…</p>;
@@ -92,26 +140,32 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
     if (!selectedItemId) {
       return;
     }
-    setPage((current) => (current ? updateItemProps(current, selectedItemId, newProps) : current));
+    updatePage((current) => updateItemProps(current, selectedItemId, newProps));
   }
 
   function handleSpanChange(newSpan: number) {
     if (!selectedItemId) {
       return;
     }
-    setPage((current) => (current ? updateItemSpan(current, selectedItemId, newSpan) : current));
+    updatePage((current) => updateItemSpan(current, selectedItemId, newSpan));
   }
 
   function handleDelete() {
     if (!selectedItemId) {
       return;
     }
-    setPage((current) => (current ? removeItem(current, selectedItemId) : current));
+    updatePage((current) => removeItem(current, selectedItemId));
     setSelectedItemId(null);
   }
 
   function handleThemeSelect(themeId: string) {
-    setPage((current) => (current ? { ...current, themeId, themeOverride: undefined } : current));
+    updatePage((current) => ({ ...current, themeId, themeOverride: undefined }));
+  }
+
+  function handlePageChange(next: PortfolioPage) {
+    setPage(next);
+    setSaveState('idle');
+    setSaveError(null);
   }
 
   async function handleSave() {
@@ -126,6 +180,13 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
     } catch (err) {
       setSaveState('error');
       setSaveError(err instanceof Error ? err.message : 'Failed to save');
+    }
+  }
+
+  function handleItemKeyDown(event: React.KeyboardEvent<HTMLDivElement>, itemId: string) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setSelectedItemId(itemId);
     }
   }
 
@@ -146,23 +207,33 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
           )}
         </div>
       </div>
-      <div className={styles.editorLayout}>
-        <div className={styles.leftColumn}>
-          <div className={styles.themeSection}>
-            <h3>Theme</h3>
-            <ThemePicker
-              presets={THEME_PRESETS}
-              selectedId={page.themeId}
-              onSelect={handleThemeSelect}
-            />
-          </div>
-        </div>
+      <PageDragDropContainer page={page} onPageChange={handlePageChange}>
         <div
-          className={styles.canvas}
-          data-testid="canvas-background"
-          onClick={() => setSelectedItemId(null)}
+          className={
+            selectedItem
+              ? styles.editorLayout
+              : `${styles.editorLayout} ${styles.editorLayoutNoSelection}`
+          }
         >
-          <PageDragDropContainer page={page} onPageChange={setPage}>
+          <div className={styles.leftColumn}>
+            <div className={styles.paletteSection}>
+              <h3>Add Component</h3>
+              <Palette />
+            </div>
+            <div className={styles.themeSection}>
+              <h3>Theme</h3>
+              <ThemePicker
+                presets={THEME_PRESETS}
+                selectedId={page.themeId}
+                onSelect={handleThemeSelect}
+              />
+            </div>
+          </div>
+          <div
+            className={styles.canvas}
+            data-testid="canvas-background"
+            onClick={() => setSelectedItemId(null)}
+          >
             {page.sections.map((section) => (
               <div key={section.id}>
                 <DropZone
@@ -170,6 +241,9 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
                   data={{ type: 'new-row-gap', sectionId: section.id, index: 0 }}
                   label={`Add a new row at the start of ${section.name}`}
                 />
+                {section.rows.length === 0 && (
+                  <p className={styles.emptyState}>Drag a component here to get started</p>
+                )}
                 {section.rows.map((row, rowIndex) => (
                   <div key={row.id}>
                     <div className={grid.row}>
@@ -189,11 +263,15 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
                               item={item}
                             >
                               <div
+                                className={styles.selectableItem}
                                 data-selected={selectedItemId === item.id}
+                                role="button"
+                                tabIndex={0}
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   setSelectedItemId(item.id);
                                 }}
+                                onKeyDown={(event) => handleItemKeyDown(event, item.id)}
                               >
                                 <ItemRenderer item={item} />
                               </div>
@@ -222,34 +300,40 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
                 ))}
               </div>
             ))}
-          </PageDragDropContainer>
-        </div>
-        {selectedItem && selectedItemId && (
-          <div className={styles.sidePanel}>
-            <div className={styles.sidePanelHeader}>
-              <Button
-                type="button"
-                variant="danger"
-                size="sm"
-                onClick={handleDelete}
-                aria-label="Delete selected item"
-              >
-                <Icon name="delete" size="sm" />
-                Delete
-              </Button>
-            </div>
-            <PropertyPanel
-              item={selectedItem}
-              onPropsChange={handlePropsChange}
-              onSpanChange={handleSpanChange}
-              supabase={supabase}
-              userId={userId}
-            />
           </div>
-        )}
-      </div>
-      <Dialog isOpen={showPreview} onClose={() => setShowPreview(false)} title="Preview">
-        {page && <PortfolioPreviewFrame page={page} />}
+          {selectedItem && selectedItemId && (
+            <div className={styles.sidePanel}>
+              <div className={styles.sidePanelHeader}>
+                <Button
+                  type="button"
+                  variant="danger"
+                  size="sm"
+                  onClick={handleDelete}
+                  aria-label="Delete selected item"
+                >
+                  <Icon name="delete" size="sm" />
+                  Delete
+                </Button>
+              </div>
+              <PropertyPanel
+                key={selectedItemId}
+                item={selectedItem}
+                onPropsChange={handlePropsChange}
+                onSpanChange={handleSpanChange}
+                supabase={supabase}
+                userId={userId}
+              />
+            </div>
+          )}
+        </div>
+      </PageDragDropContainer>
+      <Dialog
+        isOpen={showPreview}
+        onClose={() => setShowPreview(false)}
+        title="Preview"
+        size="full"
+      >
+        {page && <PortfolioPreviewFrame page={page} style={{ height: '75vh' }} />}
       </Dialog>
     </div>
   );
