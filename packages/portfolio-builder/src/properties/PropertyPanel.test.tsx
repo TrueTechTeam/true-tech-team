@@ -13,7 +13,7 @@ function renderPanel(
 ) {
   const onPropsChange = vi.fn();
   const onSpanChange = vi.fn();
-  const { rerender } = render(
+  const { rerender, unmount } = render(
     <PropertyPanel
       item={item}
       onPropsChange={onPropsChange}
@@ -26,6 +26,7 @@ function renderPanel(
   return {
     onPropsChange,
     onSpanChange,
+    unmount,
     rerender: (nextItem: SelectedItem, nextOverrides: typeof overrides = overrides) =>
       rerender(
         <PropertyPanel
@@ -108,7 +109,7 @@ describe('PropertyPanel', () => {
     expect(screen.getByText('either src or initials is required')).toBeInTheDocument();
   });
 
-  it('resets errors when the selected item changes', () => {
+  it('does not reset errors just because the item prop changes in place (the parent is responsible for keying PropertyPanel by selection so React remounts on an actual selection change)', () => {
     const { rerender } = renderPanel({
       componentType: 'heading',
       props: { text: 'Hello', level: 2, align: 'left' },
@@ -117,7 +118,30 @@ describe('PropertyPanel', () => {
     fireEvent.change(screen.getByLabelText(/^Text/), { target: { value: '' } });
     expect(screen.getByText('text is required and must be a string')).toBeInTheDocument();
 
+    // A prop-only rerender (no remount) must NOT wipe errors - if it did, every render caused by
+    // a fresh `item` object reference (as `PortfolioEditor` produces on every render) would
+    // silently clear validation errors moments after they were set. Resetting on an actual
+    // selection change is handled by the parent unmounting/remounting this component (e.g. via a
+    // `key={selectedItemId}` prop), not by an effect inside PropertyPanel.
     rerender({
+      componentType: 'heading',
+      props: { text: 'Different item', level: 2, align: 'left' },
+      span: 6,
+    });
+    expect(screen.getByText('text is required and must be a string')).toBeInTheDocument();
+  });
+
+  it('clears errors on remount, simulating the parent keying PropertyPanel by selection', () => {
+    const { unmount } = renderPanel({
+      componentType: 'heading',
+      props: { text: 'Hello', level: 2, align: 'left' },
+      span: 6,
+    });
+    fireEvent.change(screen.getByLabelText(/^Text/), { target: { value: '' } });
+    expect(screen.getByText('text is required and must be a string')).toBeInTheDocument();
+    unmount();
+
+    renderPanel({
       componentType: 'heading',
       props: { text: 'Different item', level: 2, align: 'left' },
       span: 6,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { Input, Textarea, NumberInput, Checkbox, Select } from '@true-tech-team/react-components';
 import { getRegistryEntry } from '../components/registry';
@@ -148,10 +148,6 @@ export function PropertyPanel({
   const entry = getRegistryEntry(item.componentType);
   const schema = entry?.propertySchema;
   const [errors, setErrors] = useState<string[]>([]);
-
-  useEffect(() => {
-    setErrors([]);
-  }, [item]);
 
   function handleFieldChange(key: string, value: unknown) {
     const newProps = { ...item.props, [key]: value };
