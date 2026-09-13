@@ -54,3 +54,27 @@
 .sidePanelHeader {
   margin-bottom: var(--spacing-md);
 }
+
+.editorHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--theme-border-secondary);
+}
+
+.editorHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.saveStatus {
+  color: var(--color-success-600, green);
+  font-size: 0.875rem;
+}
+
+.saveStatusError {
+  color: var(--theme-danger-text, var(--color-danger-600));
+  font-size: 0.875rem;
+}

@@ -113,4 +113,38 @@ describe('PortfolioEditor', () => {
       )
     );
   });
+
+  it('toggles the preview panel', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+
+    expect(screen.queryByTitle('Portfolio preview')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /preview/i }));
+    expect(await screen.findByTitle('Portfolio preview')).toBeInTheDocument();
+  });
+
+  it('saves the page and shows a success state', async () => {
+    const record = makeRecord();
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(record);
+    vi.spyOn(crud, 'savePortfolioPage').mockResolvedValue(record);
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+
+    await waitFor(() => expect(crud.savePortfolioPage).toHaveBeenCalled());
+    expect(await screen.findByText(/saved/i)).toBeInTheDocument();
+  });
+
+  it('shows a save error message when saving fails', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    vi.spyOn(crud, 'savePortfolioPage').mockRejectedValue(new Error('Slug taken'));
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+
+    expect(await screen.findByText('Slug taken')).toBeInTheDocument();
+  });
 });
