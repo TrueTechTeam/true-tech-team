@@ -35,6 +35,7 @@ export {
   setPortfolioPagePublished,
   checkSlugAvailable,
 } from './pages/crud';
+export { recordToPage } from './pages/mapping';
 
 export { PortfolioPreviewReceiver } from './preview/PortfolioPreviewReceiver';
 export { resolveEffectiveTheme } from './themes/resolveTheme';

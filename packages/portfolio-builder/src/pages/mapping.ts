@@ -62,3 +62,16 @@ export function pageToColumns(userId: string, page: PortfolioPage): PortfolioPag
     },
   };
 }
+
+export function recordToPage(record: PortfolioPageRecord): PortfolioPage {
+  return {
+    schemaVersion: 1,
+    slug: record.slug,
+    title: record.title,
+    templateId: record.templateId,
+    themeId: record.themeId,
+    themeOverride: record.themeOverride,
+    showNav: record.showNav,
+    sections: record.sections,
+  };
+}

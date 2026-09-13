@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { mapRowToRecord, pageToColumns, type PortfolioPageRow } from './mapping';
+import { mapRowToRecord, pageToColumns, recordToPage, type PortfolioPageRow } from './mapping';
 import type { PortfolioPage } from '../schema/types';
+import type { PortfolioPageRecord } from './types';
 
 describe('mapRowToRecord', () => {
   it('merges real columns with data JSONB contents', () => {
@@ -94,5 +95,54 @@ describe('pageToColumns', () => {
     const columns = pageToColumns('user-1', page);
 
     expect(columns.theme_id).toBeNull();
+  });
+});
+
+describe('recordToPage', () => {
+  it('converts a full record into a PortfolioPage with matching fields', () => {
+    const record: PortfolioPageRecord = {
+      id: 'page-1',
+      userId: 'user-1',
+      slug: 'jtrue',
+      title: 'Justin True',
+      templateId: 'developer-01',
+      themeId: 'slate',
+      published: true,
+      showNav: true,
+      sections: [],
+      themeOverride: { colors: { primary: 'var(--color-blue-500)' } },
+      createdAt: '2026-01-01T00:00:00Z',
+      updatedAt: '2026-01-02T00:00:00Z',
+    };
+
+    expect(recordToPage(record)).toEqual({
+      schemaVersion: 1,
+      slug: 'jtrue',
+      title: 'Justin True',
+      templateId: 'developer-01',
+      themeId: 'slate',
+      themeOverride: { colors: { primary: 'var(--color-blue-500)' } },
+      showNav: true,
+      sections: [],
+    });
+  });
+
+  it('passes through undefined themeId and themeOverride when the record has none', () => {
+    const record: PortfolioPageRecord = {
+      id: 'page-1',
+      userId: 'user-1',
+      slug: 'jtrue',
+      title: 'Justin True',
+      templateId: 'developer-01',
+      published: false,
+      showNav: false,
+      sections: [],
+      createdAt: '2026-01-01T00:00:00Z',
+      updatedAt: '2026-01-01T00:00:00Z',
+    };
+
+    const page = recordToPage(record);
+    expect(page.themeId).toBeUndefined();
+    expect(page.themeOverride).toBeUndefined();
   });
 });
