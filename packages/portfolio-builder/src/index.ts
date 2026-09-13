@@ -79,3 +79,5 @@ export { PageDragDropContainer } from './editor/PageDragDropContainer';
 export type { PageDragDropContainerProps } from './editor/PageDragDropContainer';
 export { PortfolioPagesList } from './editor/PortfolioPagesList';
 export type { PortfolioPagesListProps } from './editor/PortfolioPagesList';
+export { PortfolioEditor } from './editor/PortfolioEditor';
+export type { PortfolioEditorProps } from './editor/PortfolioEditor';
