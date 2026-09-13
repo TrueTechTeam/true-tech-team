@@ -1,0 +1,13 @@
+.accessDenied {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-xxl) var(--spacing-md);
+}
+
+.accessDeniedCard {
+  max-width: 480px;
+  text-align: center;
+  padding: var(--spacing-xl);
+  border: 1px solid var(--theme-border-secondary);
+  border-radius: var(--radius-lg);
+}
