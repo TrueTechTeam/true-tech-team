@@ -15,6 +15,8 @@ import {
 import { ItemRenderer } from '../render/ItemRenderer';
 import { PropertyPanel } from '../properties/PropertyPanel';
 import type { SelectedItem } from '../properties/types';
+import { ThemePicker } from '../themes/ThemePicker';
+import { THEME_PRESETS } from '../themes/presets';
 import { DraggableGridItem } from './DraggableGridItem';
 import { DropZone } from './DropZone';
 import { PageDragDropContainer } from './PageDragDropContainer';
@@ -104,8 +106,22 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
     setSelectedItemId(null);
   }
 
+  function handleThemeSelect(themeId: string) {
+    setPage((current) => (current ? { ...current, themeId, themeOverride: undefined } : current));
+  }
+
   return (
     <div className={styles.editorLayout}>
+      <div className={styles.leftColumn}>
+        <div className={styles.themeSection}>
+          <h3>Theme</h3>
+          <ThemePicker
+            presets={THEME_PRESETS}
+            selectedId={page.themeId}
+            onSelect={handleThemeSelect}
+          />
+        </div>
+      </div>
       <div
         className={styles.canvas}
         data-testid="canvas-background"

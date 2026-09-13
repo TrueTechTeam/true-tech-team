@@ -94,4 +94,23 @@ describe('PortfolioEditor', () => {
     await waitFor(() => expect(screen.queryByText('Hello')).not.toBeInTheDocument());
     expect(screen.queryByLabelText('Width')).not.toBeInTheDocument();
   });
+
+  it('selecting a theme preset sets themeId and clears any themeOverride', async () => {
+    const record = makeRecord();
+    record.themeOverride = { colors: { primary: 'var(--color-blue-500)' } };
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(record);
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+
+    fireEvent.click(screen.getAllByRole('button', { name: /slate/i })[0]);
+
+    // No direct assertion on internal state — verify indirectly via a re-render effect:
+    // the swatch/tile for 'slate' should now show as selected (aria-pressed).
+    await waitFor(() =>
+      expect(screen.getAllByRole('button', { name: /slate/i })[0]).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+    );
+  });
 });

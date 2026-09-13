@@ -34,6 +34,18 @@
   min-height: 400px;
 }
 
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.themeSection h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
 .sidePanel {
   border-left: 1px solid var(--theme-border-secondary);
   padding-left: var(--spacing-lg);
