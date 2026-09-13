@@ -7,6 +7,8 @@ import {
   moveItem,
   moveItemToNewRow,
   removeItem,
+  updateItemProps,
+  updateItemSpan,
 } from './transforms';
 
 function fixturePage(): PortfolioPage {
@@ -203,5 +205,55 @@ describe('removeItem', () => {
     const page = fixturePage();
     const result = removeItem(page, 'item3');
     expect(result.sections[0].rows).toHaveLength(1);
+  });
+});
+
+describe('updateItemProps', () => {
+  it('replaces the item props entirely', () => {
+    const page = fixturePage();
+    const result = updateItemProps(page, 'item1', { text: 'Updated' });
+    expect(result.sections[0].rows[0].items[0].props).toEqual({ text: 'Updated' });
+    // original page unchanged
+    expect(page.sections[0].rows[0].items[0].props).toEqual({ text: 'A' });
+  });
+
+  it('throws when the item is not found', () => {
+    const page = fixturePage();
+    expect(() => updateItemProps(page, 'does-not-exist', {})).toThrow(/not found/i);
+  });
+});
+
+describe('updateItemSpan', () => {
+  it('sets the span when there is enough room in the row', () => {
+    const page = fixturePage();
+    // sec2/row3 has item4 (span 4) alone — plenty of room
+    const result = updateItemSpan(page, 'item4', 8);
+    expect(result.sections[1].rows[0].items[0].span).toBe(8);
+  });
+
+  it('clamps to the row remaining capacity when the request would overflow', () => {
+    const page = fixturePage();
+    // sec2/row3 has only item4 (span 4) — max valid span for item4 alone is 12
+    const result = updateItemSpan(page, 'item4', 20);
+    expect(result.sections[1].rows[0].items[0].span).toBe(12);
+  });
+
+  it('clamps down when growing would push a row with siblings over 12', () => {
+    const page = fixturePage();
+    // sec1/row1 has item1 (span 6) + item2 (span 6) — item1 can grow to at most 6
+    // (12 total - item2's span 6), even though it requests 10
+    const result = updateItemSpan(page, 'item1', 10);
+    expect(result.sections[0].rows[0].items[0].span).toBe(6);
+  });
+
+  it('clamps up to a minimum of 1', () => {
+    const page = fixturePage();
+    const result = updateItemSpan(page, 'item4', 0);
+    expect(result.sections[1].rows[0].items[0].span).toBe(1);
+  });
+
+  it('never throws', () => {
+    const page = fixturePage();
+    expect(() => updateItemSpan(page, 'item1', 999)).not.toThrow();
   });
 });

@@ -145,6 +145,44 @@ export function moveItem(
   return insertItemInRow(pageAfterRemoval, targetSectionId, targetRowId, targetIndex, item);
 }
 
+export function updateItemProps(
+  page: PortfolioPage,
+  itemId: string,
+  props: Record<string, unknown>
+): PortfolioPage {
+  const location = findItemLocation(page, itemId);
+  if (!location) {
+    throw new Error(`Item not found: ${itemId}`);
+  }
+  const { sectionIndex, rowIndex, itemIndex } = location;
+  const section = page.sections[sectionIndex];
+  const row = section.rows[rowIndex];
+  const newItems = row.items.map((item, i) => (i === itemIndex ? { ...item, props } : item));
+  const newRows = section.rows.map((r, i) => (i === rowIndex ? { ...r, items: newItems } : r));
+  const newSections = [...page.sections];
+  newSections[sectionIndex] = { ...section, rows: newRows };
+  return { ...page, sections: newSections };
+}
+
+export function updateItemSpan(page: PortfolioPage, itemId: string, span: number): PortfolioPage {
+  const location = findItemLocation(page, itemId);
+  if (!location) {
+    throw new Error(`Item not found: ${itemId}`);
+  }
+  const { sectionIndex, rowIndex, itemIndex } = location;
+  const section = page.sections[sectionIndex];
+  const row = section.rows[rowIndex];
+  const maxSpan = getRowRemainingCapacity(row, itemId);
+  const clampedSpan = Math.min(12, Math.max(1, Math.round(span)), maxSpan);
+  const newItems = row.items.map((item, i) =>
+    i === itemIndex ? { ...item, span: clampedSpan } : item
+  );
+  const newRows = section.rows.map((r, i) => (i === rowIndex ? { ...r, items: newItems } : r));
+  const newSections = [...page.sections];
+  newSections[sectionIndex] = { ...section, rows: newRows };
+  return { ...page, sections: newSections };
+}
+
 export function moveItemToNewRow(
   page: PortfolioPage,
   itemId: string,
