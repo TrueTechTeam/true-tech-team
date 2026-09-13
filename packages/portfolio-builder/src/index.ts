@@ -77,3 +77,5 @@ export { DropZone } from './editor/DropZone';
 export type { DropZoneProps, DropZoneData } from './editor/DropZone';
 export { PageDragDropContainer } from './editor/PageDragDropContainer';
 export type { PageDragDropContainerProps } from './editor/PageDragDropContainer';
+export { PortfolioPagesList } from './editor/PortfolioPagesList';
+export type { PortfolioPagesListProps } from './editor/PortfolioPagesList';
