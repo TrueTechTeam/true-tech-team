@@ -63,4 +63,35 @@ describe('PortfolioEditor', () => {
     fireEvent.click(screen.getByTestId('canvas-background'));
     await waitFor(() => expect(item.closest('[data-selected="true"]')).not.toBeInTheDocument());
   });
+
+  it('shows the property panel for the selected item and updates its props', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    const item = await screen.findByText('Hello');
+    fireEvent.click(item);
+
+    const textField = await screen.findByLabelText(/^Text/);
+    fireEvent.change(textField, { target: { value: 'Updated Text' } });
+
+    await waitFor(() => expect(screen.getAllByText('Updated Text').length).toBeGreaterThan(0));
+  });
+
+  it('does not show a property panel when nothing is selected', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+    expect(screen.queryByLabelText('Width')).not.toBeInTheDocument();
+  });
+
+  it('deletes the selected item and clears the selection', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    const item = await screen.findByText('Hello');
+    fireEvent.click(item);
+
+    fireEvent.click(await screen.findByRole('button', { name: /delete/i }));
+
+    await waitFor(() => expect(screen.queryByText('Hello')).not.toBeInTheDocument());
+    expect(screen.queryByLabelText('Width')).not.toBeInTheDocument();
+  });
 });

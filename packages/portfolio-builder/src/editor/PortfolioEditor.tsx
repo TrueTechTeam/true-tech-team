@@ -2,11 +2,19 @@
 
 import { useEffect, useState, type CSSProperties } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { Icon, Button } from '@true-tech-team/react-components';
 import { loadPortfolioPage } from '../pages/crud';
 import type { PortfolioPage, GridItem } from '../schema/types';
 import { collapsedSpans } from '../grid/responsive';
-import { getRowRemainingCapacity } from '../layout/transforms';
+import {
+  getRowRemainingCapacity,
+  removeItem,
+  updateItemProps,
+  updateItemSpan,
+} from '../layout/transforms';
 import { ItemRenderer } from '../render/ItemRenderer';
+import { PropertyPanel } from '../properties/PropertyPanel';
+import type { SelectedItem } from '../properties/types';
 import { DraggableGridItem } from './DraggableGridItem';
 import { DropZone } from './DropZone';
 import { PageDragDropContainer } from './PageDragDropContainer';
@@ -35,11 +43,7 @@ export function findSelectedItem(page: PortfolioPage, itemId: string | null): Gr
   return undefined;
 }
 
-// `userId` is not yet used by this task's data-loading/canvas/selection core — it's threaded
-// through the props now because Tasks 5-7 (save, publish) need it against this same file, and
-// `PortfolioPagesListClient`'s call site already has it on hand. Renamed on destructure (rather
-// than dropped) to satisfy `@typescript-eslint/no-unused-vars` without narrowing the public prop.
-export function PortfolioEditor({ pageId, userId: _userId, supabase }: PortfolioEditorProps) {
+export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorProps) {
   const [page, setPage] = useState<PortfolioPage | null>(null);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
@@ -67,6 +71,37 @@ export function PortfolioEditor({ pageId, userId: _userId, supabase }: Portfolio
 
   if (!page) {
     return <p>Loading…</p>;
+  }
+
+  const selectedGridItem = findSelectedItem(page, selectedItemId);
+  const selectedItem: SelectedItem | undefined = selectedGridItem
+    ? {
+        componentType: selectedGridItem.component,
+        props: selectedGridItem.props,
+        span: selectedGridItem.span,
+      }
+    : undefined;
+
+  function handlePropsChange(newProps: Record<string, unknown>) {
+    if (!selectedItemId) {
+      return;
+    }
+    setPage((current) => (current ? updateItemProps(current, selectedItemId, newProps) : current));
+  }
+
+  function handleSpanChange(newSpan: number) {
+    if (!selectedItemId) {
+      return;
+    }
+    setPage((current) => (current ? updateItemSpan(current, selectedItemId, newSpan) : current));
+  }
+
+  function handleDelete() {
+    if (!selectedItemId) {
+      return;
+    }
+    setPage((current) => (current ? removeItem(current, selectedItemId) : current));
+    setSelectedItemId(null);
   }
 
   return (
@@ -138,6 +173,29 @@ export function PortfolioEditor({ pageId, userId: _userId, supabase }: Portfolio
           ))}
         </PageDragDropContainer>
       </div>
+      {selectedItem && selectedItemId && (
+        <div className={styles.sidePanel}>
+          <div className={styles.sidePanelHeader}>
+            <Button
+              type="button"
+              variant="danger"
+              size="sm"
+              onClick={handleDelete}
+              aria-label="Delete selected item"
+            >
+              <Icon name="delete" size="sm" />
+              Delete
+            </Button>
+          </div>
+          <PropertyPanel
+            item={selectedItem}
+            onPropsChange={handlePropsChange}
+            onSpanChange={handleSpanChange}
+            supabase={supabase}
+            userId={userId}
+          />
+        </div>
+      )}
     </div>
   );
 }

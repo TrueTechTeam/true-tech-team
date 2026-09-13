@@ -25,11 +25,20 @@
 
 .editorLayout {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 240px 1fr 320px;
   gap: var(--spacing-lg);
   padding: var(--spacing-lg);
 }
 
 .canvas {
   min-height: 400px;
+}
+
+.sidePanel {
+  border-left: 1px solid var(--theme-border-secondary);
+  padding-left: var(--spacing-lg);
+}
+
+.sidePanelHeader {
+  margin-bottom: var(--spacing-md);
 }
