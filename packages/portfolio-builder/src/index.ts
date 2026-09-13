@@ -29,6 +29,7 @@ export type { PortfolioPageRecord } from './pages/types';
 export {
   savePortfolioPage,
   loadPortfolioPage,
+  loadPortfolioPageBySlug,
   listPortfolioPages,
   deletePortfolioPage,
   setPortfolioPagePublished,

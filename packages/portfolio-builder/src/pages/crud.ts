@@ -68,6 +68,22 @@ export async function loadPortfolioPage(
   return row ? mapRowToRecord(row as PortfolioPageRow) : null;
 }
 
+export async function loadPortfolioPageBySlug(
+  supabase: SupabaseClient,
+  slug: string
+): Promise<PortfolioPageRecord | null> {
+  const { data: row, error } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('slug', slug)
+    .eq('published', true)
+    .maybeSingle();
+  if (error) {
+    throw error;
+  }
+  return row ? mapRowToRecord(row as PortfolioPageRow) : null;
+}
+
 export async function listPortfolioPages(
   supabase: SupabaseClient,
   userId: string

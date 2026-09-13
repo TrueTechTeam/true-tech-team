@@ -5,6 +5,7 @@ import type { PortfolioPageRow } from './mapping';
 import {
   savePortfolioPage,
   loadPortfolioPage,
+  loadPortfolioPageBySlug,
   listPortfolioPages,
   deletePortfolioPage,
   setPortfolioPagePublished,
@@ -201,5 +202,38 @@ describe('checkSlugAvailable', () => {
 
     const builder = tableFromMock.mock.results[0].value as { neq: ReturnType<typeof vi.fn> };
     expect(builder.neq).toHaveBeenCalledWith('id', 'page-1');
+  });
+});
+
+describe('loadPortfolioPageBySlug', () => {
+  it('returns the mapped record for a published, matching slug', async () => {
+    const { supabase } = createMockSupabase({
+      tableResult: { data: { ...validRow, published: true }, error: null },
+    });
+    const record = await loadPortfolioPageBySlug(supabase, 'jtrue');
+    expect(record?.slug).toBe('jtrue');
+  });
+
+  it('returns null when no row matches (covers both a nonexistent and an unpublished slug)', async () => {
+    const { supabase } = createMockSupabase({ tableResult: { data: null, error: null } });
+    const record = await loadPortfolioPageBySlug(supabase, 'missing');
+    expect(record).toBeNull();
+  });
+
+  it('filters by slug and published=true explicitly, not relying on RLS alone', async () => {
+    const { supabase, tableFromMock } = createMockSupabase({
+      tableResult: { data: { ...validRow, published: true }, error: null },
+    });
+    await loadPortfolioPageBySlug(supabase, 'jtrue');
+    const builder = tableFromMock.mock.results[0].value as { eq: ReturnType<typeof vi.fn> };
+    expect(builder.eq).toHaveBeenCalledWith('slug', 'jtrue');
+    expect(builder.eq).toHaveBeenCalledWith('published', true);
+  });
+
+  it('propagates a thrown error from the client', async () => {
+    const { supabase } = createMockSupabase({
+      tableResult: { data: null, error: new Error('network error') },
+    });
+    await expect(loadPortfolioPageBySlug(supabase, 'jtrue')).rejects.toThrow('network error');
   });
 });
