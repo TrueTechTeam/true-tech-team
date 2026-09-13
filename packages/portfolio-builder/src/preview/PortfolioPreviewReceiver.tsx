@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { GlobalProvider } from '@true-tech-team/react-components';
-import { PageRenderer } from '../render/PageRenderer';
-import { resolveEffectiveTheme } from '../themes/resolveTheme';
+import { ThemedPageView } from '../render/ThemedPageView';
 import {
   PREVIEW_READY_MESSAGE,
   isPreviewUpdateMessage,
@@ -36,9 +34,5 @@ export function PortfolioPreviewReceiver() {
     return null;
   }
 
-  return (
-    <GlobalProvider themeConfig={{ theme: resolveEffectiveTheme(page) }}>
-      <PageRenderer page={page} />
-    </GlobalProvider>
-  );
+  return <ThemedPageView page={page} />;
 }

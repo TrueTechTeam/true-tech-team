@@ -16,6 +16,8 @@ export { getRegistryEntry } from './components/registry';
 export type { RegistryEntry } from './components/registry';
 
 export { PageRenderer } from './render/PageRenderer';
+export { ThemedPageView } from './render/ThemedPageView';
+export type { ThemedPageViewProps } from './render/ThemedPageView';
 
 export { THEME_PRESETS, getThemePreset } from './themes/presets';
 export type { ThemePreset } from './themes/types';
