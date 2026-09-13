@@ -22,3 +22,14 @@
   color: var(--theme-danger-text, var(--color-danger-600));
   font-size: 0.875rem;
 }
+
+.editorLayout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+}
+
+.canvas {
+  min-height: 400px;
+}
