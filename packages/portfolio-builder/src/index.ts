@@ -38,6 +38,7 @@ export {
   checkSlugAvailable,
 } from './pages/crud';
 export { recordToPage } from './pages/mapping';
+export { slugify, generateUniqueSlug } from './pages/slug';
 
 export { PortfolioPreviewReceiver } from './preview/PortfolioPreviewReceiver';
 export { resolveEffectiveTheme } from './themes/resolveTheme';
