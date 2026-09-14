@@ -3,10 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { Card, Button, Input } from '@true-tech-team/react-components';
-import { savePortfolioPage, checkSlugAvailable } from '../pages/crud';
+import { AdaptiveGrid, Badge, Button, Card, Dialog, Input } from '@true-tech-team/react-components';
+import { savePortfolioPage } from '../pages/crud';
+import { generateUniqueSlug } from '../pages/slug';
+import { recordToPage } from '../pages/mapping';
 import type { PortfolioPageRecord } from '../pages/types';
-import styles from './PortfolioEditor.module.scss';
+import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
+import styles from './PortfolioPagesList.module.scss';
 
 export interface PortfolioPagesListProps {
   pages: PortfolioPageRecord[];
@@ -15,35 +18,32 @@ export interface PortfolioPagesListProps {
   onCreated?: (record: PortfolioPageRecord) => void;
 }
 
-function slugify(title: string): string {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
-
 export function PortfolioPagesList({
   pages,
   userId,
   supabase,
   onCreated,
 }: PortfolioPagesListProps) {
-  const [isCreating, setIsCreating] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [title, setTitle] = useState('');
-  const [slug, setSlug] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function handleOpenDialog() {
+    setIsDialogOpen(true);
+  }
+
+  function handleCloseDialog() {
+    setIsDialogOpen(false);
+    setTitle('');
+    setError(null);
+  }
 
   async function handleCreate() {
     setError(null);
     setIsSubmitting(true);
     try {
-      const available = await checkSlugAvailable(supabase, slug);
-      if (!available) {
-        setError('That slug is already taken. Please choose a different one.');
-        return;
-      }
+      const slug = await generateUniqueSlug(supabase, title);
       const record = await savePortfolioPage(supabase, userId, {
         schemaVersion: 1,
         slug,
@@ -52,6 +52,7 @@ export function PortfolioPagesList({
         showNav: true,
         sections: [{ id: crypto.randomUUID(), name: 'Main', showInNav: false, rows: [] }],
       });
+      handleCloseDialog();
       onCreated?.(record);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create page');
@@ -61,48 +62,73 @@ export function PortfolioPagesList({
   }
 
   return (
-    <div className={styles.pagesList}>
-      {pages.map((page) => (
-        <Card key={page.id} padding="sm">
-          <Link href={`/portfolio-builder/edit/${page.id}`}>{page.title}</Link>
-          <span className={styles.statusBadge}>{page.published ? 'Published' : 'Draft'}</span>
-        </Card>
-      ))}
-
-      {!isCreating && (
-        <Button type="button" onClick={() => setIsCreating(true)}>
+    <div className={styles.page}>
+      <div className={styles.headerRow}>
+        <h2 className={styles.title}>My Pages</h2>
+        <Button type="button" onClick={handleOpenDialog}>
           New Page
         </Button>
+      </div>
+
+      {pages.length === 0 ? (
+        <div className={styles.empty}>
+          <p>You haven&apos;t created any portfolio pages yet.</p>
+        </div>
+      ) : (
+        <AdaptiveGrid minItemWidth={280} gap={16}>
+          {pages.map((page) => (
+            <Link
+              key={page.id}
+              href={`/portfolio-builder/edit/${page.id}`}
+              className={styles.cardLink}
+            >
+              <Card interactive hoverable padding="none">
+                <div className={styles.previewArea}>
+                  <PortfolioPreviewFrame
+                    page={recordToPage(page)}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                </div>
+                <div className={styles.cardBody}>
+                  <h3 className={styles.cardTitle}>{page.title}</h3>
+                  <Badge variant={page.published ? 'success' : 'neutral'} size="sm">
+                    {page.published ? 'Published' : 'Draft'}
+                  </Badge>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </AdaptiveGrid>
       )}
 
-      {isCreating && (
-        <div className={styles.createForm}>
-          <Input
-            id="new-page-title"
-            label="Title"
-            value={title}
-            onChange={(event) => {
-              const value = event.target.value;
-              setTitle(value);
-              setSlug(slugify(value));
-            }}
-          />
-          <Input
-            id="new-page-slug"
-            label="Slug"
-            value={slug}
-            onChange={(event) => setSlug(event.target.value)}
-          />
-          {error && <p className={styles.errorText}>{error}</p>}
-          <Button
-            type="button"
-            onClick={handleCreate}
-            disabled={isSubmitting || !title.trim() || !slug.trim()}
-          >
-            Create
-          </Button>
-        </div>
-      )}
+      <Dialog
+        isOpen={isDialogOpen}
+        onClose={handleCloseDialog}
+        title="New Page"
+        actions={
+          <>
+            <Button type="button" variant="ghost" onClick={handleCloseDialog}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleCreate}
+              loading={isSubmitting}
+              disabled={isSubmitting || !title.trim()}
+            >
+              Create
+            </Button>
+          </>
+        }
+      >
+        <Input
+          id="new-page-title"
+          label="Title"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
+        {error && <p className={styles.errorText}>{error}</p>}
+      </Dialog>
     </div>
   );
 }

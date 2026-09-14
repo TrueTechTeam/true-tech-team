@@ -28,3 +28,14 @@ if (!global.IntersectionObserver) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 }
+
+// jsdom does not implement ResizeObserver; AdaptiveGrid and other components use it.
+if (!global.ResizeObserver) {
+  global.ResizeObserver = class ResizeObserver {
+    constructor() {}
+    disconnect() {}
+    observe() {}
+    unobserve() {}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any;
+}

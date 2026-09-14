@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { PortfolioPagesList } from './PortfolioPagesList';
 import * as crud from '../pages/crud';
+import * as slugModule from '../pages/slug';
 import type { PortfolioPageRecord } from '../pages/types';
 
 const fakeSupabase = {} as SupabaseClient;
@@ -45,8 +46,30 @@ describe('PortfolioPagesList', () => {
     expect(screen.getByText(/published/i)).toBeInTheDocument();
   });
 
-  it('creates a new page and calls onCreated with the new record', async () => {
-    vi.spyOn(crud, 'checkSlugAvailable').mockResolvedValue(true);
+  it('shows an empty state message when there are no pages', () => {
+    render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
+    expect(screen.getByText(/haven't created any portfolio pages/i)).toBeInTheDocument();
+  });
+
+  it('opens the create dialog with only a title field when New Page is clicked', () => {
+    render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
+    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/slug/i)).not.toBeInTheDocument();
+  });
+
+  it('disables the Create button until a title is entered', () => {
+    render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
+    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    const createButton = screen.getByRole('button', { name: /create/i });
+    expect(createButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'New Page' } });
+    expect(createButton).not.toBeDisabled();
+  });
+
+  it('generates a slug and creates the page, then calls onCreated', async () => {
+    vi.spyOn(slugModule, 'generateUniqueSlug').mockResolvedValue('new-page');
     const created = makeRecord({ id: 'page-2', slug: 'new-page', title: 'New Page' });
     vi.spyOn(crud, 'savePortfolioPage').mockResolvedValue(created);
     const onCreated = vi.fn();
@@ -62,10 +85,10 @@ describe('PortfolioPagesList', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /new page/i }));
     fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'New Page' } });
-    fireEvent.change(screen.getByLabelText(/slug/i), { target: { value: 'new-page' } });
     fireEvent.click(screen.getByRole('button', { name: /create/i }));
 
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith(created));
+    expect(slugModule.generateUniqueSlug).toHaveBeenCalledWith(fakeSupabase, 'New Page');
     expect(crud.savePortfolioPage).toHaveBeenCalledWith(fakeSupabase, 'user-1', {
       schemaVersion: 1,
       slug: 'new-page',
@@ -76,29 +99,33 @@ describe('PortfolioPagesList', () => {
     });
   });
 
-  it('disables the Create button until both title and slug are filled in', () => {
-    render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
-
-    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
-    const createButton = screen.getByRole('button', { name: /create/i });
-    expect(createButton).toBeDisabled();
-
-    fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'New Page' } });
-    expect(createButton).not.toBeDisabled();
-
-    fireEvent.change(screen.getByLabelText(/slug/i), { target: { value: '' } });
-    expect(createButton).toBeDisabled();
-  });
-
-  it('shows an error when the slug is already taken', async () => {
-    vi.spyOn(crud, 'checkSlugAvailable').mockResolvedValue(false);
+  it('shows an error when slug generation fails', async () => {
+    vi.spyOn(slugModule, 'generateUniqueSlug').mockRejectedValue(
+      new Error('Could not generate a unique page URL. Please try a different title.')
+    );
     render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
 
     fireEvent.click(screen.getByRole('button', { name: /new page/i }));
     fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'Taken' } });
-    fireEvent.change(screen.getByLabelText(/slug/i), { target: { value: 'taken' } });
     fireEvent.click(screen.getByRole('button', { name: /create/i }));
 
-    await waitFor(() => expect(screen.getByText(/already taken/i)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/could not generate a unique page url/i)).toBeInTheDocument()
+    );
+  });
+
+  it('closes the dialog and resets the title when Cancel is clicked', async () => {
+    render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
+    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'Draft title' } });
+    fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+
+    // The Dialog's close is animated (default animationDuration 200ms), so the content can
+    // still be mounted for a moment after the triggering click. waitFor is the disappearance
+    // analog of the findBy fallback used elsewhere in this file for the dialog's open animation.
+    await waitFor(() => expect(screen.queryByLabelText(/title/i)).not.toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    expect(screen.getByLabelText(/title/i)).toHaveValue('');
   });
 });
