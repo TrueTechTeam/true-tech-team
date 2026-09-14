@@ -57,10 +57,10 @@ describe('PortfolioPagesList', () => {
     expect(screen.getByText(/draft/i)).toBeInTheDocument();
   });
 
-  it('shows an empty state message when there are no pages', () => {
+  it('shows only the Create New Page tile in the grid when there are no pages', () => {
     render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
-    expect(screen.getByText(/haven't created any portfolio pages/i)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Create New Page' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Create New Page' })).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
   it('renders a Create New Page tile at the end of the grid that opens the dialog', () => {
@@ -79,7 +79,7 @@ describe('PortfolioPagesList', () => {
   it('disables the Create button until a title is entered', () => {
     render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
     fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
-    const createButton = screen.getByRole('button', { name: /create/i });
+    const createButton = screen.getByRole('button', { name: 'Create' });
     expect(createButton).toBeDisabled();
 
     fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'New Page' } });
@@ -103,7 +103,7 @@ describe('PortfolioPagesList', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
     fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'New Page' } });
-    fireEvent.click(screen.getByRole('button', { name: /create/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
 
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith(created));
     expect(slugModule.generateUniqueSlug).toHaveBeenCalledWith(fakeSupabase, 'New Page');
@@ -125,7 +125,7 @@ describe('PortfolioPagesList', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
     fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'Taken' } });
-    fireEvent.click(screen.getByRole('button', { name: /create/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
 
     await waitFor(() =>
       expect(screen.getByText(/could not generate a unique page url/i)).toBeInTheDocument()

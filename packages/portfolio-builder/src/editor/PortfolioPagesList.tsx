@@ -107,46 +107,40 @@ export function PortfolioPagesList({
         </Button>
       </div>
 
-      {pages.length === 0 ? (
-        <div className={styles.empty}>
-          <p>You haven&apos;t created any portfolio pages yet.</p>
-        </div>
-      ) : (
-        <AdaptiveGrid minItemWidth={280} gap={16}>
-          {pages.map((page) => (
-            <Link
-              key={page.id}
-              href={`/portfolio-builder/edit/${page.id}`}
-              className={styles.cardLink}
-            >
-              <Card hoverable padding="none">
-                <div className={styles.previewArea}>
-                  <PortfolioPreviewFrame
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- previewPages is built from this exact pages array, so page.id is always present
-                    page={previewPages.get(page.id)!}
-                    style={{ pointerEvents: 'none' }}
-                  />
-                </div>
-                <div className={styles.cardBody}>
-                  <h3 className={styles.cardTitle}>{page.title}</h3>
-                  <Badge variant={page.published ? 'success' : 'neutral'} size="sm">
-                    {page.published ? 'Published' : 'Draft'}
-                  </Badge>
-                </div>
-              </Card>
-            </Link>
-          ))}
-          <button
-            type="button"
-            className={styles.createTile}
-            onClick={handleOpenDialog}
-            aria-label="Create New Page"
+      <AdaptiveGrid minItemWidth={280} gap={16}>
+        {pages.map((page) => (
+          <Link
+            key={page.id}
+            href={`/portfolio-builder/edit/${page.id}`}
+            className={styles.cardLink}
           >
-            <Icon name="plus" size="lg" />
-            <span>Create New Page</span>
-          </button>
-        </AdaptiveGrid>
-      )}
+            <Card hoverable padding="none">
+              <div className={styles.previewArea}>
+                <PortfolioPreviewFrame
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- previewPages is built from this exact pages array, so page.id is always present
+                  page={previewPages.get(page.id)!}
+                  style={{ pointerEvents: 'none' }}
+                />
+              </div>
+              <div className={styles.cardBody}>
+                <h3 className={styles.cardTitle}>{page.title}</h3>
+                <Badge variant={page.published ? 'success' : 'neutral'} size="sm">
+                  {page.published ? 'Published' : 'Draft'}
+                </Badge>
+              </div>
+            </Card>
+          </Link>
+        ))}
+        <button
+          type="button"
+          className={styles.createTile}
+          onClick={handleOpenDialog}
+          aria-label="Create New Page"
+        >
+          <Icon name="plus" size="lg" />
+          <span>Create New Page</span>
+        </button>
+      </AdaptiveGrid>
 
       <Dialog
         isOpen={isDialogOpen}
