@@ -82,7 +82,7 @@ export function PortfolioPagesList({
               href={`/portfolio-builder/edit/${page.id}`}
               className={styles.cardLink}
             >
-              <Card interactive hoverable padding="none">
+              <Card hoverable padding="none">
                 <div className={styles.previewArea}>
                   <PortfolioPreviewFrame
                     page={recordToPage(page)}
