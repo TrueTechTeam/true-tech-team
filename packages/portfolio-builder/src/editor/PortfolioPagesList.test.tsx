@@ -46,6 +46,17 @@ describe('PortfolioPagesList', () => {
     expect(screen.getByText(/published/i)).toBeInTheDocument();
   });
 
+  it('shows a draft badge for an unpublished page', () => {
+    render(
+      <PortfolioPagesList
+        pages={[makeRecord({ published: false })]}
+        userId="user-1"
+        supabase={fakeSupabase}
+      />
+    );
+    expect(screen.getByText(/draft/i)).toBeInTheDocument();
+  });
+
   it('shows an empty state message when there are no pages', () => {
     render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
     expect(screen.getByText(/haven't created any portfolio pages/i)).toBeInTheDocument();
