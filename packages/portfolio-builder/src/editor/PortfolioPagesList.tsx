@@ -107,7 +107,13 @@ export function PortfolioPagesList({
         </Button>
       </div>
 
-      <AdaptiveGrid minItemWidth={280} gap={16}>
+      <AdaptiveGrid
+        minItemWidth={360}
+        maxColumns={4}
+        minColumns={1}
+        gap={16}
+        justifyItems="stretch"
+      >
         {pages.map((page) => (
           <Link
             key={page.id}
