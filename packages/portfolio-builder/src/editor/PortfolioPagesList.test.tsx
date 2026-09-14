@@ -60,18 +60,25 @@ describe('PortfolioPagesList', () => {
   it('shows an empty state message when there are no pages', () => {
     render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
     expect(screen.getByText(/haven't created any portfolio pages/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Create New Page' })).not.toBeInTheDocument();
+  });
+
+  it('renders a Create New Page tile at the end of the grid that opens the dialog', () => {
+    render(<PortfolioPagesList pages={[makeRecord()]} userId="user-1" supabase={fakeSupabase} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Create New Page' }));
+    expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
   });
 
   it('opens the create dialog with only a title field when New Page is clicked', () => {
     render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
-    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
     expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/slug/i)).not.toBeInTheDocument();
   });
 
   it('disables the Create button until a title is entered', () => {
     render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
-    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
     const createButton = screen.getByRole('button', { name: /create/i });
     expect(createButton).toBeDisabled();
 
@@ -94,7 +101,7 @@ describe('PortfolioPagesList', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
     fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'New Page' } });
     fireEvent.click(screen.getByRole('button', { name: /create/i }));
 
@@ -116,7 +123,7 @@ describe('PortfolioPagesList', () => {
     );
     render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
     fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'Taken' } });
     fireEvent.click(screen.getByRole('button', { name: /create/i }));
 
@@ -127,7 +134,7 @@ describe('PortfolioPagesList', () => {
 
   it('closes the dialog and resets the title when Cancel is clicked', async () => {
     render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
-    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
     fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'Draft title' } });
     fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
 
@@ -136,7 +143,7 @@ describe('PortfolioPagesList', () => {
     // analog of the findBy fallback used elsewhere in this file for the dialog's open animation.
     await waitFor(() => expect(screen.queryByLabelText(/title/i)).not.toBeInTheDocument());
 
-    fireEvent.click(screen.getByRole('button', { name: /new page/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
     expect(screen.getByLabelText(/title/i)).toHaveValue('');
   });
 });

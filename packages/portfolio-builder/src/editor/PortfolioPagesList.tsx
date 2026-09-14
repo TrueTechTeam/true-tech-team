@@ -3,7 +3,15 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { AdaptiveGrid, Badge, Button, Card, Dialog, Input } from '@true-tech-team/react-components';
+import {
+  AdaptiveGrid,
+  Badge,
+  Button,
+  Card,
+  Dialog,
+  Icon,
+  Input,
+} from '@true-tech-team/react-components';
 import { savePortfolioPage } from '../pages/crud';
 import { generateUniqueSlug, slugify } from '../pages/slug';
 import { recordToPage } from '../pages/mapping';
@@ -128,6 +136,15 @@ export function PortfolioPagesList({
               </Card>
             </Link>
           ))}
+          <button
+            type="button"
+            className={styles.createTile}
+            onClick={handleOpenDialog}
+            aria-label="Create New Page"
+          >
+            <Icon name="plus" size="lg" />
+            <span>Create New Page</span>
+          </button>
         </AdaptiveGrid>
       )}
 
