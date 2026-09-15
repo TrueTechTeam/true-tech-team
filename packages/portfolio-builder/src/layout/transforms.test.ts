@@ -9,6 +9,7 @@ import {
   removeItem,
   updateItemProps,
   updateItemSpan,
+  updateRowAlignment,
 } from './transforms';
 
 function fixturePage(): PortfolioPage {
@@ -255,5 +256,40 @@ describe('updateItemSpan', () => {
   it('never throws', () => {
     const page = fixturePage();
     expect(() => updateItemSpan(page, 'item1', 999)).not.toThrow();
+  });
+});
+
+describe('updateRowAlignment', () => {
+  it('sets justify and align on the target row without touching other rows', () => {
+    const page = fixturePage();
+    const result = updateRowAlignment(page, 'sec1', 'row1', {
+      justify: 'center',
+      align: 'bottom',
+    });
+    expect(result.sections[0].rows[0].justify).toBe('center');
+    expect(result.sections[0].rows[0].align).toBe('bottom');
+    expect(result.sections[0].rows[1].justify).toBeUndefined();
+    expect(result.sections[0].rows[1].align).toBeUndefined();
+  });
+
+  it('can set only justify, leaving align untouched', () => {
+    const page = fixturePage();
+    const result = updateRowAlignment(page, 'sec1', 'row1', { justify: 'right' });
+    expect(result.sections[0].rows[0].justify).toBe('right');
+    expect(result.sections[0].rows[0].align).toBeUndefined();
+  });
+
+  it('throws when the section does not exist', () => {
+    const page = fixturePage();
+    expect(() => updateRowAlignment(page, 'missing-section', 'row1', { justify: 'left' })).toThrow(
+      'Section not found: missing-section'
+    );
+  });
+
+  it('throws when the row does not exist', () => {
+    const page = fixturePage();
+    expect(() => updateRowAlignment(page, 'sec1', 'missing-row', { justify: 'left' })).toThrow(
+      'Row not found: missing-row'
+    );
   });
 });

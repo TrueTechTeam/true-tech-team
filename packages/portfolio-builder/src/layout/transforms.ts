@@ -1,4 +1,4 @@
-import type { PortfolioPage, SectionRow, GridItem } from '../schema/types';
+import type { PortfolioPage, SectionRow, GridItem, RowJustify, RowAlign } from '../schema/types';
 
 export function getRowRemainingCapacity(row: SectionRow, excludeItemId?: string): number {
   const used = row.items
@@ -178,6 +178,29 @@ export function updateItemSpan(page: PortfolioPage, itemId: string, span: number
     i === itemIndex ? { ...item, span: clampedSpan } : item
   );
   const newRows = section.rows.map((r, i) => (i === rowIndex ? { ...r, items: newItems } : r));
+  const newSections = [...page.sections];
+  newSections[sectionIndex] = { ...section, rows: newRows };
+  return { ...page, sections: newSections };
+}
+
+export function updateRowAlignment(
+  page: PortfolioPage,
+  sectionId: string,
+  rowId: string,
+  alignment: { justify?: RowJustify; align?: RowAlign }
+): PortfolioPage {
+  const sectionIndex = page.sections.findIndex((s) => s.id === sectionId);
+  if (sectionIndex === -1) {
+    throw new Error(`Section not found: ${sectionId}`);
+  }
+  const section = page.sections[sectionIndex];
+  const rowIndex = section.rows.findIndex((r) => r.id === rowId);
+  if (rowIndex === -1) {
+    throw new Error(`Row not found: ${rowId}`);
+  }
+  const row = section.rows[rowIndex];
+  const newRows = [...section.rows];
+  newRows[rowIndex] = { ...row, ...alignment };
   const newSections = [...page.sections];
   newSections[sectionIndex] = { ...section, rows: newRows };
   return { ...page, sections: newSections };
