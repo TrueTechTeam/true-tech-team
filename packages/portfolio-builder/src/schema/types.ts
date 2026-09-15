@@ -43,9 +43,14 @@ export interface GridItem {
   props: Record<string, unknown>;
 }
 
+export type RowJustify = 'left' | 'center' | 'right' | 'space-between';
+export type RowAlign = 'top' | 'center' | 'bottom' | 'stretch';
+
 export interface SectionRow {
   id: string;
   items: GridItem[];
+  justify?: RowJustify;
+  align?: RowAlign;
 }
 
 export interface PageSection {
