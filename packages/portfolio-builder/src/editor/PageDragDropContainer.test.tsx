@@ -106,7 +106,33 @@ describe('PageDragDropContainer', () => {
     expect(newPage.sections[0].rows[0].items).toHaveLength(2);
     expect(newPage.sections[0].rows[0].items[1].component).toBe('badge');
     expect(newPage.sections[0].rows[0].items[1].props).toEqual({ label: 'New' });
-    expect(newPage.sections[0].rows[0].items[1].span).toBe(6);
+    expect(newPage.sections[0].rows[0].items[1].span).toBe(2);
+  });
+
+  it('clamps a dropped item to the row remaining capacity when its default width does not fit', () => {
+    const onPageChange = vi.fn();
+    const page = fixturePage();
+    // row1 already has a heading (span 6) plus a text item (span 4) = 10 used, 2 remaining.
+    page.sections[0].rows[0].items.push({ id: 'item2', component: 'text', span: 4, props: {} });
+    render(
+      <PageDragDropContainer page={page} onPageChange={onPageChange}>
+        <PaletteDraggable componentType="heading" />
+        <DropZone
+          id="gap1"
+          data={{ type: 'row-gap', sectionId: 'sec1', rowId: 'row1', index: 2 }}
+          label="Drop zone"
+        />
+      </PageDragDropContainer>
+    );
+
+    drag(screen.getByText('Drag me'), screen.getByLabelText('Drop zone'));
+
+    expect(onPageChange).toHaveBeenCalledTimes(1);
+    const newPage = onPageChange.mock.calls[0][0];
+    // heading's defaultWidth is 6, but only 2 columns remain in the row - clamp to 2, don't reject.
+    expect(newPage.sections[0].rows[0].items).toHaveLength(3);
+    expect(newPage.sections[0].rows[0].items[2].component).toBe('heading');
+    expect(newPage.sections[0].rows[0].items[2].span).toBe(2);
   });
 
   it('creates a new row when a palette item is dropped on a new-row-gap', () => {

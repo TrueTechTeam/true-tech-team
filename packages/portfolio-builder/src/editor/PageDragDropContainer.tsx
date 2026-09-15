@@ -104,8 +104,8 @@ export function PageDragDropContainer({
           if (!row) {
             return;
           }
-          const span = getRowRemainingCapacity(row);
-          if (span < 1) {
+          const remaining = getRowRemainingCapacity(row);
+          if (remaining < 1) {
             // The row has no room at all. In normal operation this DropZone should already be
             // `disabled` and never render (piece 5's responsibility), so reaching this means the
             // drop happened anyway — reject it silently rather than inserting a degenerate
@@ -114,6 +114,7 @@ export function PageDragDropContainer({
             // is not logged as an error.
             return;
           }
+          const span = Math.min(entry?.defaultWidth ?? 12, remaining);
           const newItem: GridItem = {
             id: crypto.randomUUID(),
             component: componentType,
@@ -130,7 +131,7 @@ export function PageDragDropContainer({
           const newItem: GridItem = {
             id: crypto.randomUUID(),
             component: componentType,
-            span: 12,
+            span: Math.min(entry?.defaultWidth ?? 12, 12),
             props: { ...defaultProps },
           };
           onPageChange(insertItemInNewRow(page, overData.sectionId, overData.index, newItem));
