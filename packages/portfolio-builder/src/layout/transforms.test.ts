@@ -292,4 +292,12 @@ describe('updateRowAlignment', () => {
       'Row not found: missing-row'
     );
   });
+
+  it('preserves an existing align value when only justify is updated afterward', () => {
+    const page = fixturePage();
+    const withAlign = updateRowAlignment(page, 'sec1', 'row1', { align: 'bottom' });
+    const result = updateRowAlignment(withAlign, 'sec1', 'row1', { justify: 'right' });
+    expect(result.sections[0].rows[0].justify).toBe('right');
+    expect(result.sections[0].rows[0].align).toBe('bottom');
+  });
 });
