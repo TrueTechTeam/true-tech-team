@@ -1,0 +1,24 @@
+.triggerLabel,
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.swatchRow {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.swatch {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--theme-border-secondary);
+}
+
+.item {
+  justify-content: space-between;
+  width: 100%;
+}

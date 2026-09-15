@@ -3,7 +3,6 @@
 import {
   Accordion,
   Card,
-  DragHandle,
   useDraggable,
   Icon,
   type IconName,
@@ -60,13 +59,18 @@ function PaletteEntryButton({ entry }: { entry: PaletteEntry }) {
 
   return (
     <Card
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
       hoverable
       padding="sm"
+      aria-label={`Drag ${entry.label}`}
       className={isDragging ? styles.paletteEntryDragging : styles.paletteEntry}
     >
-      <DragHandle ref={setNodeRef} {...attributes} {...listeners} label={`Drag ${entry.label}`} />
-      <Icon name={entry.icon} size="sm" />
-      <span>{entry.label}</span>
+      <div className={styles.paletteEntryContent}>
+        <Icon name={entry.icon} size="sm" />
+        <span>{entry.label}</span>
+      </div>
     </Card>
   );
 }
@@ -74,14 +78,14 @@ function PaletteEntryButton({ entry }: { entry: PaletteEntry }) {
 export function Palette() {
   return (
     <>
-      <Accordion header="Display" defaultOpen>
+      <Accordion header="Display" defaultOpen className={styles.paletteAccordion}>
         <div className={styles.paletteGroup}>
           {DISPLAY_ENTRIES.map((entry) => (
             <PaletteEntryButton key={entry.componentType} entry={entry} />
           ))}
         </div>
       </Accordion>
-      <Accordion header="Interactive" defaultOpen>
+      <Accordion header="Interactive" defaultOpen className={styles.paletteAccordion}>
         <div className={styles.paletteGroup}>
           {INTERACTIVE_ENTRIES.map((entry) => (
             <PaletteEntryButton key={entry.componentType} entry={entry} />

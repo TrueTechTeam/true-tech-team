@@ -4,16 +4,29 @@
   gap: var(--spacing-sm);
 }
 
+.paletteAccordion {
+  margin: var(--spacing-md);
+}
+
 .paletteEntry,
 .paletteEntryDragging {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
+  width: 100%;
   cursor: grab;
+  display: flex;
+  align-items: flex-start;
+  padding: 0 var(--spacing-sm);
 }
 
 .paletteEntryDragging {
   opacity: 0.5;
+}
+
+.paletteEntryContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  width: 100%;
 }
 
 .gridItem,

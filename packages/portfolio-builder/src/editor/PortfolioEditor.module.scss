@@ -5,25 +5,23 @@
 
 .editorLayout {
   display: grid;
-  grid-template-columns: 240px 1fr 320px;
+  grid-template-columns: 280px 1fr 320px;
   gap: var(--spacing-lg);
-  padding: var(--spacing-lg);
   align-items: start;
 }
 
-.editorLayoutNoSelection {
-  grid-template-columns: 240px 1fr;
-}
-
-// The three columns scroll independently of each other rather than the whole page scrolling
-// as one unit - each is pinned near the top of the viewport (sticky) and caps its own height,
-// scrolling its own overflow internally.
+// The left/right columns stay pinned in view as the page scrolls (sticky), fill the space
+// between the headers and the bottom of the screen, and scroll their own overflow internally
+// if their own content runs longer than that. The canvas is deliberately NOT part of this - it
+// just grows with its content, so the page only scrolls when the canvas's own content needs it
+// to, rather than the whole layout always claiming the full viewport height.
 .leftColumn,
-.canvas,
 .sidePanel {
   position: sticky;
-  top: var(--spacing-lg);
-  max-height: calc(100vh - 96px);
+  top: 0;
+
+  // Approximates the combined height of the site header and this editor's own header.
+  height: calc(100vh - 160px);
   overflow-y: auto;
   border-radius: var(--radius-md);
 }
@@ -31,20 +29,31 @@
 .leftColumn {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-md);
+  min-width: 280px;
   background: var(--theme-surface-secondary);
 }
 
 .canvas {
-  min-height: 400px;
+  // Approximates the space between the site header and footer, so a lightly-populated page
+  // still visually fills the available screen without forcing a taller-than-needed layout.
+  min-height: calc(100vh - 160px);
+  margin: var(--spacing-lg) 0;
   padding: var(--spacing-md);
+  background: color-mix(in srgb, var(--theme-surface-primary) 94%, black);
   border: 1px solid var(--theme-border-secondary);
+  border-radius: var(--radius-md);
 }
 
 .sidePanel {
   padding: var(--spacing-md);
   background: var(--theme-surface-secondary);
+}
+
+.sidePanelPlaceholder {
+  color: var(--theme-text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: var(--spacing-lg) 0;
 }
 
 .emptyState {
@@ -78,6 +87,16 @@
   align-items: center;
   padding: var(--spacing-md) var(--spacing-lg);
   border-bottom: 1px solid var(--theme-border-secondary);
+}
+
+.editorHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+
+  h2 {
+    margin: 0;
+  }
 }
 
 .editorHeaderActions {

@@ -5,6 +5,7 @@ import { PortfolioPagesList } from './PortfolioPagesList';
 import * as crud from '../pages/crud';
 import * as slugModule from '../pages/slug';
 import type { PortfolioPageRecord } from '../pages/types';
+import { THEME_PRESETS } from '../themes/presets';
 
 const fakeSupabase = {} as SupabaseClient;
 
@@ -112,6 +113,7 @@ describe('PortfolioPagesList', () => {
       slug: 'new-page',
       title: 'New Page',
       templateId: 'blank',
+      themeId: THEME_PRESETS[0]?.id,
       showNav: true,
       sections: [{ id: expect.any(String), name: 'Main', showInNav: false, rows: [] }],
     });

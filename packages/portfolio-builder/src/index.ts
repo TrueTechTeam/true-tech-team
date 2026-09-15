@@ -21,8 +21,8 @@ export type { ThemedPageViewProps } from './render/ThemedPageView';
 
 export { THEME_PRESETS, getThemePreset } from './themes/presets';
 export type { ThemePreset } from './themes/types';
-export { ThemePicker } from './themes/ThemePicker';
-export type { ThemePickerProps } from './themes/ThemePicker';
+export { ThemeDropdown } from './themes/ThemeDropdown';
+export type { ThemeDropdownProps } from './themes/ThemeDropdown';
 
 export type { PortfolioAsset } from './assets/types';
 export { uploadPortfolioAsset, deletePortfolioAsset, listPortfolioAssets } from './assets/upload';

@@ -3,7 +3,7 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-import { Accordion, Icon, Button, Dialog } from '@true-tech-team/react-components';
+import { Icon, Button, Dialog } from '@true-tech-team/react-components';
 import { loadPortfolioPage, savePortfolioPage } from '../pages/crud';
 import { recordToPage } from '../pages/mapping';
 import type { PortfolioPage, GridItem } from '../schema/types';
@@ -17,7 +17,7 @@ import {
 import { ItemRenderer } from '../render/ItemRenderer';
 import { PropertyPanel } from '../properties/PropertyPanel';
 import type { SelectedItem } from '../properties/types';
-import { ThemePicker } from '../themes/ThemePicker';
+import { ThemeDropdown } from '../themes/ThemeDropdown';
 import { THEME_PRESETS } from '../themes/presets';
 import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
 import { Palette } from './Palette';
@@ -185,7 +185,14 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
   return (
     <div className={styles.editorRoot}>
       <div className={styles.editorHeader}>
-        <h2>{page.title}</h2>
+        <div className={styles.editorHeaderTitle}>
+          <h2>{page.title}</h2>
+          <ThemeDropdown
+            presets={THEME_PRESETS}
+            selectedId={page.themeId ?? THEME_PRESETS[0]?.id}
+            onSelect={handleThemeSelect}
+          />
+        </div>
         <div className={styles.editorHeaderActions}>
           <Button type="button" onClick={() => setShowPreview(true)}>
             Preview
@@ -200,21 +207,8 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
         </div>
       </div>
       <PageDragDropContainer page={page} onPageChange={handlePageChange}>
-        <div
-          className={
-            selectedItem
-              ? styles.editorLayout
-              : `${styles.editorLayout} ${styles.editorLayoutNoSelection}`
-          }
-        >
+        <div className={styles.editorLayout}>
           <div className={styles.leftColumn}>
-            <Accordion header="Theme" defaultOpen>
-              <ThemePicker
-                presets={THEME_PRESETS}
-                selectedId={page.themeId}
-                onSelect={handleThemeSelect}
-              />
-            </Accordion>
             <Palette />
           </div>
           <div
@@ -289,30 +283,34 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
               </div>
             ))}
           </div>
-          {selectedItem && selectedItemId && (
-            <div className={styles.sidePanel}>
-              <div className={styles.sidePanelHeader}>
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="sm"
-                  onClick={handleDelete}
-                  aria-label="Delete selected item"
-                >
-                  <Icon name="delete" size="sm" />
-                  Delete
-                </Button>
-              </div>
-              <PropertyPanel
-                key={selectedItemId}
-                item={selectedItem}
-                onPropsChange={handlePropsChange}
-                onSpanChange={handleSpanChange}
-                supabase={supabase}
-                userId={userId}
-              />
-            </div>
-          )}
+          <div className={styles.sidePanel}>
+            {selectedItem && selectedItemId ? (
+              <>
+                <div className={styles.sidePanelHeader}>
+                  <Button
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    onClick={handleDelete}
+                    aria-label="Delete selected item"
+                  >
+                    <Icon name="delete" size="sm" />
+                    Delete
+                  </Button>
+                </div>
+                <PropertyPanel
+                  key={selectedItemId}
+                  item={selectedItem}
+                  onPropsChange={handlePropsChange}
+                  onSpanChange={handleSpanChange}
+                  supabase={supabase}
+                  userId={userId}
+                />
+              </>
+            ) : (
+              <p className={styles.sidePanelPlaceholder}>Select an item to edit its properties</p>
+            )}
+          </div>
         </div>
       </PageDragDropContainer>
       <Dialog

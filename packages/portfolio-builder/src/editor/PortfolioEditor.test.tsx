@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { PortfolioEditor } from './PortfolioEditor';
 import * as crud from '../pages/crud';
@@ -76,11 +77,12 @@ describe('PortfolioEditor', () => {
     await waitFor(() => expect(screen.getAllByText('Updated Text').length).toBeGreaterThan(0));
   });
 
-  it('does not show a property panel when nothing is selected', async () => {
+  it('shows a placeholder in the side panel instead of a property panel when nothing is selected', async () => {
     vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
     render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
     await screen.findByText('Hello');
     expect(screen.queryByLabelText('Width')).not.toBeInTheDocument();
+    expect(screen.getByText('Select an item to edit its properties')).toBeInTheDocument();
   });
 
   it('deletes the selected item and clears the selection', async () => {
@@ -102,15 +104,16 @@ describe('PortfolioEditor', () => {
     render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
     await screen.findByText('Hello');
 
-    fireEvent.click(screen.getAllByRole('button', { name: /slate/i })[0]);
+    // The dropdown defaults to the first theme preset ("Slate") when the page has no themeId
+    // of its own, so its trigger already reads "Slate" before any selection is made here.
+    // Select a different preset so the test can verify a genuine change, not a no-op re-click.
+    await userEvent.click(screen.getByRole('button', { name: /^slate /i }));
+    await userEvent.click(screen.getByText('Coral Reef'));
 
-    // No direct assertion on internal state — verify indirectly via a re-render effect:
-    // the swatch/tile for 'slate' should now show as selected (aria-pressed).
+    // No direct assertion on internal state — verify indirectly via a re-render effect: the
+    // theme dropdown's trigger should now show the newly selected preset's name.
     await waitFor(() =>
-      expect(screen.getAllByRole('button', { name: /slate/i })[0]).toHaveAttribute(
-        'aria-pressed',
-        'true'
-      )
+      expect(screen.getByRole('button', { name: /coral reef/i })).toBeInTheDocument()
     );
   });
 

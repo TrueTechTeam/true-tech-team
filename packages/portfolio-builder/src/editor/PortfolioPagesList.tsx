@@ -15,6 +15,7 @@ import {
 import { savePortfolioPage } from '../pages/crud';
 import { generateUniqueSlug, slugify } from '../pages/slug';
 import { recordToPage } from '../pages/mapping';
+import { THEME_PRESETS } from '../themes/presets';
 import type { PortfolioPageRecord } from '../pages/types';
 import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
 import styles from './PortfolioPagesList.module.scss';
@@ -61,6 +62,7 @@ export function PortfolioPagesList({
         slug,
         title: title.trim(),
         templateId: 'blank',
+        themeId: THEME_PRESETS[0]?.id,
         showNav: true,
         sections: [{ id: crypto.randomUUID(), name: 'Main', showInNav: false, rows: [] }],
       });
