@@ -8,6 +8,7 @@ import { loadPortfolioPage, savePortfolioPage } from '../pages/crud';
 import { recordToPage } from '../pages/mapping';
 import type { PortfolioPage, GridItem } from '../schema/types';
 import { collapsedSpans } from '../grid/responsive';
+import { rowAlignmentStyle } from '../grid/rowStyle';
 import {
   getRowRemainingCapacity,
   removeItem,
@@ -228,7 +229,7 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
                 )}
                 {section.rows.map((row, rowIndex) => (
                   <div key={row.id}>
-                    <div className={grid.row}>
+                    <div className={grid.row} style={rowAlignmentStyle(row)}>
                       {row.items.map((item, index) => {
                         const spans = collapsedSpans(item.span);
                         const spanStyle = {

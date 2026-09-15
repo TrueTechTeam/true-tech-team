@@ -1,13 +1,14 @@
 .row {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-md);
   width: 100%;
 }
 
 .item,
 .itemPlaceholder {
-  grid-column: span var(--span-mobile, 12);
+  flex: 0 0 calc(var(--span-mobile, 12) / 12 * 100%);
+  max-width: calc(var(--span-mobile, 12) / 12 * 100%);
   min-width: 0;
 }
 
@@ -20,13 +21,15 @@
 @media (width >= 768px) {
   .item,
   .itemPlaceholder {
-    grid-column: span var(--span-tablet, 12);
+    flex-basis: calc(var(--span-tablet, 12) / 12 * 100%);
+    max-width: calc(var(--span-tablet, 12) / 12 * 100%);
   }
 }
 
 @media (width >= 1024px) {
   .item,
   .itemPlaceholder {
-    grid-column: span var(--span-desktop, 12);
+    flex-basis: calc(var(--span-desktop, 12) / 12 * 100%);
+    max-width: calc(var(--span-desktop, 12) / 12 * 100%);
   }
 }

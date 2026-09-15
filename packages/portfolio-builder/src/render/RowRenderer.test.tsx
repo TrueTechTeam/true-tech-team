@@ -16,4 +16,24 @@ describe('RowRenderer', () => {
     const headings = screen.getAllByRole('heading');
     expect(headings.map((h) => h.textContent)).toEqual(['First', 'Second']);
   });
+
+  it('applies justify-content and align-items inline when the row sets justify/align', () => {
+    const row: SectionRow = {
+      id: 'row-2',
+      items: [],
+      justify: 'center',
+      align: 'bottom',
+    };
+    render(<RowRenderer row={row} />);
+    const rowElement = screen.getByTestId('row-2');
+    expect(rowElement).toHaveStyle({ justifyContent: 'center', alignItems: 'flex-end' });
+  });
+
+  it('applies no inline justify-content/align-items when the row has neither set', () => {
+    const row: SectionRow = { id: 'row-3', items: [] };
+    render(<RowRenderer row={row} />);
+    const rowElement = screen.getByTestId('row-3');
+    expect(rowElement.style.justifyContent).toBe('');
+    expect(rowElement.style.alignItems).toBe('');
+  });
 });
