@@ -75,7 +75,6 @@ export {
   removeItem,
 } from './layout/transforms';
 export { Palette } from './editor/Palette';
-export type { PaletteProps } from './editor/Palette';
 export { DraggableGridItem } from './editor/DraggableGridItem';
 export type { DraggableGridItemProps } from './editor/DraggableGridItem';
 export { DropZone } from './editor/DropZone';

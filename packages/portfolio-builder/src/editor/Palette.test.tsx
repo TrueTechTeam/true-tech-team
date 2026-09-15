@@ -23,7 +23,9 @@ describe('Palette', () => {
   it('renders exactly the 22 non-array-prop component types', () => {
     renderPalette();
     const expectedCount = COMPONENT_TYPES.filter((t) => !ARRAY_PROP_TYPES.includes(t)).length;
-    expect(screen.getAllByRole('button')).toHaveLength(expectedCount);
+    // Scoped to "Drag ..." to exclude the two Accordion section-header toggle buttons
+    // ("Interactive"/"Display"), which are also role="button" but aren't palette entries.
+    expect(screen.getAllByRole('button', { name: /^Drag /i })).toHaveLength(expectedCount);
   });
 
   it('does not render entries for array-prop component types', () => {

@@ -1,16 +1,50 @@
+.editorRoot {
+  display: flex;
+  flex-direction: column;
+}
+
 .editorLayout {
   display: grid;
   grid-template-columns: 240px 1fr 320px;
   gap: var(--spacing-lg);
   padding: var(--spacing-lg);
+  align-items: start;
 }
 
 .editorLayoutNoSelection {
   grid-template-columns: 240px 1fr;
 }
 
+// The three columns scroll independently of each other rather than the whole page scrolling
+// as one unit - each is pinned near the top of the viewport (sticky) and caps its own height,
+// scrolling its own overflow internally.
+.leftColumn,
+.canvas,
+.sidePanel {
+  position: sticky;
+  top: var(--spacing-lg);
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  border-radius: var(--radius-md);
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--theme-surface-secondary);
+}
+
 .canvas {
   min-height: 400px;
+  padding: var(--spacing-md);
+  border: 1px solid var(--theme-border-secondary);
+}
+
+.sidePanel {
+  padding: var(--spacing-md);
+  background: var(--theme-surface-secondary);
 }
 
 .emptyState {
@@ -29,27 +63,9 @@
   padding: var(--spacing-xl);
 }
 
-.leftColumn {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-.paletteSection h3,
-.themeSection h3 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin-bottom: var(--spacing-sm);
-}
-
 .selectableItem[data-selected='true'] {
   outline: 2px solid var(--theme-primary, var(--color-primary-500));
   outline-offset: 2px;
-}
-
-.sidePanel {
-  border-left: 1px solid var(--theme-border-secondary);
-  padding-left: var(--spacing-lg);
 }
 
 .sidePanelHeader {

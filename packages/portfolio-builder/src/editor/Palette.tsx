@@ -1,6 +1,13 @@
 'use client';
 
-import { useDraggable, Icon, type IconName } from '@true-tech-team/react-components';
+import {
+  Accordion,
+  Card,
+  DragHandle,
+  useDraggable,
+  Icon,
+  type IconName,
+} from '@true-tech-team/react-components';
 import type { ComponentType } from '../schema/types';
 import styles from './editor.module.scss';
 
@@ -52,38 +59,35 @@ function PaletteEntryButton({ entry }: { entry: PaletteEntry }) {
   });
 
   return (
-    <button
-      type="button"
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
+    <Card
+      hoverable
+      padding="sm"
       className={isDragging ? styles.paletteEntryDragging : styles.paletteEntry}
     >
+      <DragHandle ref={setNodeRef} {...attributes} {...listeners} label={`Drag ${entry.label}`} />
       <Icon name={entry.icon} size="sm" />
       <span>{entry.label}</span>
-    </button>
+    </Card>
   );
 }
 
-export interface PaletteProps {
-  className?: string;
-}
-
-export function Palette({ className }: PaletteProps) {
+export function Palette() {
   return (
-    <div className={className}>
-      <section>
-        <h3 className={styles.paletteGroupTitle}>Interactive</h3>
-        {INTERACTIVE_ENTRIES.map((entry) => (
-          <PaletteEntryButton key={entry.componentType} entry={entry} />
-        ))}
-      </section>
-      <section>
-        <h3 className={styles.paletteGroupTitle}>Display</h3>
-        {DISPLAY_ENTRIES.map((entry) => (
-          <PaletteEntryButton key={entry.componentType} entry={entry} />
-        ))}
-      </section>
-    </div>
+    <>
+      <Accordion header="Display" defaultOpen>
+        <div className={styles.paletteGroup}>
+          {DISPLAY_ENTRIES.map((entry) => (
+            <PaletteEntryButton key={entry.componentType} entry={entry} />
+          ))}
+        </div>
+      </Accordion>
+      <Accordion header="Interactive" defaultOpen>
+        <div className={styles.paletteGroup}>
+          {INTERACTIVE_ENTRIES.map((entry) => (
+            <PaletteEntryButton key={entry.componentType} entry={entry} />
+          ))}
+        </div>
+      </Accordion>
+    </>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-import { Icon, Button, Dialog } from '@true-tech-team/react-components';
+import { Accordion, Icon, Button, Dialog } from '@true-tech-team/react-components';
 import { loadPortfolioPage, savePortfolioPage } from '../pages/crud';
 import { recordToPage } from '../pages/mapping';
 import type { PortfolioPage, GridItem } from '../schema/types';
@@ -183,7 +183,7 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
   }
 
   return (
-    <div>
+    <div className={styles.editorRoot}>
       <div className={styles.editorHeader}>
         <h2>{page.title}</h2>
         <div className={styles.editorHeaderActions}>
@@ -208,18 +208,14 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
           }
         >
           <div className={styles.leftColumn}>
-            <div className={styles.paletteSection}>
-              <h3>Add Component</h3>
-              <Palette />
-            </div>
-            <div className={styles.themeSection}>
-              <h3>Theme</h3>
+            <Accordion header="Theme" defaultOpen>
               <ThemePicker
                 presets={THEME_PRESETS}
                 selectedId={page.themeId}
                 onSelect={handleThemeSelect}
               />
-            </div>
+            </Accordion>
+            <Palette />
           </div>
           <div
             className={styles.canvas}
