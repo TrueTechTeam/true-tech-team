@@ -20,6 +20,8 @@ import { PropertyPanel } from '../properties/PropertyPanel';
 import type { SelectedItem } from '../properties/types';
 import { ThemeDropdown } from '../themes/ThemeDropdown';
 import { THEME_PRESETS } from '../themes/presets';
+import { resolveEffectiveTheme } from '../themes/resolveTheme';
+import { themeStyleVars } from '../themes/themeStyleVars';
 import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
 import { Palette } from './Palette';
 import { DraggableGridItem } from './DraggableGridItem';
@@ -215,6 +217,7 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
           <div
             className={styles.canvas}
             data-testid="canvas-background"
+            style={themeStyleVars(resolveEffectiveTheme(page))}
             onClick={() => setSelectedItemId(null)}
           >
             {page.sections.map((section) => (

@@ -117,6 +117,33 @@ describe('PortfolioEditor', () => {
     );
   });
 
+  it("applies the page's resolved theme colors as scoped CSS variables on the canvas", async () => {
+    const record = makeRecord();
+    record.themeOverride = { colors: { primary: 'var(--color-blue-500)' } };
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(record);
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+
+    expect(screen.getByTestId('canvas-background')).toHaveStyle({
+      '--theme-primary': 'var(--color-blue-500)',
+    });
+  });
+
+  it('updates the canvas theme variables when a different theme preset is selected', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+
+    await userEvent.click(screen.getByRole('button', { name: /^slate /i }));
+    await userEvent.click(screen.getByText('Coral Reef'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('canvas-background')).toHaveStyle({
+        '--theme-primary': 'var(--color-coral-500)',
+      })
+    );
+  });
+
   it('toggles the preview panel', async () => {
     vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
     render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
