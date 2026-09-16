@@ -39,3 +39,56 @@ if (!global.ResizeObserver) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 }
+
+// jsdom does not implement the PointerEvent constructor (a long-standing gap:
+// https://github.com/jsdom/jsdom/issues/2527), so `fireEvent.pointerDown`/`pointerMove` fall back
+// to a plain `Event` that drops `clientX`/`clientY`. Polyfill a minimal PointerEvent (MouseEvent
+// already carries clientX/clientY) so pointer-drag handlers (ResizeEdge and friends) receive real
+// coordinates in tests.
+if (!window.PointerEvent) {
+  class PointerEventPolyfill extends MouseEvent {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  window.PointerEvent = PointerEventPolyfill as any;
+}
+
+// jsdom does not implement DataTransfer or the DragEvent constructor (long-standing jsdom gaps:
+// https://github.com/jsdom/jsdom/issues/1568 and .../2913), so tests that simulate a drop's
+// geometry by constructing `new DragEvent(...)` directly (RTL's `fireEvent.drag*` helpers fall
+// back to a plain `Event` here too, silently dropping `clientX`/`clientY` - same shape of gap as
+// the PointerEvent one above) need both polyfilled.
+if (!window.DataTransfer) {
+  class DataTransferPolyfill {
+    dropEffect = 'move';
+    effectAllowed = 'all';
+    private readonly store = new Map<string, string>();
+    setData(format: string, data: string) {
+      this.store.set(format, data);
+    }
+    getData(format: string) {
+      return this.store.get(format) ?? '';
+    }
+    clearData() {
+      this.store.clear();
+    }
+    setDragImage() {}
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  window.DataTransfer = DataTransferPolyfill as any;
+}
+
+if (!window.DragEvent) {
+  class DragEventPolyfill extends MouseEvent {
+    dataTransfer: DataTransfer;
+    constructor(type: string, eventInit: DragEventInit = {}) {
+      super(type, eventInit);
+      // A real dragstart event's `dataTransfer` is populated by the browser's own drag manager,
+      // not by the DragEvent constructor - nothing here simulates that, so default one in
+      // whenever the caller doesn't supply one. Without this, library drag-start handlers that
+      // unconditionally call `event.dataTransfer.setData(...)` (as `useDraggable`'s does) crash
+      // on a null/undefined dataTransfer.
+      this.dataTransfer = eventInit.dataTransfer ?? new window.DataTransfer();
+    }
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  window.DragEvent = DragEventPolyfill as any;
+}
