@@ -1,21 +1,20 @@
 'use client';
 
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-import { Icon, Button, Dialog } from '@true-tech-team/react-components';
+import { Icon, Button, Dialog, useDroppable } from '@true-tech-team/react-components';
 import { loadPortfolioPage, savePortfolioPage } from '../pages/crud';
 import { recordToPage } from '../pages/mapping';
-import type { PortfolioPage, GridItem } from '../schema/types';
-import { collapsedSpans } from '../grid/responsive';
-import { rowAlignmentStyle } from '../grid/rowStyle';
+import { isComponentType, type PortfolioPage, type GridItem } from '../schema/types';
+import { getRegistryEntry } from '../components/registry';
 import {
-  getRowRemainingCapacity,
+  insertItemInNewRow,
   removeItem,
   updateItemProps,
   updateItemSpan,
 } from '../layout/transforms';
-import { ItemRenderer } from '../render/ItemRenderer';
+import { nearestBoundary } from '../layout/nearestBoundary';
 import { PropertyPanel } from '../properties/PropertyPanel';
 import type { SelectedItem } from '../properties/types';
 import { ThemeDropdown } from '../themes/ThemeDropdown';
@@ -24,10 +23,9 @@ import { resolveEffectiveTheme } from '../themes/resolveTheme';
 import { themeStyleVars } from '../themes/themeStyleVars';
 import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
 import { Palette } from './Palette';
-import { DraggableGridItem } from './DraggableGridItem';
-import { DropZone } from './DropZone';
+import { EditableRow } from './EditableRow';
+import { InsertionLine } from './InsertionLine';
 import { PageDragDropContainer } from './PageDragDropContainer';
-import grid from '../grid/Grid.module.scss';
 import styles from './PortfolioEditor.module.scss';
 
 export interface PortfolioEditorProps {
@@ -178,13 +176,6 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
     }
   }
 
-  function handleItemKeyDown(event: React.KeyboardEvent<HTMLDivElement>, itemId: string) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      setSelectedItemId(itemId);
-    }
-  }
-
   return (
     <div className={styles.editorRoot}>
       <div className={styles.editorHeader}>
@@ -214,82 +205,12 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
           <div className={styles.leftColumn}>
             <Palette />
           </div>
-          <div
-            className={styles.canvas}
-            data-testid="canvas-background"
-            style={themeStyleVars(resolveEffectiveTheme(page))}
-            onClick={() => setSelectedItemId(null)}
-          >
-            {page.sections.map((section) => (
-              <div key={section.id}>
-                <DropZone
-                  id={`new-row-gap:${section.id}:0`}
-                  data={{ type: 'new-row-gap', sectionId: section.id, index: 0 }}
-                  label={`Add a new row at the start of ${section.name}`}
-                />
-                {section.rows.length === 0 && (
-                  <p className={styles.emptyState}>Drag a component here to get started</p>
-                )}
-                {section.rows.map((row, rowIndex) => (
-                  <div key={row.id}>
-                    <div className={grid.row} style={rowAlignmentStyle(row)}>
-                      {row.items.map((item, index) => {
-                        const spans = collapsedSpans(item.span);
-                        const spanStyle = {
-                          '--span-desktop': String(spans.desktop),
-                          '--span-tablet': String(spans.tablet),
-                          '--span-mobile': String(spans.mobile),
-                        } as CSSProperties;
-                        return (
-                          <div key={item.id} className={grid.item} style={spanStyle}>
-                            <DraggableGridItem
-                              sectionId={section.id}
-                              rowId={row.id}
-                              index={index}
-                              item={item}
-                              columnWidth={12}
-                              onResize={() => {}}
-                              onResizeEnd={() => {}}
-                            >
-                              <div
-                                className={styles.selectableItem}
-                                data-selected={selectedItemId === item.id}
-                                role="button"
-                                tabIndex={0}
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  setSelectedItemId(item.id);
-                                }}
-                                onKeyDown={(event) => handleItemKeyDown(event, item.id)}
-                              >
-                                <ItemRenderer item={item} />
-                              </div>
-                            </DraggableGridItem>
-                          </div>
-                        );
-                      })}
-                      <DropZone
-                        id={`row-gap:${section.id}:${row.id}:${row.items.length}`}
-                        data={{
-                          type: 'row-gap',
-                          sectionId: section.id,
-                          rowId: row.id,
-                          index: row.items.length,
-                        }}
-                        disabled={getRowRemainingCapacity(row) < 1}
-                        label="Drop here to add to this row"
-                      />
-                    </div>
-                    <DropZone
-                      id={`new-row-gap:${section.id}:${rowIndex + 1}`}
-                      data={{ type: 'new-row-gap', sectionId: section.id, index: rowIndex + 1 }}
-                      label={`Add a new row after this one in ${section.name}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+          <PortfolioCanvas
+            page={page}
+            selectedItemId={selectedItemId}
+            onSelectItem={setSelectedItemId}
+            onPageChange={handlePageChange}
+          />
           <div className={styles.sidePanel}>
             {selectedItem && selectedItemId ? (
               <>
@@ -329,5 +250,200 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
         {page && <PortfolioPreviewFrame page={page} style={{ height: '75vh' }} />}
       </Dialog>
     </div>
+  );
+}
+
+// `useDroppable` reads drag context from `DndProvider` (rendered by `PageDragDropContainer`),
+// which is a CHILD of `PortfolioEditor`'s own return - so the tier-3 canvas-level droppable can't
+// be a hook call inside `PortfolioEditor` itself (it would run before that provider exists in the
+// tree). It lives in this separate component instead, rendered as a descendant of
+// `PageDragDropContainer` alongside the palette and side panel.
+function PortfolioCanvas({
+  page,
+  selectedItemId,
+  onSelectItem,
+  onPageChange,
+}: {
+  page: PortfolioPage;
+  selectedItemId: string | null;
+  onSelectItem: (itemId: string | null) => void;
+  onPageChange: (page: PortfolioPage) => void;
+}) {
+  const [canvasInsertion, setCanvasInsertion] = useState<{
+    sectionId: string;
+    offset: number;
+  } | null>(null);
+  const sectionRefs = useRef(new Map<string, HTMLElement>());
+
+  const {
+    setNodeRef: setCanvasDropRef,
+    active,
+    attributes: canvasAttrs,
+    listeners: canvasListeners,
+  } = useDroppable({
+    id: 'canvas',
+    accepts: ['palette-item', 'grid-item'],
+  });
+
+  function handleCanvasDragOver(event: React.DragEvent<HTMLDivElement>) {
+    canvasListeners.onDragOver(event);
+    event.preventDefault();
+    const sectionRects = page.sections
+      .map((s) => ({ id: s.id, rect: sectionRefs.current.get(s.id)?.getBoundingClientRect() }))
+      .filter((entry): entry is { id: string; rect: DOMRect } => Boolean(entry.rect));
+    if (sectionRects.length === 0) {
+      return;
+    }
+    const boundary = nearestBoundary(
+      event.clientY,
+      sectionRects.map((entry) => entry.rect),
+      'y'
+    );
+    if (!boundary) {
+      return;
+    }
+    const targetSection = sectionRects[Math.min(boundary.index, sectionRects.length - 1)];
+    setCanvasInsertion({ sectionId: targetSection.id, offset: boundary.position });
+  }
+
+  function handleCanvasDrop(event: React.DragEvent<HTMLDivElement>) {
+    canvasListeners.onDrop(event);
+    event.preventDefault();
+    const current = canvasInsertion;
+    setCanvasInsertion(null);
+    if (!active || !current) {
+      return;
+    }
+    const targetSection = page.sections.find((s) => s.id === current.sectionId);
+    if (!targetSection) {
+      return;
+    }
+    const data = active.data;
+    if (
+      data.type === 'palette-item' &&
+      typeof data.componentType === 'string' &&
+      isComponentType(data.componentType)
+    ) {
+      const entry = getRegistryEntry(data.componentType);
+      const newItem = {
+        id: crypto.randomUUID(),
+        component: data.componentType,
+        span: Math.min(entry?.defaultWidth ?? 12, 12),
+        props: { ...(entry?.defaultProps ?? {}) },
+      };
+      onPageChange(insertItemInNewRow(page, targetSection.id, targetSection.rows.length, newItem));
+    }
+  }
+
+  return (
+    <div
+      ref={setCanvasDropRef}
+      {...canvasAttrs}
+      className={styles.canvas}
+      data-testid="canvas-background"
+      data-drag-active={active ? 'true' : undefined}
+      style={themeStyleVars(resolveEffectiveTheme(page))}
+      onClick={() => onSelectItem(null)}
+      onDragOver={handleCanvasDragOver}
+      onDrop={handleCanvasDrop}
+    >
+      {page.sections.map((section) => (
+        <div
+          key={section.id}
+          ref={(node) => {
+            if (node) {
+              sectionRefs.current.set(section.id, node);
+            } else {
+              sectionRefs.current.delete(section.id);
+            }
+          }}
+          style={{ position: 'relative' }}
+        >
+          {section.rows.length === 0 && (
+            <SectionEmptyDropTarget
+              sectionId={section.id}
+              page={page}
+              onPageChange={onPageChange}
+            />
+          )}
+          {section.rows.map((row, rowIndex) => (
+            <EditableRow
+              key={row.id}
+              page={page}
+              section={section}
+              row={row}
+              rowIndex={rowIndex}
+              onPageChange={onPageChange}
+              selectedItemId={selectedItemId}
+              onSelectItem={onSelectItem}
+            />
+          ))}
+          {canvasInsertion?.sectionId === section.id && (
+            <InsertionLine
+              orientation="horizontal"
+              offset={
+                canvasInsertion.offset -
+                (sectionRefs.current.get(section.id)?.getBoundingClientRect().top ?? 0)
+              }
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SectionEmptyDropTarget({
+  sectionId,
+  page,
+  onPageChange,
+}: {
+  sectionId: string;
+  page: PortfolioPage;
+  onPageChange: (page: PortfolioPage) => void;
+}) {
+  const { setNodeRef, active, attributes, listeners } = useDroppable({
+    id: `section-empty:${sectionId}`,
+    accepts: ['palette-item', 'grid-item'],
+  });
+
+  function handleDrop(event: React.DragEvent<HTMLParagraphElement>) {
+    listeners.onDrop(event);
+    event.preventDefault();
+    event.stopPropagation();
+    if (!active) {
+      return;
+    }
+    const data = active.data;
+    if (
+      data.type === 'palette-item' &&
+      typeof data.componentType === 'string' &&
+      isComponentType(data.componentType)
+    ) {
+      const entry = getRegistryEntry(data.componentType);
+      const newItem = {
+        id: crypto.randomUUID(),
+        component: data.componentType,
+        span: Math.min(entry?.defaultWidth ?? 12, 12),
+        props: { ...(entry?.defaultProps ?? {}) },
+      };
+      onPageChange(insertItemInNewRow(page, sectionId, 0, newItem));
+    }
+  }
+
+  return (
+    <p
+      ref={setNodeRef}
+      {...attributes}
+      onDragOver={(event) => {
+        listeners.onDragOver(event);
+        event.preventDefault();
+        event.stopPropagation();
+      }}
+      onDrop={handleDrop}
+      className={styles.emptyState}
+    >
+      Drag a component here to get started
+    </p>
   );
 }

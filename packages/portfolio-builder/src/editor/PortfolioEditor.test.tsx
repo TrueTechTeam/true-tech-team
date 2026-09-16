@@ -198,8 +198,7 @@ describe('PortfolioEditor', () => {
     vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(record);
     render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
 
-    expect(await screen.findByLabelText('Add a new row at the start of Main')).toBeInTheDocument();
-    expect(screen.getByText(/drag a component here to get started/i)).toBeInTheDocument();
+    expect(await screen.findByText(/drag a component here to get started/i)).toBeInTheDocument();
   });
 
   // F4: `selectedItem` is a fresh object literal every render, so PropertyPanel must be keyed by
@@ -261,5 +260,43 @@ describe('PortfolioEditor', () => {
     fireEvent.change(textField, { target: { value: 'Changed' } });
 
     await waitFor(() => expect(screen.queryByText(/^saved$/i)).not.toBeInTheDocument());
+  });
+
+  it('marks the canvas as drag-active while something is being dragged', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+
+    const canvas = screen.getByTestId('canvas-background');
+    expect(canvas).not.toHaveAttribute('data-drag-active', 'true');
+
+    const paletteHeading = screen.getByText('Heading').closest('[draggable="true"]');
+    if (!paletteHeading) {
+      throw new Error('expected a draggable palette entry');
+    }
+    fireEvent.dragStart(paletteHeading);
+    expect(canvas).toHaveAttribute('data-drag-active', 'true');
+
+    fireEvent.dragEnd(paletteHeading);
+    expect(canvas).not.toHaveAttribute('data-drag-active', 'true');
+  });
+
+  it('appends a dropped palette item to the end of an empty section via the section-level fallback', async () => {
+    const record = makeRecord();
+    record.sections = [{ id: 'sec1', name: 'Body', showInNav: false, rows: [] }];
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(record);
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+
+    const placeholder = await screen.findByText(/drag a component here to get started/i);
+    const paletteHeading = screen.getByText('Heading').closest('[draggable="true"]');
+    if (!paletteHeading) {
+      throw new Error('expected a draggable palette entry');
+    }
+    fireEvent.dragStart(paletteHeading);
+    fireEvent.drop(placeholder);
+
+    await waitFor(() =>
+      expect(screen.queryByText(/drag a component here to get started/i)).not.toBeInTheDocument()
+    );
   });
 });
