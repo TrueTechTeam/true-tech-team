@@ -61,10 +61,31 @@ export function PortfolioPagesList({
         schemaVersion: 1 as const,
         slug,
         title: title.trim(),
-        templateId: 'blank',
+        templateId: 'default',
         themeId: THEME_PRESETS[0]?.id,
         showNav: true,
-        sections: [{ id: crypto.randomUUID(), name: 'Main', showInNav: false, rows: [] }],
+        sections: [
+          {
+            id: crypto.randomUUID(),
+            name: 'Header',
+            showInNav: false,
+            rows: [
+              {
+                id: crypto.randomUUID(),
+                items: [
+                  {
+                    id: crypto.randomUUID(),
+                    component: 'heading' as const,
+                    span: 12,
+                    props: { text: title.trim(), level: 1, align: 'center' },
+                  },
+                ],
+              },
+            ],
+          },
+          { id: crypto.randomUUID(), name: 'Body', showInNav: false, rows: [] },
+          { id: crypto.randomUUID(), name: 'Footer', showInNav: false, rows: [] },
+        ],
       });
 
       const slug = await generateUniqueSlug(supabase, title);

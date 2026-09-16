@@ -112,10 +112,31 @@ describe('PortfolioPagesList', () => {
       schemaVersion: 1,
       slug: 'new-page',
       title: 'New Page',
-      templateId: 'blank',
+      templateId: 'default',
       themeId: THEME_PRESETS[0]?.id,
       showNav: true,
-      sections: [{ id: expect.any(String), name: 'Main', showInNav: false, rows: [] }],
+      sections: [
+        {
+          id: expect.any(String),
+          name: 'Header',
+          showInNav: false,
+          rows: [
+            {
+              id: expect.any(String),
+              items: [
+                {
+                  id: expect.any(String),
+                  component: 'heading',
+                  span: 12,
+                  props: { text: 'New Page', level: 1, align: 'center' },
+                },
+              ],
+            },
+          ],
+        },
+        { id: expect.any(String), name: 'Body', showInNav: false, rows: [] },
+        { id: expect.any(String), name: 'Footer', showInNav: false, rows: [] },
+      ],
     });
   });
 
