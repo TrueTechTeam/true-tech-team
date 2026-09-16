@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-import { Icon, Button, Dialog, useDroppable } from '@true-tech-team/react-components';
+import {
+  Icon,
+  Button,
+  Dialog,
+  useDroppable,
+  type DragData,
+} from '@true-tech-team/react-components';
 import { loadPortfolioPage, savePortfolioPage } from '../pages/crud';
 import { recordToPage } from '../pages/mapping';
 import {
@@ -17,6 +23,7 @@ import {
 import { getRegistryEntry } from '../components/registry';
 import {
   insertItemInNewRow,
+  moveItemToNewRow,
   removeItem,
   updateItemProps,
   updateItemSpan,
@@ -296,6 +303,29 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
   );
 }
 
+/**
+ * Builds the `GridItem` a `palette-item` drop should insert, or `undefined` when `data` isn't a
+ * usable palette payload. Shared by the tier-2 (empty section) and tier-3 (canvas) drop handlers so
+ * the two can't drift apart; the tier-1 equivalent lives in `EditableRow` with its own span
+ * clamping against the target row's remaining capacity.
+ */
+function paletteItemFromDragData(data: DragData): GridItem | undefined {
+  if (
+    data.type !== 'palette-item' ||
+    typeof data.componentType !== 'string' ||
+    !isComponentType(data.componentType)
+  ) {
+    return undefined;
+  }
+  const entry = getRegistryEntry(data.componentType);
+  return {
+    id: crypto.randomUUID(),
+    component: data.componentType,
+    span: Math.min(entry?.defaultWidth ?? 12, 12),
+    props: { ...(entry?.defaultProps ?? {}) },
+  };
+}
+
 // `useDroppable` reads drag context from `DndProvider` (rendered by `PageDragDropContainer`),
 // which is a CHILD of `PortfolioEditor`'s own return - so the tier-3 canvas-level droppable can't
 // be a hook call inside `PortfolioEditor` itself (it would run before that provider exists in the
@@ -328,6 +358,17 @@ function PortfolioCanvas({
     accepts: ['palette-item', 'grid-item'],
   });
 
+  // A drag that ends anywhere (dropped on a row, cancelled with Escape, dropped outside the
+  // window) clears the shared `active`. `onDragLeave` below covers the common case of the pointer
+  // moving off the canvas margin onto a row - which `stopPropagation()`s, so the canvas would
+  // otherwise never hear about the drag again - but a drag that ends without the canvas seeing any
+  // further event needs this too, or a stale insertion line survives the gesture on screen.
+  useEffect(() => {
+    if (!active) {
+      setCanvasInsertion(null);
+    }
+  }, [active]);
+
   function handleCanvasDragOver(event: React.DragEvent<HTMLDivElement>) {
     canvasListeners.onDragOver(event);
     event.preventDefault();
@@ -346,7 +387,14 @@ function PortfolioCanvas({
       return;
     }
     const targetSection = sectionRects[Math.min(boundary.index, sectionRects.length - 1)];
-    setCanvasInsertion({ sectionId: targetSection.id, offset: boundary.position });
+    // Tier 3's insertion rule is always "append to the BOTTOM of whichever section receives the
+    // drop" (the spec's "no more specific target -> dropped on the canvas -> added to the bottom").
+    // So the line has to be drawn at that section's own bottom edge, NOT at `boundary.position`:
+    // the raw boundary can sit at the section's TOP (or at an inter-section boundary that clamps
+    // to a different section than it visually points at), which would show the line somewhere the
+    // item then doesn't land. Storing the offset already relative to the section wrapper also
+    // keeps the render free of a live `getBoundingClientRect()` read.
+    setCanvasInsertion({ sectionId: targetSection.id, offset: targetSection.rect.height });
   }
 
   function handleCanvasDrop(event: React.DragEvent<HTMLDivElement>) {
@@ -362,19 +410,19 @@ function PortfolioCanvas({
       return;
     }
     const data = active.data;
-    if (
-      data.type === 'palette-item' &&
-      typeof data.componentType === 'string' &&
-      isComponentType(data.componentType)
-    ) {
-      const entry = getRegistryEntry(data.componentType);
-      const newItem = {
-        id: crypto.randomUUID(),
-        component: data.componentType,
-        span: Math.min(entry?.defaultWidth ?? 12, 12),
-        props: { ...(entry?.defaultProps ?? {}) },
-      };
+    const newItem = paletteItemFromDragData(data);
+    if (newItem) {
       onPageChange(insertItemInNewRow(page, targetSection.id, targetSection.rows.length, newItem));
+      return;
+    }
+    if (data.type === 'grid-item') {
+      try {
+        onPageChange(
+          moveItemToNewRow(page, active.id, targetSection.id, targetSection.rows.length)
+        );
+      } catch (error) {
+        console.error('Drag-and-drop move rejected:', error);
+      }
     }
   }
 
@@ -388,6 +436,14 @@ function PortfolioCanvas({
       style={themeStyleVars(resolveEffectiveTheme(page))}
       onClick={() => onSelectItem(null)}
       onDragOver={handleCanvasDragOver}
+      onDragLeave={(event) => {
+        canvasListeners.onDragLeave(event);
+        // Mirrors `EditableRow.handleDragLeave`. Moving the pointer off the canvas margin and onto
+        // a row fires `dragleave` here (the canvas was the previous immediate target) and from
+        // then on the row `stopPropagation()`s every `dragover`, so without this the canvas's own
+        // insertion line would render alongside the row's and then outlive the whole drag.
+        setCanvasInsertion(null);
+      }}
       onDrop={handleCanvasDrop}
     >
       {page.sections.map((section) => (
@@ -400,6 +456,7 @@ function PortfolioCanvas({
               sectionRefs.current.delete(section.id);
             }
           }}
+          data-testid={`section:${section.id}`}
           style={{ position: 'relative' }}
         >
           {section.rows.length === 0 && (
@@ -422,13 +479,7 @@ function PortfolioCanvas({
             />
           ))}
           {canvasInsertion?.sectionId === section.id && (
-            <InsertionLine
-              orientation="horizontal"
-              offset={
-                canvasInsertion.offset -
-                (sectionRefs.current.get(section.id)?.getBoundingClientRect().top ?? 0)
-              }
-            />
+            <InsertionLine orientation="horizontal" offset={canvasInsertion.offset} />
           )}
         </div>
       ))}
@@ -458,19 +509,19 @@ function SectionEmptyDropTarget({
       return;
     }
     const data = active.data;
-    if (
-      data.type === 'palette-item' &&
-      typeof data.componentType === 'string' &&
-      isComponentType(data.componentType)
-    ) {
-      const entry = getRegistryEntry(data.componentType);
-      const newItem = {
-        id: crypto.randomUUID(),
-        component: data.componentType,
-        span: Math.min(entry?.defaultWidth ?? 12, 12),
-        props: { ...(entry?.defaultProps ?? {}) },
-      };
+    const newItem = paletteItemFromDragData(data);
+    if (newItem) {
       onPageChange(insertItemInNewRow(page, sectionId, 0, newItem));
+      return;
+    }
+    // An EXISTING grid item dragged into an empty section (e.g. the Footer every new page seeds).
+    // There is only ever one possible position in an empty section, so index 0 always.
+    if (data.type === 'grid-item') {
+      try {
+        onPageChange(moveItemToNewRow(page, active.id, sectionId, 0));
+      } catch (error) {
+        console.error('Drag-and-drop move rejected:', error);
+      }
     }
   }
 

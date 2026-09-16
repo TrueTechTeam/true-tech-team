@@ -43,3 +43,10 @@
 .gridItemDragging {
   opacity: 0.5;
 }
+
+// Lives here (not in PortfolioEditor.module.scss) because EditableRow - the component that renders
+// the selectable wrapper - imports this stylesheet, alongside `.gridItem`'s hover outline above.
+.selectableItem[data-selected='true'] {
+  outline: 2px solid var(--theme-primary, var(--color-primary-500));
+  outline-offset: 2px;
+}

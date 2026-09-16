@@ -26,6 +26,7 @@ import { ItemRenderer } from '../render/ItemRenderer';
 import { DraggableGridItem } from './DraggableGridItem';
 import { InsertionLine } from './InsertionLine';
 import grid from '../grid/Grid.module.scss';
+import styles from './editor.module.scss';
 
 export interface EditableRowProps {
   page: PortfolioPage;
@@ -38,8 +39,14 @@ export interface EditableRowProps {
 }
 
 type InsertionState =
+  // `offset` is the insertion line's position within the row root: an X offset for the vertical
+  // in-row line, a Y offset for the horizontal new-row lines. Carrying it for ALL three cases (not
+  // just `in-row`) is what lets the render read it straight out of state - the new-row-below line
+  // used to re-read `getBoundingClientRect().height` during render, a layout read this file
+  // deliberately avoids everywhere else (see `columnWidth`'s comment below).
   | { kind: 'in-row'; index: number; offset: number }
-  | { kind: 'new-row-above' | 'new-row-below' }
+  | { kind: 'new-row-above'; offset: number }
+  | { kind: 'new-row-below'; offset: number }
   | null;
 
 interface ResizePreview {
@@ -68,6 +75,20 @@ function isGridItemData(
   );
 }
 
+/** Finds a grid item anywhere in `page` by id. Local (rather than reused from `PortfolioEditor`)
+ * to keep `EditableRow` free of an import cycle - `PortfolioEditor` already imports this module. */
+function findGridItemById(page: PortfolioPage, itemId: string): GridItem | undefined {
+  for (const section of page.sections) {
+    for (const row of section.rows) {
+      const found = row.items.find((item) => item.id === itemId);
+      if (found) {
+        return found;
+      }
+    }
+  }
+  return undefined;
+}
+
 export function EditableRow({
   page,
   section,
@@ -77,15 +98,22 @@ export function EditableRow({
   selectedItemId,
   onSelectItem,
 }: EditableRowProps) {
+  // `rootRef` is the OUTER droppable wrapper (the drag-and-drop surface + insertion-line
+  // positioning context). `rowInnerRef` is the INNER flex container that actually carries
+  // `Grid.module.scss`'s `gap: var(--spacing-md)` and the real content width - column-width
+  // measurement must read that one, not the wrapper (which has no gap CSS at all and therefore
+  // reports `column-gap: normal` in a real browser).
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const rowInnerRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef(new Map<string, HTMLElement>());
   const [insertion, setInsertion] = useState<InsertionState>(null);
   const [resizePreview, setResizePreview] = useState<ResizePreview | null>(null);
-  // Starts at the pre-mount fallback (1) and is only ever written from `useLayoutEffect`/event
-  // handlers below, never read from the DOM during render - see the comment on
-  // `handleRowPointerDownCapture` for why a render-time DOM read here would be both a React purity
-  // violation and, for the FIRST resize gesture specifically, actually wrong.
-  const [columnWidth, setColumnWidth] = useState(1);
+  // Starts at 0, meaning "not measured yet" (see `measureColumnWidth`'s contract below;
+  // `ResizeEdge` refuses to start a gesture on a non-positive width), and is only ever written
+  // from `useLayoutEffect`/event handlers below, never read from the DOM during render - see the
+  // comment on `handleRowPointerDownCapture` for why a render-time DOM read here would be both a
+  // React purity violation and, for the FIRST resize gesture specifically, actually wrong.
+  const [columnWidth, setColumnWidth] = useState(0);
   // ResizeEdge's pointerdown/pointerup handlers are captured once, at gesture start, so they never
   // see later re-renders' fresh `resizePreview` state - handleResizeEnd reads this ref (always
   // current) instead of the stale `resizePreview` closure variable it would otherwise see.
@@ -97,16 +125,30 @@ export function EditableRow({
     accepts: ['palette-item', 'grid-item'],
   });
 
+  /**
+   * One column's pixel width, measured off the INNER flex row (`.row` from `Grid.module.scss`) -
+   * the element that actually has `gap: var(--spacing-md)` and the row's real content width.
+   * Measuring the outer droppable wrapper instead reads `column-gap: normal` in a real browser
+   * (`parseFloat('normal')` is `NaN`, and `'normal'` is truthy so a `|| '0'` fallback never fires),
+   * which propagates NaN all the way into `updateItemSpan` and corrupts the saved page.
+   *
+   * Returns `0` for "could not be measured" - callers treat a non-positive width as "don't resize"
+   * rather than computing with a garbage number.
+   */
   function measureColumnWidth(): number {
-    const rowElement = rootRef.current;
+    const rowElement = rowInnerRef.current;
     if (!rowElement) {
-      return 1;
+      return 0;
     }
-    const gapPx = parseFloat(getComputedStyle(rowElement).columnGap || '0');
-    return (rowElement.clientWidth - 11 * gapPx) / 12;
+    const gapPx = parseFloat(getComputedStyle(rowElement).columnGap);
+    if (!Number.isFinite(gapPx)) {
+      return 0;
+    }
+    const width = (rowElement.clientWidth - 11 * gapPx) / 12;
+    return Number.isFinite(width) && width > 0 ? width : 0;
   }
 
-  // Measure once after mount (`rootRef.current` is only attached post-commit, so this can't run
+  // Measure once after mount (`rowInnerRef.current` is only attached post-commit, so this can't run
   // during render - see `measureColumnWidth`'s early-return fallback above). This keeps
   // `columnWidth` reasonably accurate before any interaction; it is NOT what makes resizing
   // correct - see `handleRowPointerDownCapture` below for that.
@@ -145,19 +187,31 @@ export function EditableRow({
     }
     const relativeY = (event.clientY - rowRect.top) / rowRect.height;
     if (relativeY < NEW_ROW_BAND) {
-      return { kind: 'new-row-above' };
+      return { kind: 'new-row-above', offset: 0 };
     }
     if (relativeY > 1 - NEW_ROW_BAND) {
-      return { kind: 'new-row-below' };
+      return { kind: 'new-row-below', offset: rowRect.height };
     }
-    const itemRects = row.items
-      .map((item) => itemRefs.current.get(item.id)?.getBoundingClientRect())
-      .filter((rect): rect is DOMRect => Boolean(rect));
-    const boundary = nearestBoundary(event.clientX, itemRects, 'x');
+    // Keep each item paired with its own rect through the filter. Dropping unmeasured items from a
+    // bare rect array would make `boundary.index` index the SURVIVING list while it gets used as a
+    // `row.items` insertion index - correct only as long as every ref happens to be attached.
+    const measured = row.items
+      .map((item) => ({ item, rect: itemRefs.current.get(item.id)?.getBoundingClientRect() }))
+      .filter((entry): entry is { item: GridItem; rect: DOMRect } => Boolean(entry.rect));
+    const boundary = nearestBoundary(
+      event.clientX,
+      measured.map((entry) => entry.rect),
+      'x'
+    );
     if (!boundary) {
       return null;
     }
-    return { kind: 'in-row', index: boundary.index, offset: boundary.position - rowRect.left };
+    // A boundary index of `i` means "before `measured[i]`" (and `measured.length` means "after the
+    // last measured item"), so translate it back through the surviving list to the real index of
+    // that item in `row.items`.
+    const itemAfterBoundary = measured[boundary.index]?.item;
+    const index = itemAfterBoundary ? row.items.indexOf(itemAfterBoundary) : row.items.length;
+    return { kind: 'in-row', index, offset: boundary.position - rowRect.left };
   }
 
   function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
@@ -223,6 +277,17 @@ export function EditableRow({
           if (isSameRowReorder && data.index === targetIndex) {
             return;
           }
+          if (!isSameRowReorder) {
+            const draggedItem = findGridItemById(page, active.id);
+            if (!draggedItem || draggedItem.span > getRowRemainingCapacity(row)) {
+              // Dragging an existing item whose own span is larger than the target row's
+              // remaining capacity is an ordinary user action, not a bug - no-op silently rather
+              // than let it fall through to moveItem's throw (which would then be logged as an
+              // error below). (Same-row reorders never need this check: the row's total span
+              // doesn't change when reordering within itself.)
+              return;
+            }
+          }
           onPageChange(moveItem(page, active.id, section.id, row.id, targetIndex));
         } else {
           const targetIndex = current.kind === 'new-row-above' ? rowIndex : rowIndex + 1;
@@ -249,7 +314,12 @@ export function EditableRow({
       data-row-id={row.id}
       style={{ position: 'relative' }}
     >
-      <div className={grid.row} style={rowAlignmentStyle(row)}>
+      <div
+        ref={rowInnerRef}
+        className={grid.row}
+        style={rowAlignmentStyle(row)}
+        data-testid={`row-inner:${row.id}`}
+      >
         {row.items.map((item, index) => {
           const effectiveSpan =
             resizePreview?.itemId === item.id
@@ -265,6 +335,13 @@ export function EditableRow({
           } as React.CSSProperties;
 
           function handleResize(side: 'left' | 'right', effectiveDelta: number) {
+            // Defense in depth against a bad column-width measurement (see `measureColumnWidth`):
+            // a non-finite delta must never reach `updateItemSpan`, which happily writes `NaN` into
+            // `item.span` (it passes `schema/validate.ts`'s `typeof === 'number'` check, serializes
+            // to `null`, and then makes the page unloadable). Degrade to "resize does nothing".
+            if (!Number.isFinite(effectiveDelta)) {
+              return;
+            }
             const neighborIndex = side === 'left' ? index - 1 : index + 1;
             const neighbor = row.items[neighborIndex];
             let preview: ResizePreview;
@@ -305,9 +382,17 @@ export function EditableRow({
               }
             };
             const applyNeighbor = () => {
-              if (preview.neighborId && preview.neighborSpan !== undefined) {
-                next = updateItemSpan(next, preview.neighborId, preview.neighborSpan);
+              if (!preview.neighborId || preview.neighborSpan === undefined) {
+                return;
               }
+              // `updateItemSpan` rebuilds the page object even when the span it writes is identical
+              // to what's already there, so an unchanged neighbor has to be skipped explicitly for
+              // the `next !== page` no-op check below to mean anything.
+              const neighbor = row.items.find((candidate) => candidate.id === preview.neighborId);
+              if (neighbor && neighbor.span === preview.neighborSpan) {
+                return;
+              }
+              next = updateItemSpan(next, preview.neighborId, preview.neighborSpan);
             };
             // updateItemSpan's own clamp is computed against the row's CURRENT (not-yet-updated)
             // spans, so whichever side of the pair is SHRINKING must be applied first to free up
@@ -320,7 +405,13 @@ export function EditableRow({
               applyItem();
               applyNeighbor();
             }
-            onPageChange(next);
+            // A gesture that ends where it started (dragged out and back) produces a preview equal
+            // to the current spans, so every `updateItemSpan` above is skipped and `next` is still
+            // the same object. Calling `onPageChange` anyway would flip the editor's "Saved"
+            // indicator back to unsaved for a no-op gesture.
+            if (next !== page) {
+              onPageChange(next);
+            }
           }
 
           return (
@@ -347,12 +438,24 @@ export function EditableRow({
                 onResizeEnd={handleResizeEnd}
               >
                 <div
+                  className={styles.selectableItem}
                   data-selected={selectedItemId === item.id}
                   role="button"
                   tabIndex={0}
                   onClick={(event) => {
                     event.stopPropagation();
                     onSelectItem(item.id);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      // `useDraggable`'s own `onKeyDown` (spread onto the ancestor
+                      // `DraggableGridItem` box) also treats Enter/Space as "pick this item up for
+                      // a keyboard drag". Stop the event here so activating the item selects it
+                      // instead of starting a phantom drag.
+                      event.stopPropagation();
+                      onSelectItem(item.id);
+                    }
                   }}
                 >
                   <ItemRenderer item={item} />
@@ -362,14 +465,10 @@ export function EditableRow({
           );
         })}
       </div>
-      {insertion?.kind === 'in-row' && (
-        <InsertionLine orientation="vertical" offset={insertion.offset} />
-      )}
-      {insertion?.kind === 'new-row-above' && <InsertionLine orientation="horizontal" offset={0} />}
-      {insertion?.kind === 'new-row-below' && (
+      {insertion && (
         <InsertionLine
-          orientation="horizontal"
-          offset={rootRef.current?.getBoundingClientRect().height ?? 0}
+          orientation={insertion.kind === 'in-row' ? 'vertical' : 'horizontal'}
+          offset={insertion.offset}
         />
       )}
     </div>

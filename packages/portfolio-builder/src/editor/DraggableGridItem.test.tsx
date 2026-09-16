@@ -4,16 +4,8 @@ import { DndProvider } from '@true-tech-team/react-components';
 import { DraggableGridItem } from './DraggableGridItem';
 import type { GridItem } from '../schema/types';
 
-// jsdom does not implement the PointerEvent constructor (a long-standing gap:
-// https://github.com/jsdom/jsdom/issues/2527), so `fireEvent.pointerDown`/`pointerMove` fall back
-// to a plain `Event` that drops `clientX`. Polyfill a minimal PointerEvent (MouseEvent already
-// carries clientX/clientY) so ResizeEdge's real pointer handlers receive the coordinates this
-// test asserts on.
-if (typeof window.PointerEvent === 'undefined') {
-  class PointerEventPolyfill extends MouseEvent {}
-  (window as unknown as { PointerEvent: typeof PointerEventPolyfill }).PointerEvent =
-    PointerEventPolyfill;
-}
+// PointerEvent is polyfilled globally in vitest.setup.ts (jsdom has no native constructor), so
+// ResizeEdge's real pointer handlers receive real clientX values here.
 
 function makeItem(): GridItem {
   return { id: 'item-1', component: 'heading', span: 6, props: { text: 'Hello' } };
@@ -36,12 +28,41 @@ describe('DraggableGridItem', () => {
         </DraggableGridItem>
       </DndProvider>
     );
-    const box = screen.getByRole('button', { name: /drag heading/i });
+    const box = screen.getByLabelText('Drag heading');
     expect(box).toHaveAttribute('draggable', 'true');
     expect(box).toContainElement(screen.getByText('Hello'));
     expect(
       screen.queryByLabelText(/^drag heading$/i, { selector: '[data-drag-handle]' })
     ).not.toBeInTheDocument();
+  });
+
+  // ARIA prohibits nesting interactive roles, and `EditableRow` renders its own
+  // `role="button" tabIndex={0}` click-to-select wrapper inside this box - so this box must NOT
+  // also carry `useDraggable`'s default `role="button"`/`tabIndex={0}` (which would nest two
+  // button roles and create two tab stops per grid item).
+  it('does not claim button semantics or a tab stop of its own', () => {
+    render(
+      <DndProvider onDragEnd={vi.fn()}>
+        <DraggableGridItem
+          sectionId="sec1"
+          rowId="row1"
+          index={0}
+          item={makeItem()}
+          columnWidth={80}
+          onResize={vi.fn()}
+          onResizeEnd={vi.fn()}
+        >
+          <div role="button" tabIndex={0}>
+            Hello
+          </div>
+        </DraggableGridItem>
+      </DndProvider>
+    );
+    const box = screen.getByLabelText('Drag heading');
+    expect(box).not.toHaveAttribute('role');
+    expect(box).not.toHaveAttribute('tabindex');
+    // Exactly one button role in the subtree: the inner selectable wrapper, not the drag box.
+    expect(screen.getAllByRole('button')).toHaveLength(1);
   });
 
   it('renders a resize edge on both the left and right sides', () => {

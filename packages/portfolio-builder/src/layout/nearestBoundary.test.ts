@@ -40,13 +40,10 @@ describe('nearestBoundary', () => {
   });
 
   it("breaks a tie at a rect's own midpoint in favor of the earlier (left/top) boundary", () => {
-    const _rects = [rect(0, 100), rect(108, 208)];
-    // Midpoint of rect 1 (108-208) is 158, exactly equidistant from boundary index 1 (104) and
-    // boundary index 2 (208): distance to 104 is 54, distance to 208 is 50 - NOT actually a tie
-    // with these numbers, so use rect 0 alone: its own midpoint (50) is equidistant from boundary
-    // 0 (0, distance 50) and boundary 1 (104, distance 54) - still not exact. Construct an exact
-    // tie deliberately: a single rect from 0 to 100, pointer at 50 is 50 from boundary 0 (at 0)
-    // and 50 from boundary 1 (at 100).
+    // An exact tie needs a deliberately constructed case: with a single rect from 0 to 100 the
+    // only two boundaries are 0 and 100, so a pointer at 50 is exactly 50 from each. (Multi-rect
+    // layouts don't produce one - e.g. with rects 0-100 and 108-208, the midpoint of the second
+    // rect, 158, is 54 from boundary 1 at 104 and 50 from boundary 2 at 208.)
     const singleRect = [rect(0, 100)];
     const result = nearestBoundary(50, singleRect, 'x');
     expect(result).toEqual({ index: 0, position: 0 });

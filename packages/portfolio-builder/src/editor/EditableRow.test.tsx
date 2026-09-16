@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { DndProvider, useDraggable } from '@true-tech-team/react-components';
 import { EditableRow } from './EditableRow';
+import editorStyles from './editor.module.scss';
 import type { GridItem, PortfolioPage, PageSection, SectionRow } from '../schema/types';
 
 // PointerEvent is polyfilled globally in vitest.setup.ts (jsdom has no native constructor) so
@@ -35,17 +36,42 @@ function mockRect(
   } as DOMRect);
 }
 
-/** jsdom does not compute real layout, so `clientWidth`/`getComputedStyle` need explicit mocking
- * to give EditableRow's own column-width measurement (`(clientWidth - 11 * gapPx) / 12`) a known,
- * assertable result in tests. */
-function mockColumnWidth(rowElement: HTMLElement, columnWidthPx: number, gapPx = 16) {
-  Object.defineProperty(rowElement, 'clientWidth', {
+/**
+ * jsdom does not compute real layout, so `clientWidth`/`getComputedStyle` need explicit mocking to
+ * give EditableRow's own column-width measurement (`(clientWidth - 11 * gapPx) / 12`) a known,
+ * assertable result in tests.
+ *
+ * Deliberately PER-ELEMENT rather than a blanket `window.getComputedStyle` stub. The gap
+ * (`gap: var(--spacing-md)`) lives on the INNER flex row from `Grid.module.scss`; the OUTER
+ * droppable wrapper has no gap CSS at all, and a real browser reports `column-gap: normal` for it
+ * - which `parseFloat` turns into `NaN` (and `'normal'` is truthy, so a `|| '0'` fallback never
+ * fires). Both facts are reproduced here: a blanket stub that returned `'16px'` for every element
+ * made measuring the wrong element completely invisible to this suite, which is exactly how the
+ * NaN-span bug shipped.
+ *
+ * Only these two elements are intercepted; every other element falls through to jsdom's real
+ * implementation.
+ */
+function mockColumnWidth(rowId: string, columnWidthPx: number, gapPx = 16) {
+  const outer = screen.getByTestId(rowId);
+  const inner = screen.getByTestId(`row-inner:${rowId}`);
+  Object.defineProperty(inner, 'clientWidth', {
     value: Math.round(columnWidthPx * 12 + 11 * gapPx),
     configurable: true,
   });
-  vi.spyOn(window, 'getComputedStyle').mockReturnValue({
-    columnGap: `${gapPx}px`,
-  } as CSSStyleDeclaration);
+  const realGetComputedStyle = window.getComputedStyle.bind(window);
+  vi.spyOn(window, 'getComputedStyle').mockImplementation(
+    (element: Element, pseudoElement?: string | null) => {
+      if (element === inner) {
+        return { columnGap: `${gapPx}px` } as CSSStyleDeclaration;
+      }
+      if (element === outer) {
+        return { columnGap: 'normal' } as CSSStyleDeclaration;
+      }
+      return realGetComputedStyle(element, pseudoElement ?? undefined);
+    }
+  );
+  return { outer, inner };
 }
 
 // React 19's automatic batching defers the state update from `dragover` (which schedules
@@ -95,7 +121,36 @@ function FakePaletteSource({ componentType }: { componentType: string }) {
   return <div ref={setNodeRef} {...attributes} {...listeners} data-testid="fake-palette-source" />;
 }
 
+/** The grid-item equivalent of `FakePaletteSource`: stands in for an existing `DraggableGridItem`
+ * living in some OTHER row, so a drop can be driven with `active.data.type === 'grid-item'`. */
+function FakeGridItemSource({
+  itemId,
+  sectionId,
+  rowId,
+  index,
+}: {
+  itemId: string;
+  sectionId: string;
+  rowId: string;
+  index: number;
+}) {
+  const { setNodeRef, attributes, listeners } = useDraggable({
+    id: itemId,
+    data: { type: 'grid-item', sectionId, rowId, index },
+  });
+  return (
+    <div ref={setNodeRef} {...attributes} {...listeners} data-testid="fake-grid-item-source" />
+  );
+}
+
 describe('EditableRow', () => {
+  // `mockColumnWidth` replaces `window.getComputedStyle` for the whole process, so it has to be put
+  // back between tests - otherwise one test's per-element stub leaks into the next (the old blanket
+  // stub had exactly this problem, silently applying to every later test in the file).
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('renders each item in the row and marks its root with data-row-id', () => {
     const row: SectionRow = {
       id: 'row1',
@@ -241,8 +296,7 @@ describe('EditableRow', () => {
         />
       </DndProvider>
     );
-    const rowElement = screen.getByTestId('row1');
-    mockColumnWidth(rowElement, 80);
+    mockColumnWidth('row1', 80);
     const rightEdge = screen.getByLabelText('Resize right edge');
     fireEvent.pointerDown(rightEdge, { clientX: 0 });
     // 800px / 80px column width rounds to 10 columns of growth, i.e. item1 alone (the row's only
@@ -302,7 +356,7 @@ describe('EditableRow', () => {
         />
       </DndProvider>
     );
-    mockColumnWidth(screen.getByTestId('row1'), 80);
+    mockColumnWidth('row1', 80);
     const item1RightEdge = screen.getAllByLabelText('Resize right edge')[0];
     fireEvent.pointerDown(item1RightEdge, { clientX: 0 });
     // Two pointermoves, not one: `effectiveDelta` is always the TOTAL delta since gesture start
@@ -326,5 +380,234 @@ describe('EditableRow', () => {
     const finalItems = finalPage.sections[0].rows[0].items;
     expect(finalItems.find((item: GridItem) => item.id === 'item1').span).toBe(8);
     expect(finalItems.find((item: GridItem) => item.id === 'item2').span).toBe(4);
+  });
+
+  // C1 regression pin. Fails against the pre-fix code, which measured `getComputedStyle` on the
+  // OUTER droppable wrapper: that element has no gap CSS, a real browser reports
+  // `column-gap: normal`, `parseFloat('normal')` is NaN, and the NaN rides all the way through
+  // ResizeEdge's delta math into `updateItemSpan(page, id, NaN)` - which passes schema validation
+  // (`typeof NaN === 'number'`), serializes to `"span": null`, and makes the page unloadable.
+  it('measures the column width from the inner flex row, not the outer droppable wrapper', () => {
+    const row: SectionRow = {
+      id: 'row1',
+      items: [{ id: 'item1', component: 'heading', span: 6, props: { text: 'Hi' } }],
+    };
+    const { page, section } = makePage(row);
+    const onPageChange = vi.fn();
+    render(
+      <DndProvider>
+        <EditableRow
+          page={page}
+          section={section}
+          row={row}
+          rowIndex={0}
+          onPageChange={onPageChange}
+          selectedItemId={null}
+          onSelectItem={vi.fn()}
+        />
+      </DndProvider>
+    );
+    // Only the INNER row reports a real gap/width here; the outer wrapper reports the
+    // `column-gap: normal` a real browser gives it.
+    mockColumnWidth('row1', 80);
+
+    fireEvent.pointerDown(screen.getByLabelText('Resize right edge'), { clientX: 0 });
+    fireEvent.pointerMove(window, { clientX: 160 });
+
+    // 160px over an 80px column = exactly 2 columns of growth: 6 -> 8. Measuring the wrong element
+    // yields NaN here, which renders as "NaN" (or, with the guard, leaves the span at 6).
+    const spanDuringDrag = screen
+      .getByTestId('grid-item-item1')
+      .style.getPropertyValue('--span-desktop');
+    expect(spanDuringDrag).toBe('8');
+
+    fireEvent.pointerUp(window);
+    const finalPage = onPageChange.mock.calls[onPageChange.mock.calls.length - 1][0];
+    const finalSpan = finalPage.sections[0].rows[0].items[0].span;
+    expect(finalSpan).toBe(8);
+    expect(Number.isFinite(finalSpan)).toBe(true);
+  });
+
+  // C1 defense in depth: even if the measurement fails outright, a resize must degrade to
+  // "does nothing" rather than writing a non-finite span into page state.
+  it('does not resize at all when the column width cannot be measured', () => {
+    const row: SectionRow = {
+      id: 'row1',
+      items: [{ id: 'item1', component: 'heading', span: 6, props: { text: 'Hi' } }],
+    };
+    const { page, section } = makePage(row);
+    const onPageChange = vi.fn();
+    render(
+      <DndProvider>
+        <EditableRow
+          page={page}
+          section={section}
+          row={row}
+          rowIndex={0}
+          onPageChange={onPageChange}
+          selectedItemId={null}
+          onSelectItem={vi.fn()}
+        />
+      </DndProvider>
+    );
+    // No `mockColumnWidth` at all: jsdom computes no layout, so the measurement can't succeed.
+    fireEvent.pointerDown(screen.getByLabelText('Resize right edge'), { clientX: 0 });
+    fireEvent.pointerMove(window, { clientX: 800 });
+    fireEvent.pointerUp(window);
+
+    expect(screen.getByTestId('grid-item-item1').style.getPropertyValue('--span-desktop')).toBe(
+      '6'
+    );
+    expect(onPageChange).not.toHaveBeenCalled();
+  });
+
+  // I2 regression pin: `data-selected` alone is not enough - the outline only ever renders if the
+  // wrapper also carries the class the CSS rule is written against, in a stylesheet this component
+  // actually imports.
+  it('gives the selected item wrapper the class the selection outline is styled on', () => {
+    const row: SectionRow = {
+      id: 'row1',
+      items: [{ id: 'item1', component: 'heading', span: 12, props: { text: 'Hi' } }],
+    };
+    const { page, section } = makePage(row);
+    render(
+      <DndProvider>
+        <EditableRow
+          page={page}
+          section={section}
+          row={row}
+          rowIndex={0}
+          onPageChange={vi.fn()}
+          selectedItemId="item1"
+          onSelectItem={vi.fn()}
+        />
+      </DndProvider>
+    );
+    const wrapper = screen.getByText('Hi').closest('[data-selected]');
+    expect(wrapper).toHaveAttribute('data-selected', 'true');
+    expect(editorStyles.selectableItem).toBeTruthy();
+    expect(wrapper?.className).toContain(editorStyles.selectableItem);
+  });
+
+  // I3 regression pin: the item is `role="button" tabIndex={0}`, so a keyboard user must be able
+  // to activate it.
+  it.each(['Enter', ' '])('selects the item when %s is pressed on it', (key) => {
+    const row: SectionRow = {
+      id: 'row1',
+      items: [{ id: 'item1', component: 'heading', span: 12, props: { text: 'Hi' } }],
+    };
+    const { page, section } = makePage(row);
+    const onSelectItem = vi.fn();
+    render(
+      <DndProvider>
+        <EditableRow
+          page={page}
+          section={section}
+          row={row}
+          rowIndex={0}
+          onPageChange={vi.fn()}
+          selectedItemId={null}
+          onSelectItem={onSelectItem}
+        />
+      </DndProvider>
+    );
+    const selectable = screen.getByText('Hi').closest('[role="button"]');
+    if (!selectable) {
+      throw new Error('expected a selectable item wrapper');
+    }
+    fireEvent.keyDown(selectable, { key });
+
+    expect(onSelectItem).toHaveBeenCalledWith('item1');
+    // ...and it must NOT also trip `useDraggable`'s own Enter/Space "pick up for keyboard drag"
+    // handler on the ancestor draggable box.
+    expect(selectable.closest('[draggable="true"]')).not.toHaveAttribute('data-dragging', 'true');
+  });
+
+  it('does not report a page change when a resize gesture ends back where it started', () => {
+    const row: SectionRow = {
+      id: 'row1',
+      items: [
+        { id: 'item1', component: 'heading', span: 6, props: { text: 'A' } },
+        { id: 'item2', component: 'heading', span: 6, props: { text: 'B' } },
+      ],
+    };
+    const { page, section } = makePage(row);
+    const onPageChange = vi.fn();
+    render(
+      <DndProvider>
+        <EditableRow
+          page={page}
+          section={section}
+          row={row}
+          rowIndex={0}
+          onPageChange={onPageChange}
+          selectedItemId={null}
+          onSelectItem={vi.fn()}
+        />
+      </DndProvider>
+    );
+    mockColumnWidth('row1', 80);
+    fireEvent.pointerDown(screen.getAllByLabelText('Resize right edge')[0], { clientX: 0 });
+    fireEvent.pointerMove(window, { clientX: 240 });
+    // Dragged back to the exact starting position - nothing actually changed, so the editor must
+    // not be marked dirty (which would flip its "Saved" indicator back to unsaved).
+    fireEvent.pointerMove(window, { clientX: 0 });
+    fireEvent.pointerUp(window);
+
+    expect(onPageChange).not.toHaveBeenCalled();
+  });
+
+  it('silently ignores a grid item dragged into a row without room for its span', () => {
+    const targetRow: SectionRow = {
+      id: 'row1',
+      items: [{ id: 'item1', component: 'heading', span: 12, props: { text: 'Full' } }],
+    };
+    const sourceRow: SectionRow = {
+      id: 'row2',
+      items: [{ id: 'item2', component: 'heading', span: 6, props: { text: 'Mover' } }],
+    };
+    const section: PageSection = {
+      id: 'sec1',
+      name: 'Body',
+      showInNav: false,
+      rows: [targetRow, sourceRow],
+    };
+    const page: PortfolioPage = {
+      schemaVersion: 1,
+      slug: 'test',
+      title: 'Test',
+      templateId: 'default',
+      showNav: true,
+      sections: [section],
+    };
+    const onPageChange = vi.fn();
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(
+      <DndProvider>
+        <FakeGridItemSource itemId="item2" sectionId="sec1" rowId="row2" index={0} />
+        <EditableRow
+          page={page}
+          section={section}
+          row={targetRow}
+          rowIndex={0}
+          onPageChange={onPageChange}
+          selectedItemId={null}
+          onSelectItem={vi.fn()}
+        />
+      </DndProvider>
+    );
+
+    const rowElement = screen.getByTestId('row1');
+    mockRect(rowElement, { left: 0, right: 632, top: 0, bottom: 80 });
+    mockRect(screen.getByTestId('grid-item-item1'), { left: 0, right: 632, top: 0, bottom: 80 });
+
+    fireEvent.dragStart(screen.getByTestId('fake-grid-item-source'));
+    dispatchDragOver(rowElement, 620, 40);
+    dispatchDrop(rowElement, 620, 40);
+
+    // The target row is already full (12/12) and the dragged item's span is 6, so this cannot fit.
+    // That is an ordinary user action, not a bug: no page change, and nothing logged as an error.
+    expect(onPageChange).not.toHaveBeenCalled();
+    expect(consoleError).not.toHaveBeenCalled();
   });
 });

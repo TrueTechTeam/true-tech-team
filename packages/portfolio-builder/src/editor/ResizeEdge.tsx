@@ -24,6 +24,14 @@ export function ResizeEdge({ side, columnWidth, onResize, onResizeEnd }: ResizeE
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
     event.stopPropagation();
     event.preventDefault();
+    // `columnWidth` comes from a live DOM measurement in `EditableRow`. If that measurement failed
+    // (0) or produced a garbage value (NaN/Infinity), every delta computed from it would be
+    // non-finite and would eventually be written into `item.span` as `NaN` - which survives schema
+    // validation, serializes to `null`, and makes the saved page unloadable. Refuse to start the
+    // gesture at all instead: a bad measurement degrades to "resize does nothing".
+    if (!Number.isFinite(columnWidth) || columnWidth <= 0) {
+      return;
+    }
     startXRef.current = event.clientX;
 
     function handleMove(moveEvent: PointerEvent) {

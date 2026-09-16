@@ -31,10 +31,21 @@ export function DraggableGridItem({
     data: { type: 'grid-item', sectionId, rowId, index },
   });
 
+  // `useDraggable`'s `attributes` also carry `role="button"` and `tabIndex={0}`. Deliberately
+  // dropped here: `EditableRow` renders its own `role="button" tabIndex={0}` click-to-select
+  // wrapper INSIDE this box, and ARIA prohibits nesting interactive roles (it also produced two
+  // tab stops per item). The inner wrapper is the single accessible control; this box keeps only
+  // the native-drag attributes it actually needs.
+  const dragAttributes = {
+    draggable: attributes.draggable,
+    'aria-grabbed': attributes['aria-grabbed'],
+    'data-dragging': attributes['data-dragging'],
+  };
+
   return (
     <div
       ref={setNodeRef}
-      {...attributes}
+      {...dragAttributes}
       {...listeners}
       className={isDragging ? styles.gridItemDragging : styles.gridItem}
       aria-label={`Drag ${item.component}`}

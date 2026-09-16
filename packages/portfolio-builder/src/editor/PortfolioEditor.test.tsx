@@ -35,6 +35,72 @@ function makeRecord(): PortfolioPageRecord {
   };
 }
 
+/** A two-section page: `sec1` holds "Hello", `sec2` holds "World" (or no rows at all when
+ * `emptySecond` is set, standing in for the empty Footer every new page seeds). */
+function makeTwoSectionRecord(emptySecond = false): PortfolioPageRecord {
+  const record = makeRecord();
+  record.sections = [
+    {
+      id: 'sec1',
+      name: 'Intro',
+      showInNav: false,
+      rows: [
+        {
+          id: 'row1',
+          items: [{ id: 'item1', component: 'heading', span: 12, props: { text: 'Hello' } }],
+        },
+      ],
+    },
+    {
+      id: 'sec2',
+      name: 'Second',
+      showInNav: false,
+      rows: emptySecond
+        ? []
+        : [
+            {
+              id: 'row2',
+              items: [{ id: 'item2', component: 'heading', span: 12, props: { text: 'World' } }],
+            },
+          ],
+    },
+  ];
+  return record;
+}
+
+/** jsdom computes no layout, so the canvas's tier-3 geometry needs real section rects to work
+ * against. `sec1` occupies y 0-100, `sec2` occupies y 100-300. */
+function mockSectionRects() {
+  const rects: Record<string, { top: number; bottom: number }> = {
+    'section:sec1': { top: 0, bottom: 100 },
+    'section:sec2': { top: 100, bottom: 300 },
+  };
+  for (const [testId, { top, bottom }] of Object.entries(rects)) {
+    const element = screen.getByTestId(testId);
+    vi.spyOn(element, 'getBoundingClientRect').mockReturnValue({
+      top,
+      bottom,
+      left: 0,
+      right: 800,
+      x: 0,
+      y: top,
+      width: 800,
+      height: bottom - top,
+      toJSON: () => ({}),
+    } as DOMRect);
+  }
+}
+
+/** Starts a real drag from a palette entry, populating DndProvider's `active`. */
+function startPaletteDrag(label = 'Heading') {
+  const entry = screen.getByText(label).closest('[draggable="true"]');
+  if (!entry) {
+    throw new Error('expected a draggable palette entry');
+  }
+  fireEvent.dragStart(entry);
+  return entry;
+}
+
 describe('PortfolioEditor', () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -342,5 +408,146 @@ describe('PortfolioEditor', () => {
         'page-1'
       )
     );
+  });
+
+  // I4 (tier 2): `SectionEmptyDropTarget` declares `accepts: ['palette-item', 'grid-item']` but
+  // only ever implemented the palette branch - dropping an EXISTING item onto an empty section
+  // (e.g. the Footer a new page seeds) silently claimed the event and did nothing.
+  it('moves an existing grid item into an empty section when dropped on its placeholder', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeTwoSectionRecord(true));
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+
+    const dragBox = screen.getByLabelText('Drag heading');
+    fireEvent.dragStart(dragBox);
+    fireEvent.drop(screen.getByText(/drag a component here to get started/i));
+
+    await waitFor(() =>
+      expect(within(screen.getByTestId('section:sec2')).getByText('Hello')).toBeInTheDocument()
+    );
+    expect(within(screen.getByTestId('section:sec1')).queryByText('Hello')).not.toBeInTheDocument();
+  });
+
+  // I4 (tier 3): same gap on the canvas-level fallback - a grid item dropped on empty canvas
+  // margin must append to the bottom of the nearest section.
+  it('moves an existing grid item to the bottom of the nearest section when dropped on canvas margin', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeTwoSectionRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+    mockSectionRects();
+
+    const canvas = screen.getByTestId('canvas-background');
+    fireEvent.dragStart(screen.getAllByLabelText('Drag heading')[0]);
+    // y=250 is nearest the boundary below sec2 (sec2 spans 100-300), so sec2 receives the item.
+    fireEvent.dragOver(canvas, { clientY: 250 });
+    fireEvent.drop(canvas, { clientY: 250 });
+
+    await waitFor(() =>
+      expect(within(screen.getByTestId('section:sec2')).getByText('Hello')).toBeInTheDocument()
+    );
+  });
+
+  // I7: `handleCanvasDrop` (the whole tier-3 drop path) previously had zero coverage.
+  it('appends a dropped palette item to the bottom of the nearest section via the canvas fallback', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeTwoSectionRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+    mockSectionRects();
+
+    const canvas = screen.getByTestId('canvas-background');
+    startPaletteDrag();
+    fireEvent.dragOver(canvas, { clientY: 250 });
+    fireEvent.drop(canvas, { clientY: 250 });
+
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('section:sec2')).getByText('New Heading')
+      ).toBeInTheDocument()
+    );
+    expect(
+      within(screen.getByTestId('section:sec1')).queryByText('New Heading')
+    ).not.toBeInTheDocument();
+  });
+
+  // I6: the line used to be drawn at the raw `nearestBoundary` position while the drop always
+  // appended to the bottom of the clamped target section - for a pointer near a section's TOP the
+  // two visibly disagreed. Here the boundary position is 100 (sec2's top edge) but sec2 is the
+  // section that receives the item, so the line must sit at sec2's BOTTOM: offset 200 within a
+  // section that spans 100-300.
+  it('draws the canvas insertion line at the bottom of the section that will receive the drop', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeTwoSectionRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+    mockSectionRects();
+
+    startPaletteDrag();
+    fireEvent.dragOver(screen.getByTestId('canvas-background'), { clientY: 110 });
+
+    const line = within(screen.getByTestId('section:sec2')).getByTestId('insertion-line');
+    expect(line.style.top).toBe('200px');
+  });
+
+  // I5: `canvasInsertion` was only ever cleared by the canvas's own drop handler. Moving onto a
+  // row (which `stopPropagation()`s every later dragover) left the canvas line rendered alongside
+  // the row's own, and a drop on the row then left it on screen after the drag was over.
+  it('clears the canvas insertion line when the drag moves from canvas margin onto a row', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeTwoSectionRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+    mockSectionRects();
+
+    const canvas = screen.getByTestId('canvas-background');
+    startPaletteDrag();
+    fireEvent.dragOver(canvas, { clientY: 250 });
+    expect(screen.getAllByTestId('insertion-line')).toHaveLength(1);
+
+    // Pointer crosses from the canvas margin onto a row: `dragleave` fires on the canvas (it was
+    // the previous immediate target), then the row claims every subsequent `dragover`.
+    fireEvent.dragLeave(canvas);
+    fireEvent.dragOver(screen.getByTestId('row1'), { clientY: 50 });
+
+    const lines = screen.getAllByTestId('insertion-line');
+    expect(lines).toHaveLength(1);
+    expect(within(screen.getByTestId('row1')).getByTestId('insertion-line')).toBe(lines[0]);
+  });
+
+  it('leaves no insertion line behind once the drag ends', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeTwoSectionRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+    mockSectionRects();
+
+    const paletteEntry = startPaletteDrag();
+    fireEvent.dragOver(screen.getByTestId('canvas-background'), { clientY: 250 });
+    expect(screen.getAllByTestId('insertion-line')).toHaveLength(1);
+
+    // The drag ends without the canvas ever seeing another event (dropped on a row, or cancelled).
+    fireEvent.dragEnd(paletteEntry);
+
+    await waitFor(() => expect(screen.queryByTestId('insertion-line')).not.toBeInTheDocument());
+  });
+
+  // I7: nothing pinned `EditableRow`'s `stopPropagation()` - the row and the canvas both handling
+  // the same dragover would render two insertion lines at once.
+  it("a row's dragover does not also reach the canvas-level tier-3 handler", async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeTwoSectionRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    await screen.findByText('Hello');
+    mockSectionRects();
+
+    startPaletteDrag();
+    // Dispatched on the row, but it bubbles - the canvas's handler is on an ancestor and would
+    // fire too (adding a second, section-level line) if the row didn't stop the event.
+    fireEvent.dragOver(screen.getByTestId('row1'), { clientY: 50 });
+    expect(screen.getAllByTestId('insertion-line')).toHaveLength(1);
+    expect(within(screen.getByTestId('row1')).getByTestId('insertion-line')).toBeInTheDocument();
+
+    // Control: the canvas handler really is live, so the single line above is genuinely the result
+    // of the row stopping the event rather than of a dead tier-3 handler.
+    fireEvent.dragLeave(screen.getByTestId('row1'));
+    fireEvent.dragOver(screen.getByTestId('canvas-background'), { clientY: 250 });
+    const canvasLine = within(screen.getByTestId('section:sec2')).getByTestId('insertion-line');
+    expect(screen.getAllByTestId('insertion-line')).toHaveLength(1);
+    expect(canvasLine).toBeInTheDocument();
   });
 });
