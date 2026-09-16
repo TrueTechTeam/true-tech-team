@@ -31,9 +31,13 @@
 
 .gridItem,
 .gridItemDragging {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-xs);
+  position: relative;
+  cursor: grab;
+}
+
+.gridItem:hover {
+  outline: 2px solid var(--theme-border-primary);
+  outline-offset: -1px;
 }
 
 .gridItemDragging {

@@ -247,6 +247,9 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
                               rowId={row.id}
                               index={index}
                               item={item}
+                              columnWidth={12}
+                              onResize={() => {}}
+                              onResizeEnd={() => {}}
                             >
                               <div
                                 className={styles.selectableItem}

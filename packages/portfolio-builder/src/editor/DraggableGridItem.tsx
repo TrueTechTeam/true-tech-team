@@ -1,7 +1,8 @@
 'use client';
 
-import { useDraggable, DragHandle } from '@true-tech-team/react-components';
+import { useDraggable } from '@true-tech-team/react-components';
 import type { GridItem } from '../schema/types';
+import { ResizeEdge } from './ResizeEdge';
 import styles from './editor.module.scss';
 
 export interface DraggableGridItemProps {
@@ -9,6 +10,9 @@ export interface DraggableGridItemProps {
   rowId: string;
   index: number;
   item: GridItem;
+  columnWidth: number;
+  onResize: (side: 'left' | 'right', effectiveDelta: number) => void;
+  onResizeEnd: () => void;
   children: React.ReactNode;
 }
 
@@ -17,6 +21,9 @@ export function DraggableGridItem({
   rowId,
   index,
   item,
+  columnWidth,
+  onResize,
+  onResizeEnd,
   children,
 }: DraggableGridItemProps) {
   const { setNodeRef, attributes, listeners, isDragging } = useDraggable({
@@ -25,14 +32,26 @@ export function DraggableGridItem({
   });
 
   return (
-    <div className={isDragging ? styles.gridItemDragging : styles.gridItem}>
-      <DragHandle
-        ref={setNodeRef}
-        {...attributes}
-        {...listeners}
-        label={`Drag ${item.component}`}
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      className={isDragging ? styles.gridItemDragging : styles.gridItem}
+      aria-label={`Drag ${item.component}`}
+    >
+      <ResizeEdge
+        side="left"
+        columnWidth={columnWidth}
+        onResize={(delta) => onResize('left', delta)}
+        onResizeEnd={onResizeEnd}
       />
       {children}
+      <ResizeEdge
+        side="right"
+        columnWidth={columnWidth}
+        onResize={(delta) => onResize('right', delta)}
+        onResizeEnd={onResizeEnd}
+      />
     </div>
   );
 }
