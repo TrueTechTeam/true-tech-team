@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useDroppable, type DragData } from '@true-tech-team/react-components';
 import {
@@ -81,7 +81,11 @@ export function EditableRow({
   const itemRefs = useRef(new Map<string, HTMLElement>());
   const [insertion, setInsertion] = useState<InsertionState>(null);
   const [resizePreview, setResizePreview] = useState<ResizePreview | null>(null);
-  const [columnWidthOverride, setColumnWidthOverride] = useState<number | null>(null);
+  // Starts at the pre-mount fallback (1) and is only ever written from `useLayoutEffect`/event
+  // handlers below, never read from the DOM during render - see the comment on
+  // `handleRowPointerDownCapture` for why a render-time DOM read here would be both a React purity
+  // violation and, for the FIRST resize gesture specifically, actually wrong.
+  const [columnWidth, setColumnWidth] = useState(1);
   // ResizeEdge's pointerdown/pointerup handlers are captured once, at gesture start, so they never
   // see later re-renders' fresh `resizePreview` state - handleResizeEnd reads this ref (always
   // current) instead of the stale `resizePreview` closure variable it would otherwise see.
@@ -101,20 +105,36 @@ export function EditableRow({
     const gapPx = parseFloat(getComputedStyle(rowElement).columnGap || '0');
     return (rowElement.clientWidth - 11 * gapPx) / 12;
   }
-  const columnWidth = columnWidthOverride ?? measureColumnWidth();
 
-  // A ref's DOM node isn't attached until AFTER the render that creates it commits, so this first
-  // inline measurement (above) is 1 (the pre-mount fallback) until something re-renders this
-  // component. Nothing else naturally does before the user's first resize gesture, which would
-  // freeze every `DraggableGridItem` a stale columnWidth for that whole gesture (ResizeEdge snapshots
-  // its columnWidth prop once, at pointerdown). Re-measure synchronously, in the CAPTURE phase of
-  // pointerdown on the row (fires before the event reaches ResizeEdge's own bubble-phase handler),
-  // and flush that measurement with `flushSync` so the fresh value is committed - and visible to
-  // ResizeEdge - before its own pointerdown handler runs later in the same event.
+  // Measure once after mount (`rootRef.current` is only attached post-commit, so this can't run
+  // during render - see `measureColumnWidth`'s early-return fallback above). This keeps
+  // `columnWidth` reasonably accurate before any interaction; it is NOT what makes resizing
+  // correct - see `handleRowPointerDownCapture` below for that.
+  useLayoutEffect(() => {
+    setColumnWidth(measureColumnWidth());
+  }, []);
+
+  // This capture-phase remeasure is the mechanism that actually makes the FIRST resize gesture use
+  // an accurate columnWidth - the mount-time effect above is not sufficient on its own. Every
+  // `DraggableGridItem`/`ResizeEdge` snapshots its `columnWidth` PROP once, at pointerdown, and
+  // reuses that snapshot for the whole gesture (by Task 3 design - ResizeEdge computes delta from a
+  // `startXRef` fixed at pointerdown, never re-measuring). If the row's width becomes accurate only
+  // via a LATER render (e.g. the mount-effect above, or any other state update), that later,
+  // correct value simply arrives too late for a gesture already in progress - ResizeEdge's
+  // pointerdown handler already closed over whatever `columnWidth` prop was current when it fired.
+  // Native DOM event dispatch is two-pass: capture phase runs root-to-target BEFORE bubble phase
+  // reaches the target, in the same synchronous dispatch - so a capture-phase handler on the row
+  // (an ancestor of every ResizeEdge) is GUARANTEED to run before ResizeEdge's own bubble-phase
+  // onPointerDown, for the very same pointerdown event. Re-measuring here and committing with
+  // `flushSync` (forcing the re-render synchronously, before this handler returns and the event
+  // continues to the bubble phase) is what gets the fresh value into ResizeEdge's `columnWidth`
+  // prop in time for ITS handler to read it. Do not "simplify" this away without preserving that
+  // two-pass ordering guarantee - a plain `setColumnWidth` (deferred, batched) would not be applied
+  // in time, silently reintroducing the stale-columnWidth-on-first-gesture bug.
   function handleRowPointerDownCapture() {
     const fresh = measureColumnWidth();
     if (fresh !== columnWidth) {
-      flushSync(() => setColumnWidthOverride(fresh));
+      flushSync(() => setColumnWidth(fresh));
     }
   }
 

@@ -246,10 +246,21 @@ describe('EditableRow', () => {
     const rightEdge = screen.getByLabelText('Resize right edge');
     fireEvent.pointerDown(rightEdge, { clientX: 0 });
     // 800px / 80px column width rounds to 10 columns of growth, i.e. item1 alone (the row's only
-    // item) would reach span 16 if unclamped - deliberately chosen well past 12 so this test
-    // actually distinguishes the correct ceiling (12, since nothing else occupies the row) from a
-    // double-counted one (item.span + remaining = 18), which would wrongly let it reach 16.
+    // item) would reach span 16 if unclamped (6 + 10). Correct ceiling is 12 (nothing else occupies
+    // the row); a double-counted ceiling (item.span + remaining = 6 + 12 = 18) would NOT clamp this
+    // particular delta at all, since 16 < 18 - so the two formulas genuinely disagree here (16 vs
+    // 12), unlike a smaller delta that both formulas would clamp identically.
     fireEvent.pointerMove(window, { clientX: 800 });
+    // Assert the MID-GESTURE preview here, before `pointerUp` commits it. `updateItemSpan` (called
+    // at commit time) applies its own identical 12-column capacity clamp, so the committed value
+    // alone can't distinguish the two ceiling formulas - both the correct (12) and double-counted
+    // (16, itself still under the buggy ceiling of 18) previews would commit to 12 regardless,
+    // masking the bug. The preview computed directly by `handleResize` (reflected here via the
+    // rendered `--span-desktop` custom property, never routed through `updateItemSpan`) is the only
+    // place the ceiling formula's effect is actually observable pre-commit.
+    expect(screen.getByTestId('grid-item-item1').style.getPropertyValue('--span-desktop')).toBe(
+      '12'
+    );
     fireEvent.pointerUp(window);
     // item1 is the row's only item (6/12 used, 6 free) - growing its right edge with no right
     // neighbor draws from free row capacity, clamped at 12 total.
@@ -294,10 +305,23 @@ describe('EditableRow', () => {
     mockColumnWidth(screen.getByTestId('row1'), 80);
     const item1RightEdge = screen.getAllByLabelText('Resize right edge')[0];
     fireEvent.pointerDown(item1RightEdge, { clientX: 0 });
+    // Two pointermoves, not one: `effectiveDelta` is always the TOTAL delta since gesture start
+    // (ResizeEdge re-measures from its frozen `startXRef`, not incrementally), so `handleResize`
+    // must compute `item.span + effectiveDelta` (the stable prop) on every call, not
+    // `previewSpan + effectiveDelta` (the just-set preview from the PRIOR call). A single
+    // pointermove can't tell these apart, since on the first move `previewSpan === item.span` and
+    // both formulas agree. This first move (clientX: 80, effectiveDelta 1) intentionally sets a
+    // preview span (7) that differs from item.span (6), so the second move below can expose a
+    // buggy implementation that reads from it instead.
+    fireEvent.pointerMove(window, { clientX: 80 });
+    // Second move, still measured from the SAME gesture start (clientX: 160, effectiveDelta 2).
+    // Correct: item.span(6) + 2 = 8. Buggy (previewSpan-based): previewSpan(7 from the first move)
+    // + 2 = 9 - double-applying the delta. Asserting 8 below pins the correct formula.
     fireEvent.pointerMove(window, { clientX: 160 });
     fireEvent.pointerUp(window);
-    // item1 grows by 2 (160px / 80px column width, rounded), item2 shrinks by 2 - their combined
-    // span (12) is unchanged, matching the spec's symmetric-trade rule.
+    // item1 grows by 2 total (160px / 80px column width, rounded, from gesture start), item2
+    // shrinks by 2 - their combined span (12) is unchanged, matching the spec's symmetric-trade
+    // rule.
     const finalPage = onPageChange.mock.calls[onPageChange.mock.calls.length - 1][0];
     const finalItems = finalPage.sections[0].rows[0].items;
     expect(finalItems.find((item: GridItem) => item.id === 'item1').span).toBe(8);
