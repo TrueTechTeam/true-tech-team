@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { PortfolioEditor } from './PortfolioEditor';
@@ -297,6 +297,50 @@ describe('PortfolioEditor', () => {
 
     await waitFor(() =>
       expect(screen.queryByText(/drag a component here to get started/i)).not.toBeInTheDocument()
+    );
+  });
+
+  // NOTE on interaction pattern — see RowPropertiesPanel.test.tsx / IconField.test.tsx:
+  // `Select`'s closed trigger is a `<div role="button" aria-label={label}>`, not a native
+  // <select>, so selecting an option means clicking the trigger open and then clicking the
+  // desired `menuitem`, not firing a `change` event.
+  it('shows row properties alongside item properties when an item is selected', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    const item = await screen.findByText('Hello');
+    fireEvent.click(item);
+
+    expect(await screen.findByLabelText('Justify')).toBeInTheDocument();
+    expect(screen.getByLabelText('Align')).toBeInTheDocument();
+  });
+
+  it('updates the row alignment when a justify option is changed', async () => {
+    const record = makeRecord();
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(record);
+    vi.spyOn(crud, 'savePortfolioPage').mockResolvedValue(record);
+    render(<PortfolioEditor pageId="page-1" userId="user-1" supabase={fakeSupabase} />);
+    const item = await screen.findByText('Hello');
+    fireEvent.click(item);
+
+    fireEvent.click(await screen.findByLabelText('Justify'));
+    const menu = await screen.findByRole('menu');
+    fireEvent.click(within(menu).getByRole('menuitem', { name: 'Center' }));
+
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+
+    await waitFor(() =>
+      expect(crud.savePortfolioPage).toHaveBeenCalledWith(
+        fakeSupabase,
+        'user-1',
+        expect.objectContaining({
+          sections: expect.arrayContaining([
+            expect.objectContaining({
+              rows: expect.arrayContaining([expect.objectContaining({ justify: 'center' })]),
+            }),
+          ]),
+        }),
+        'page-1'
+      )
     );
   });
 });

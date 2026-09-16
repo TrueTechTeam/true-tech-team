@@ -6,16 +6,25 @@ import Link from 'next/link';
 import { Icon, Button, Dialog, useDroppable } from '@true-tech-team/react-components';
 import { loadPortfolioPage, savePortfolioPage } from '../pages/crud';
 import { recordToPage } from '../pages/mapping';
-import { isComponentType, type PortfolioPage, type GridItem } from '../schema/types';
+import {
+  isComponentType,
+  type PortfolioPage,
+  type GridItem,
+  type RowAlign,
+  type RowJustify,
+  type SectionRow,
+} from '../schema/types';
 import { getRegistryEntry } from '../components/registry';
 import {
   insertItemInNewRow,
   removeItem,
   updateItemProps,
   updateItemSpan,
+  updateRowAlignment,
 } from '../layout/transforms';
 import { nearestBoundary } from '../layout/nearestBoundary';
 import { PropertyPanel } from '../properties/PropertyPanel';
+import { RowPropertiesPanel } from '../properties/RowPropertiesPanel';
 import type { SelectedItem } from '../properties/types';
 import { ThemeDropdown } from '../themes/ThemeDropdown';
 import { THEME_PRESETS } from '../themes/presets';
@@ -46,6 +55,24 @@ export function findSelectedItem(page: PortfolioPage, itemId: string | null): Gr
       const item = row.items.find((candidate) => candidate.id === itemId);
       if (item) {
         return item;
+      }
+    }
+  }
+  return undefined;
+}
+
+/** Finds the row containing `itemId` (and the id of the section it belongs to), or `undefined`. */
+export function findSelectedRow(
+  page: PortfolioPage,
+  itemId: string | null
+): { row: SectionRow; sectionId: string } | undefined {
+  if (!itemId) {
+    return undefined;
+  }
+  for (const section of page.sections) {
+    for (const row of section.rows) {
+      if (row.items.some((item) => item.id === itemId)) {
+        return { row, sectionId: section.id };
       }
     }
   }
@@ -128,6 +155,16 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
         span: selectedGridItem.span,
       }
     : undefined;
+  const selectedRowInfo = findSelectedRow(page, selectedItemId);
+
+  function handleRowAlignmentChange(alignment: { justify?: RowJustify; align?: RowAlign }) {
+    if (!selectedRowInfo) {
+      return;
+    }
+    updatePage((current) =>
+      updateRowAlignment(current, selectedRowInfo.sectionId, selectedRowInfo.row.id, alignment)
+    );
+  }
 
   function handlePropsChange(newProps: Record<string, unknown>) {
     if (!selectedItemId) {
@@ -234,6 +271,12 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
                   supabase={supabase}
                   userId={userId}
                 />
+                {selectedRowInfo && (
+                  <RowPropertiesPanel
+                    row={selectedRowInfo.row}
+                    onAlignmentChange={handleRowAlignmentChange}
+                  />
+                )}
               </>
             ) : (
               <p className={styles.sidePanelPlaceholder}>Select an item to edit its properties</p>
