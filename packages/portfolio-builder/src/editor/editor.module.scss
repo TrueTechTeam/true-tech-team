@@ -43,14 +43,3 @@
 .gridItemDragging {
   opacity: 0.5;
 }
-
-.dropZone,
-.dropZoneActive {
-  min-height: 28px;
-  border-radius: var(--radius-sm);
-  flex: 1 1 auto;
-}
-
-.dropZoneActive {
-  background: var(--theme-primary-100);
-}

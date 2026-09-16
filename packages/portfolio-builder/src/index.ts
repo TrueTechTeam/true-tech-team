@@ -77,8 +77,6 @@ export {
 export { Palette } from './editor/Palette';
 export { DraggableGridItem } from './editor/DraggableGridItem';
 export type { DraggableGridItemProps } from './editor/DraggableGridItem';
-export { DropZone } from './editor/DropZone';
-export type { DropZoneProps, DropZoneData } from './editor/DropZone';
 export { PageDragDropContainer } from './editor/PageDragDropContainer';
 export type { PageDragDropContainerProps } from './editor/PageDragDropContainer';
 export { PortfolioPagesList } from './editor/PortfolioPagesList';

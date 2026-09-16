@@ -237,7 +237,7 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
           )}
         </div>
       </div>
-      <PageDragDropContainer page={page} onPageChange={handlePageChange}>
+      <PageDragDropContainer>
         <div className={styles.editorLayout}>
           <div className={styles.leftColumn}>
             <Palette />
