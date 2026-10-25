@@ -1,13 +1,13 @@
 import type { PortfolioPage } from '../schema/types';
-import { NavBar } from './NavBar';
+import { sectionAnchors } from './anchors';
 import { SectionRenderer } from './SectionRenderer';
 
 export function PageRenderer({ page }: { page: PortfolioPage }) {
+  const anchors = sectionAnchors(page.sections);
   return (
     <div>
-      {page.showNav ? <NavBar title={page.title} sections={page.sections} /> : null}
       {page.sections.map((section) => (
-        <SectionRenderer key={section.id} section={section} />
+        <SectionRenderer key={section.id} section={section} page={page} anchors={anchors} />
       ))}
     </div>
   );

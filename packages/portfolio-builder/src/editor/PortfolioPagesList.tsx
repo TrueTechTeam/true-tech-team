@@ -15,6 +15,7 @@ import {
 import { savePortfolioPage } from '../pages/crud';
 import { generateUniqueSlug, slugify } from '../pages/slug';
 import { recordToPage } from '../pages/mapping';
+import { SECTION_REGISTRY } from '../sections/registry';
 import { THEME_PRESETS } from '../themes/presets';
 import type { PortfolioPageRecord } from '../pages/types';
 import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
@@ -58,33 +59,19 @@ export function PortfolioPagesList({
     setIsSubmitting(true);
     try {
       const buildPage = (slug: string) => ({
-        schemaVersion: 1 as const,
+        schemaVersion: 2 as const,
         slug,
         title: title.trim(),
         templateId: 'default',
         themeId: THEME_PRESETS[0]?.id,
-        showNav: true,
         sections: [
           {
             id: crypto.randomUUID(),
-            name: 'Header',
+            type: 'navbar' as const,
+            name: 'Home',
             showInNav: false,
-            rows: [
-              {
-                id: crypto.randomUUID(),
-                items: [
-                  {
-                    id: crypto.randomUUID(),
-                    component: 'heading' as const,
-                    span: 12,
-                    props: { text: title.trim(), level: 1, align: 'center' },
-                  },
-                ],
-              },
-            ],
+            props: { ...SECTION_REGISTRY.navbar.defaultProps },
           },
-          { id: crypto.randomUUID(), name: 'Body', showInNav: false, rows: [] },
-          { id: crypto.randomUUID(), name: 'Footer', showInNav: false, rows: [] },
         ],
       });
 

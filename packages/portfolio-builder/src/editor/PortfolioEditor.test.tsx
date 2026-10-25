@@ -16,19 +16,8 @@ function makeRecord(): PortfolioPageRecord {
     title: 'Justin True',
     templateId: 'blank',
     published: false,
-    showNav: true,
     sections: [
-      {
-        id: 'sec1',
-        name: 'Intro',
-        showInNav: false,
-        rows: [
-          {
-            id: 'row1',
-            items: [{ id: 'item1', component: 'heading', span: 12, props: { text: 'Hello' } }],
-          },
-        ],
-      },
+      { id: 'sec-nav', type: 'navbar', name: 'Home', showInNav: false, props: { brand: 'Hello' } },
     ],
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',

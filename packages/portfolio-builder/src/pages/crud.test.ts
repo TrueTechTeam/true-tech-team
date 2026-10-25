@@ -47,17 +47,16 @@ const validRow: PortfolioPageRow = {
   template_id: 'developer-01',
   theme_id: null,
   published: false,
-  data: { showNav: true, sections: [] },
+  data: { sections: [] },
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
 };
 
 const validPage: PortfolioPage = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   slug: 'jtrue',
   title: 'Justin True',
   templateId: 'developer-01',
-  showNav: true,
   sections: [],
 };
 

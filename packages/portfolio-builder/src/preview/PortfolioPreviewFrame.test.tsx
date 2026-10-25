@@ -6,11 +6,10 @@ import type { PortfolioPage } from '../schema/types';
 
 function makePage(): PortfolioPage {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     slug: 'jtrue',
     title: 'Justin True',
     templateId: 'developer-01',
-    showNav: true,
     sections: [],
   };
 }

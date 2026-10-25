@@ -5,25 +5,19 @@ import type { PortfolioPage } from '../schema/types';
 
 function makePage(): PortfolioPage {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     slug: 'jtrue',
     title: 'Justin True',
     templateId: 'developer-01',
-    showNav: true,
     sections: [
       {
-        id: 'about',
-        name: 'About',
-        showInNav: true,
-        rows: [
-          {
-            id: 'row-1',
-            items: [
-              { id: 'item-1', component: 'heading', span: 12, props: { text: 'Hello there' } },
-            ],
-          },
-        ],
+        id: 'sec-nav',
+        type: 'navbar',
+        name: 'Home',
+        showInNav: false,
+        props: { brand: 'Hello there' },
       },
+      { id: 'about', type: 'navbar', name: 'About', showInNav: true, props: {} },
     ],
   };
 }
@@ -34,13 +28,15 @@ describe('ThemedPageView', () => {
     expect(screen.getByText('Hello there')).toBeInTheDocument();
   });
 
-  it('renders the nav when the page has showNav set', () => {
+  it('renders a nav link for each nav-visible section when the page has a navbar section', () => {
     render(<ThemedPageView page={makePage()} />);
     expect(screen.getByRole('link', { name: 'About' })).toBeInTheDocument();
   });
 
-  it('omits the nav when showNav is false', () => {
-    render(<ThemedPageView page={{ ...makePage(), showNav: false }} />);
+  // The navbar section's presence is the nav toggle now - there is no `showNav` flag.
+  it('omits the nav entirely when the page has no navbar section', () => {
+    const { container } = render(<ThemedPageView page={{ ...makePage(), sections: [] }} />);
+    expect(container.querySelector('[data-component="navbar"]')).toBeNull();
     expect(screen.queryByRole('link', { name: 'About' })).not.toBeInTheDocument();
   });
 });

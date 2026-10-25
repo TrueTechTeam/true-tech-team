@@ -1,19 +1,12 @@
-export const PORTFOLIO_BUILDER_SCHEMA_VERSION = 1;
-export type {
-  PortfolioPage,
-  PageSection,
-  SectionRow,
-  GridItem,
-  ComponentType,
-  SectionBackground,
-} from './schema/types';
-export { COMPONENT_TYPES, isComponentType } from './schema/types';
-export { validatePortfolioPage } from './schema/validate';
+export const PORTFOLIO_BUILDER_SCHEMA_VERSION = 2;
+export type { PortfolioPage, PageSection, SectionBackground } from './schema/types';
+export type { SectionType } from './schema/types';
+export { SECTION_TYPES, isSectionType } from './schema/types';
+export type { SectionComponentProps, SectionTypeEntry } from './sections/types';
+export { SECTION_REGISTRY, getSectionTypeEntry } from './sections/registry';
+export { sectionAnchors } from './render/anchors';
+export { validatePortfolioPage, validateSectionProps } from './schema/validate';
 export type { ValidationResult } from './schema/validate';
-export { collapsedSpans } from './grid/responsive';
-export type { CollapsedSpans } from './grid/responsive';
-export { getRegistryEntry } from './components/registry';
-export type { RegistryEntry } from './components/registry';
 
 export { PageRenderer } from './render/PageRenderer';
 export { ThemedPageView } from './render/ThemedPageView';

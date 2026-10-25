@@ -17,7 +17,6 @@ function makeRecord(overrides: Partial<PortfolioPageRecord> = {}): PortfolioPage
     title: 'Justin True',
     templateId: 'blank',
     published: false,
-    showNav: true,
     sections: [],
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
@@ -109,33 +108,19 @@ describe('PortfolioPagesList', () => {
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith(created));
     expect(slugModule.generateUniqueSlug).toHaveBeenCalledWith(fakeSupabase, 'New Page');
     expect(crud.savePortfolioPage).toHaveBeenCalledWith(fakeSupabase, 'user-1', {
-      schemaVersion: 1,
+      schemaVersion: 2,
       slug: 'new-page',
       title: 'New Page',
       templateId: 'default',
       themeId: THEME_PRESETS[0]?.id,
-      showNav: true,
       sections: [
         {
           id: expect.any(String),
-          name: 'Header',
+          type: 'navbar',
+          name: 'Home',
           showInNav: false,
-          rows: [
-            {
-              id: expect.any(String),
-              items: [
-                {
-                  id: expect.any(String),
-                  component: 'heading',
-                  span: 12,
-                  props: { text: 'New Page', level: 1, align: 'center' },
-                },
-              ],
-            },
-          ],
+          props: { brand: '', sticky: true },
         },
-        { id: expect.any(String), name: 'Body', showInNav: false, rows: [] },
-        { id: expect.any(String), name: 'Footer', showInNav: false, rows: [] },
       ],
     });
   });

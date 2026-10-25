@@ -6,24 +6,17 @@ import type { PortfolioPage } from '../schema/types';
 
 function makePage(): PortfolioPage {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     slug: 'jtrue',
     title: 'Justin True',
     templateId: 'developer-01',
-    showNav: false,
     sections: [
       {
         id: 'about',
+        type: 'navbar',
         name: 'About',
         showInNav: false,
-        rows: [
-          {
-            id: 'row-1',
-            items: [
-              { id: 'item-1', component: 'heading', span: 12, props: { text: 'Hello preview' } },
-            ],
-          },
-        ],
+        props: { brand: 'Hello preview' },
       },
     ],
   };

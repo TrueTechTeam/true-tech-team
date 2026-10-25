@@ -8,7 +8,6 @@ export interface PortfolioPageRecord {
   templateId: string;
   themeId?: string;
   published: boolean;
-  showNav: boolean;
   sections: PageSection[];
   themeOverride?: PortfolioPage['themeOverride'];
   createdAt: string;

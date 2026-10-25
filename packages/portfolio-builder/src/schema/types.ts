@@ -1,73 +1,33 @@
 import type { ThemeOverride } from '@true-tech-team/react-components';
 
-export const COMPONENT_TYPES = [
-  'heading',
-  'text',
-  'image',
-  'spacer',
-  'card',
-  'badge',
-  'avatar',
-  'chip',
-  'pill',
-  'icon',
-  'statusIndicator',
-  'progressBar',
-  'circularProgress',
-  'kpi',
-  'countUp',
-  'reveal',
-  'collapse',
-  'flipCard',
-  'carousel',
-  'overflowText',
-  'truncatedList',
-  'button',
-  'iconButton',
-  'accordion',
-  'tabs',
-] as const;
+export const SECTION_TYPES = ['navbar'] as const;
 
-export type ComponentType = (typeof COMPONENT_TYPES)[number];
+export type SectionType = (typeof SECTION_TYPES)[number];
 
-export function isComponentType(value: string): value is ComponentType {
-  return (COMPONENT_TYPES as readonly string[]).includes(value);
+export function isSectionType(value: string): value is SectionType {
+  return (SECTION_TYPES as readonly string[]).includes(value);
 }
 
 export type SectionBackground = 'primary' | 'secondary' | 'tertiary' | 'transparent';
 
-export interface GridItem {
-  id: string;
-  component: ComponentType;
-  span: number;
-  props: Record<string, unknown>;
-}
-
-export type RowJustify = 'left' | 'center' | 'right' | 'space-between';
-export type RowAlign = 'top' | 'center' | 'bottom' | 'stretch';
-
-export interface SectionRow {
-  id: string;
-  items: GridItem[];
-  justify?: RowJustify;
-  align?: RowAlign;
-}
-
 export interface PageSection {
+  /** Stable identity, used for reorder/remove. NOT the anchor - see `render/anchors.ts`. */
   id: string;
+  type: SectionType;
+  /** Nav label and the source of the scroll anchor. */
   name: string;
   showInNav: boolean;
   background?: SectionBackground;
-  rows: SectionRow[];
+  /** Type-specific configuration and content, shaped by the type's `propertySchema`. */
+  props: Record<string, unknown>;
 }
 
 export interface PortfolioPage {
-  schemaVersion: 1;
+  schemaVersion: 2;
   slug: string;
   title: string;
   templateId: string;
   themeId?: string;
   themeOverride?: ThemeOverride;
-  showNav: boolean;
   sections: PageSection[];
 }

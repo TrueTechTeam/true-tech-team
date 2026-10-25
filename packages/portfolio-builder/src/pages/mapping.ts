@@ -10,7 +10,6 @@ export interface PortfolioPageRow {
   theme_id: string | null;
   published: boolean;
   data: {
-    showNav?: boolean;
     sections?: PageSection[];
     themeOverride?: PortfolioPage['themeOverride'];
   };
@@ -27,7 +26,6 @@ export function mapRowToRecord(row: PortfolioPageRow): PortfolioPageRecord {
     templateId: row.template_id,
     themeId: row.theme_id ?? undefined,
     published: row.published,
-    showNav: row.data.showNav ?? true,
     sections: row.data.sections ?? [],
     themeOverride: row.data.themeOverride,
     createdAt: row.created_at,
@@ -42,7 +40,6 @@ export interface PortfolioPageColumns {
   template_id: string;
   theme_id: string | null;
   data: {
-    showNav: boolean;
     sections: PageSection[];
     themeOverride?: PortfolioPage['themeOverride'];
   };
@@ -56,7 +53,6 @@ export function pageToColumns(userId: string, page: PortfolioPage): PortfolioPag
     template_id: page.templateId,
     theme_id: page.themeId ?? null,
     data: {
-      showNav: page.showNav,
       sections: page.sections,
       themeOverride: page.themeOverride,
     },
@@ -65,13 +61,12 @@ export function pageToColumns(userId: string, page: PortfolioPage): PortfolioPag
 
 export function recordToPage(record: PortfolioPageRecord): PortfolioPage {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     slug: record.slug,
     title: record.title,
     templateId: record.templateId,
     themeId: record.themeId,
     themeOverride: record.themeOverride,
-    showNav: record.showNav,
     sections: record.sections,
   };
 }

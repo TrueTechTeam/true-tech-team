@@ -1,59 +1,39 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { PageRenderer } from './PageRenderer';
-import type { PortfolioPage } from '../schema/types';
+import type { PageSection, PortfolioPage } from '../schema/types';
 
-function makePage(): PortfolioPage {
-  return {
-    schemaVersion: 1,
-    slug: 'jtrue',
-    title: 'Justin True',
-    templateId: 'developer-01',
-    showNav: true,
-    sections: [
-      {
-        id: 'about',
-        name: 'About',
-        showInNav: true,
-        rows: [
-          {
-            id: 'row-1',
-            items: [{ id: 'item-1', component: 'heading', span: 12, props: { text: 'About me' } }],
-          },
-        ],
-      },
-      {
-        id: 'projects',
-        name: 'Projects',
-        showInNav: true,
-        rows: [
-          {
-            id: 'row-2',
-            items: [
-              { id: 'item-2', component: 'heading', span: 12, props: { text: 'My projects' } },
-            ],
-          },
-        ],
-      },
-    ],
-  };
+function makePage(sections: PageSection[]): PortfolioPage {
+  return { schemaVersion: 2, slug: 's', title: 'Justin True', templateId: 'default', sections };
 }
 
 describe('PageRenderer', () => {
-  it('renders a nav link for every section when showNav is true', () => {
-    render(<PageRenderer page={makePage()} />);
-    expect(screen.getByRole('link', { name: 'About' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Projects' })).toBeInTheDocument();
+  it('renders every section with name-derived anchors', () => {
+    const page = makePage([
+      { id: 'nav', type: 'navbar', name: 'Home', showInNav: false, props: { brand: 'JT' } },
+    ]);
+    const { container } = render(<PageRenderer page={page} />);
+    expect(container.querySelector('section')).toHaveAttribute('id', 'home');
+    expect(screen.getByText('JT')).toBeInTheDocument();
   });
 
-  it('omits the nav entirely when showNav is false', () => {
-    render(<PageRenderer page={{ ...makePage(), showNav: false }} />);
-    expect(screen.queryByRole('link', { name: 'About' })).not.toBeInTheDocument();
+  // Review Focus 3
+  it('renders an empty page without crashing when there are no sections', () => {
+    const { container } = render(<PageRenderer page={makePage([])} />);
+    expect(container.querySelectorAll('section')).toHaveLength(0);
   });
 
-  it('renders every section', () => {
-    render(<PageRenderer page={makePage()} />);
-    expect(screen.getByText('About me')).toBeInTheDocument();
-    expect(screen.getByText('My projects')).toBeInTheDocument();
+  // Review Focus 5
+  it('renders a pre-pivot page blank rather than throwing', () => {
+    const legacy = {
+      schemaVersion: 1,
+      slug: 's',
+      title: 'Old',
+      templateId: 'blank',
+      showNav: true,
+      sections: [{ id: 'sec1', name: 'Intro', showInNav: false, rows: [] }],
+    } as unknown as PortfolioPage;
+    const { container } = render(<PageRenderer page={legacy} />);
+    expect(container.querySelectorAll('section')).toHaveLength(0);
   });
 });

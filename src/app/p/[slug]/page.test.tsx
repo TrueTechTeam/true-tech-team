@@ -19,7 +19,6 @@ function makeRecord(overrides: Partial<PortfolioPageRecord> = {}): PortfolioPage
     title: 'Justin True',
     templateId: 'developer-01',
     published: true,
-    showNav: true,
     sections: [],
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',

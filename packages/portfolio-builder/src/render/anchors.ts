@@ -3,7 +3,7 @@ import { slugify } from '../pages/slug';
 /**
  * Maps section id -> URL-fragment anchor, derived from section names.
  *
- * Both `NavBar`'s link targets and `SectionRenderer`'s element ids read from this one map
+ * Both `NavbarSection`'s link targets and `SectionRenderer`'s element ids read from this one map
  * (computed once in `PageRenderer`) so a link and its target cannot drift apart.
  *
  * Typed structurally rather than against `PageSection` so it depends on nothing but the two

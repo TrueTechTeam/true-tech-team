@@ -3,6 +3,14 @@ import { mapRowToRecord, pageToColumns, recordToPage, type PortfolioPageRow } fr
 import type { PortfolioPage } from '../schema/types';
 import type { PortfolioPageRecord } from './types';
 
+const section = {
+  id: 'sec-nav',
+  type: 'navbar' as const,
+  name: 'Home',
+  showInNav: false,
+  props: { brand: 'JT', sticky: true },
+};
+
 describe('mapRowToRecord', () => {
   it('merges real columns with data JSONB contents', () => {
     const row: PortfolioPageRow = {
@@ -13,7 +21,7 @@ describe('mapRowToRecord', () => {
       template_id: 'developer-01',
       theme_id: 'slate',
       published: false,
-      data: { showNav: true, sections: [] },
+      data: { sections: [section] },
       created_at: '2026-01-01T00:00:00Z',
       updated_at: '2026-01-02T00:00:00Z',
     };
@@ -28,8 +36,7 @@ describe('mapRowToRecord', () => {
       templateId: 'developer-01',
       themeId: 'slate',
       published: false,
-      showNav: true,
-      sections: [],
+      sections: [section],
       themeOverride: undefined,
       createdAt: '2026-01-01T00:00:00Z',
       updatedAt: '2026-01-02T00:00:00Z',
@@ -54,20 +61,18 @@ describe('mapRowToRecord', () => {
 
     expect(record.themeId).toBeUndefined();
     expect(record.sections).toEqual([]);
-    expect(record.showNav).toBe(true);
   });
 });
 
 describe('pageToColumns', () => {
   it('splits a PortfolioPage into real columns and a data blob', () => {
     const page: PortfolioPage = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       slug: 'jtrue',
       title: 'Justin True',
       templateId: 'developer-01',
       themeId: 'slate',
-      showNav: true,
-      sections: [],
+      sections: [section],
     };
 
     const columns = pageToColumns('user-1', page);
@@ -78,17 +83,16 @@ describe('pageToColumns', () => {
       title: 'Justin True',
       template_id: 'developer-01',
       theme_id: 'slate',
-      data: { showNav: true, sections: [], themeOverride: undefined },
+      data: { sections: [section], themeOverride: undefined },
     });
   });
 
   it('stores theme_id as null when the page has none', () => {
     const page: PortfolioPage = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       slug: 'jtrue',
       title: 'Justin True',
       templateId: 'developer-01',
-      showNav: true,
       sections: [],
     };
 
@@ -108,22 +112,20 @@ describe('recordToPage', () => {
       templateId: 'developer-01',
       themeId: 'slate',
       published: true,
-      showNav: true,
-      sections: [],
+      sections: [section],
       themeOverride: { colors: { primary: 'var(--color-blue-500)' } },
       createdAt: '2026-01-01T00:00:00Z',
       updatedAt: '2026-01-02T00:00:00Z',
     };
 
     expect(recordToPage(record)).toEqual({
-      schemaVersion: 1,
+      schemaVersion: 2,
       slug: 'jtrue',
       title: 'Justin True',
       templateId: 'developer-01',
       themeId: 'slate',
       themeOverride: { colors: { primary: 'var(--color-blue-500)' } },
-      showNav: true,
-      sections: [],
+      sections: [section],
     });
   });
 
@@ -135,7 +137,6 @@ describe('recordToPage', () => {
       title: 'Justin True',
       templateId: 'developer-01',
       published: false,
-      showNav: false,
       sections: [],
       createdAt: '2026-01-01T00:00:00Z',
       updatedAt: '2026-01-01T00:00:00Z',
