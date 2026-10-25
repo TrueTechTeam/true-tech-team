@@ -57,7 +57,6 @@ export type {
   PropertyFieldOption,
   PropertyField,
   PropertySchema,
-  SelectedItem,
 } from './properties/types';
 export { PropertyPanel } from './properties/PropertyPanel';
 export type { PropertyPanelProps } from './properties/PropertyPanel';

@@ -1,5 +1,3 @@
-import type { ComponentType } from '../schema/types';
-
 export type PropertyFieldType =
   | 'text'
   | 'textarea'
@@ -7,7 +5,8 @@ export type PropertyFieldType =
   | 'boolean'
   | 'select'
   | 'image'
-  | 'icon';
+  | 'icon'
+  | 'list';
 
 export interface PropertyFieldOption {
   value: string;
@@ -23,12 +22,12 @@ export interface PropertyField {
   optionValueType?: 'string' | 'number';
   min?: number;
   max?: number;
+  /** Required when `type === 'list'`: the schema each entry in the list follows. */
+  itemSchema?: PropertySchema;
+  /** Singular noun for the add button, e.g. "Photo" renders "Add Photo". */
+  itemLabel?: string;
+  /** Optional cap on list length. */
+  maxItems?: number;
 }
 
 export type PropertySchema = PropertyField[];
-
-export interface SelectedItem {
-  componentType: ComponentType;
-  props: Record<string, unknown>;
-  span: number;
-}
