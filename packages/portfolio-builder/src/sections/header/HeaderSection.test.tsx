@@ -61,4 +61,41 @@ describe('HeaderSection', () => {
     renderHeader(makeHeader({ heading: 'Hi', ctas: 'nope' }));
     expect(screen.queryAllByRole('link')).toHaveLength(0);
   });
+
+  it.each([
+    'javascript:alert(1)',
+    'JaVaScRiPt:alert(1)',
+    '  javascript:alert(1)',
+    '\njavascript:alert(1)',
+    'java\tscript:alert(1)',
+    'data:text/html,<script>alert(1)</script>',
+    'vbscript:msgbox(1)',
+    '//evil.example',
+    'relative/path',
+  ])('drops an unsafe href (%j) but still renders a valid sibling', (href) => {
+    renderHeader(
+      makeHeader({
+        heading: 'Hi',
+        ctas: [
+          { label: 'Bad', href },
+          { label: 'Good', href: '#good' },
+        ],
+      })
+    );
+    expect(screen.queryByRole('link', { name: 'Bad' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Good' })).toHaveAttribute('href', '#good');
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+  });
+
+  it.each([
+    'https://a.example/x',
+    'http://a.example',
+    'mailto:a@b.c',
+    'tel:+15551234',
+    '#work',
+    '/about',
+  ])('keeps an allowed href (%s)', (href) => {
+    renderHeader(makeHeader({ heading: 'Hi', ctas: [{ label: 'Ok', href }] }));
+    expect(screen.getByRole('link', { name: 'Ok' })).toHaveAttribute('href', href);
+  });
 });
