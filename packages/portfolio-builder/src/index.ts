@@ -66,19 +66,6 @@ export type { ImageFieldProps } from './properties/ImageField';
 export { IconField } from './properties/IconField';
 export type { IconFieldProps } from './properties/IconField';
 
-export {
-  getRowRemainingCapacity,
-  insertItemInRow,
-  insertItemInNewRow,
-  moveItem,
-  moveItemToNewRow,
-  removeItem,
-} from './layout/transforms';
-export { Palette } from './editor/Palette';
-export { DraggableGridItem } from './editor/DraggableGridItem';
-export type { DraggableGridItemProps } from './editor/DraggableGridItem';
-export { PageDragDropContainer } from './editor/PageDragDropContainer';
-export type { PageDragDropContainerProps } from './editor/PageDragDropContainer';
 export { PortfolioPagesList } from './editor/PortfolioPagesList';
 export type { PortfolioPagesListProps } from './editor/PortfolioPagesList';
 export { PortfolioEditor } from './editor/PortfolioEditor';

@@ -3,76 +3,12 @@
   flex-direction: column;
 }
 
-.editorLayout {
-  display: grid;
-  grid-template-columns: 280px 1fr 320px;
-  gap: var(--spacing-lg);
-  align-items: start;
-}
-
-// The left/right columns stay pinned in view as the page scrolls (sticky), fill the space
-// between the headers and the bottom of the screen, and scroll their own overflow internally
-// if their own content runs longer than that. The canvas is deliberately NOT part of this - it
-// just grows with its content, so the page only scrolls when the canvas's own content needs it
-// to, rather than the whole layout always claiming the full viewport height.
-.leftColumn,
-.sidePanel {
-  position: sticky;
-  top: 0;
-
-  // Approximates the combined height of the site header and this editor's own header.
-  height: calc(100vh - 160px);
-  overflow-y: auto;
-  border-radius: var(--radius-md);
-}
-
-.leftColumn {
-  display: flex;
-  flex-direction: column;
-  min-width: 280px;
-  background: var(--theme-surface-secondary);
-}
-
 .canvas {
-  // Approximates the space between the site header and footer, so a lightly-populated page
-  // still visually fills the available screen without forcing a taller-than-needed layout.
-  min-height: calc(100vh - 160px);
   margin: var(--spacing-lg) 0;
   padding: var(--spacing-md);
   background: color-mix(in srgb, var(--theme-surface-primary) 94%, black);
   border: 1px solid var(--theme-border-secondary);
   border-radius: var(--radius-md);
-}
-
-.canvas[data-drag-active='true'] {
-  border-style: dashed;
-  border-color: var(--theme-primary, var(--color-primary-500));
-}
-
-.sidePanel {
-  padding: var(--spacing-md);
-  background: var(--theme-surface-secondary);
-}
-
-.sidePanelPlaceholder {
-  color: var(--theme-text-secondary);
-  font-size: var(--font-size-sm);
-  text-align: center;
-  padding: var(--spacing-lg) 0;
-}
-
-.emptyState {
-  color: var(--color-neutral-500);
-  font-size: 0.875rem;
-  text-align: center;
-  padding: var(--spacing-lg);
-
-  // NO `pointer-events: none` here. It was correct while this paragraph was inert decoration
-  // layered over a `DropZone`, but this element IS the tier-2 (empty-section) droppable surface
-  // now - `pointer-events: none` would make a real browser route every drag event straight past it
-  // to the canvas, silently disabling the whole tier. (jsdom ignores `pointer-events`, so unit
-  // tests alone cannot catch that.)
-  user-select: none;
 }
 
 .stateMessage {
@@ -81,10 +17,6 @@
   align-items: flex-start;
   gap: var(--spacing-sm);
   padding: var(--spacing-xl);
-}
-
-.sidePanelHeader {
-  margin-bottom: var(--spacing-md);
 }
 
 .editorHeader {
