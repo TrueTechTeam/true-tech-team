@@ -27,8 +27,8 @@ describe('NavbarSection', () => {
     const nav = makeNav({ brand: 'JT' });
     const page = makePage([
       nav,
-      { id: 'a', type: 'navbar', name: 'About', showInNav: true, props: {} },
-      { id: 'b', type: 'navbar', name: 'Hidden', showInNav: false, props: {} },
+      { id: 'a', type: 'header', name: 'About', showInNav: true, props: {} },
+      { id: 'b', type: 'header', name: 'Hidden', showInNav: false, props: {} },
     ]);
     renderNav(nav, page);
 
@@ -56,7 +56,7 @@ describe('NavbarSection', () => {
     const nav = makeNav({ brand: 'JT' });
     const page = makePage([
       nav,
-      { id: 'a', type: 'navbar', name: 'About', showInNav: true, props: {} },
+      { id: 'a', type: 'header', name: 'About', showInNav: true, props: {} },
     ]);
     const target = document.createElement('div');
     target.id = 'about';

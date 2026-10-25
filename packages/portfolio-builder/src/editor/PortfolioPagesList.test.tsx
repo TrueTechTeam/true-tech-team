@@ -121,6 +121,13 @@ describe('PortfolioPagesList', () => {
           showInNav: false,
           props: { brand: '', sticky: true },
         },
+        {
+          id: expect.any(String),
+          type: 'header',
+          name: 'Intro',
+          showInNav: true,
+          props: expect.objectContaining({ heading: 'New Page' }),
+        },
       ],
     });
   });

@@ -72,6 +72,13 @@ export function PortfolioPagesList({
             showInNav: false,
             props: { ...SECTION_META.navbar.defaultProps },
           },
+          {
+            id: crypto.randomUUID(),
+            type: 'header' as const,
+            name: 'Intro',
+            showInNav: true,
+            props: { ...SECTION_META.header.defaultProps, heading: title.trim() },
+          },
         ],
       });
 

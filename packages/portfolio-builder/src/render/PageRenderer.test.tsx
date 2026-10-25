@@ -28,14 +28,15 @@ describe('PageRenderer', () => {
   it('keeps a chrome section in its declared position among the sections', () => {
     const page = makePage([
       { id: 'nav', type: 'navbar', name: 'Home', showInNav: false, props: { brand: 'JT' } },
-      { id: 'about', type: 'navbar', name: 'About', showInNav: true, props: { brand: 'Second' } },
+      { id: 'about', type: 'header', name: 'About', showInNav: true, props: { heading: 'Second' } },
     ]);
     const { container } = render(<PageRenderer page={page} />);
 
-    const brands = [...container.querySelectorAll('[data-component="navbar-brand"]')].map(
-      (node) => node.textContent
-    );
-    expect(brands).toEqual(['JT', 'Second']);
+    const children = [...container.firstElementChild!.children];
+    expect(children).toHaveLength(2);
+    expect(children[0]?.matches('header[data-component="navbar"]')).toBe(true);
+    expect(children[1]?.tagName).toBe('SECTION');
+    expect(children[1]?.textContent).toContain('Second');
   });
 
   // Review Focus 3

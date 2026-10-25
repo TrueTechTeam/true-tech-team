@@ -17,7 +17,7 @@ function makePage(): PortfolioPage {
         showInNav: false,
         props: { brand: 'Hello there' },
       },
-      { id: 'about', type: 'navbar', name: 'About', showInNav: true, props: {} },
+      { id: 'about', type: 'header', name: 'About', showInNav: true, props: {} },
     ],
   };
 }

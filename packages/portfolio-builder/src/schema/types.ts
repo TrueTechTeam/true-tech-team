@@ -1,6 +1,6 @@
 import type { ThemeOverride } from '@true-tech-team/react-components';
 
-export const SECTION_TYPES = ['navbar'] as const;
+export const SECTION_TYPES = ['navbar', 'header'] as const;
 
 export type SectionType = (typeof SECTION_TYPES)[number];
 

@@ -78,3 +78,48 @@ describe('validatePortfolioPage', () => {
     expect(result.errors).toContain('sections[0].name is required and must be a non-empty string');
   });
 });
+
+function makeHeaderSection(props: Record<string, unknown>) {
+  return { id: 'hdr', type: 'header', name: 'Intro', showInNav: true, props };
+}
+
+describe('list property validation', () => {
+  it('rejects a list prop that is not an array', () => {
+    const result = validatePortfolioPage(
+      makePage({ sections: [makeHeaderSection({ heading: 'Hi', ctas: 'nope' })] })
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('sections[0].props.ctas must be an array');
+  });
+
+  it('rejects a list entry that is not an object, naming its index', () => {
+    const result = validatePortfolioPage(
+      makePage({ sections: [makeHeaderSection({ heading: 'Hi', ctas: ['nope'] })] })
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('sections[0].props.ctas[0] must be an object');
+  });
+
+  it('rejects a list entry missing a required sub-field, naming its index', () => {
+    const result = validatePortfolioPage(
+      makePage({ sections: [makeHeaderSection({ heading: 'Hi', ctas: [{ href: '#a' }] })] })
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors.join(' ')).toMatch(/sections\[0\]\.props\.ctas\[0\]\.label is required/);
+  });
+
+  it('rejects a list longer than maxItems', () => {
+    const entry = { label: 'a', href: '#a', variant: 'primary' };
+    const result = validatePortfolioPage(
+      makePage({ sections: [makeHeaderSection({ heading: 'Hi', ctas: [entry, entry, entry] })] })
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('sections[0].props.ctas must have at most 2 entries');
+  });
+
+  it('rejects a header missing its required heading', () => {
+    const result = validatePortfolioPage(makePage({ sections: [makeHeaderSection({ ctas: [] })] }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.join(' ')).toMatch(/sections\[0\]\.props\.heading is required/);
+  });
+});
