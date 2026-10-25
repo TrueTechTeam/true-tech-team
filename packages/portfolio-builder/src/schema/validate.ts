@@ -1,5 +1,8 @@
 import { isSectionType, SECTION_TYPES } from './types';
-import { SECTION_REGISTRY } from '../sections/registry';
+// Metadata only, never `sections/registry`: that module imports the section components, and
+// pulling the component layer in here would reach every importer of `validatePortfolioPage`,
+// `pages/crud.ts` among them.
+import { SECTION_META } from '../sections/meta';
 import type { PropertyField, PropertySchema } from '../properties/types';
 
 export interface ValidationResult {
@@ -116,11 +119,7 @@ function validatePageSection(value: unknown, path: string): string[] {
     return errors;
   }
   errors.push(
-    ...validateSectionProps(
-      value.props,
-      SECTION_REGISTRY[value.type].propertySchema,
-      `${path}.props`
-    )
+    ...validateSectionProps(value.props, SECTION_META[value.type].propertySchema, `${path}.props`)
   );
   return errors;
 }
@@ -152,7 +151,7 @@ export function validatePortfolioPage(value: unknown): ValidationResult {
   });
 
   SECTION_TYPES.forEach((type) => {
-    if (!SECTION_REGISTRY[type].singleton) {
+    if (!SECTION_META[type].singleton) {
       return;
     }
     const count = (value.sections as unknown[]).filter(

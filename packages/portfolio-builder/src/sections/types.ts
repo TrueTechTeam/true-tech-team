@@ -14,8 +14,15 @@ export interface SectionComponentProps {
   anchors: Map<string, string>;
 }
 
-export interface SectionTypeEntry {
-  component: (props: SectionComponentProps) => ReactElement | null;
+/**
+ * Everything about a section type except its component.
+ *
+ * Deliberately React-free and free of any `'use client'` dependency: `schema/validate.ts` needs
+ * each type's `propertySchema` and `singleton` flag, and it must stay importable from server
+ * code (and from `pages/crud.ts`) without dragging in the component layer. Keeping the
+ * component out of this type is what makes that possible.
+ */
+export interface SectionTypeMeta {
   /** Human label for the editor's section catalog, e.g. "Photo Gallery". */
   label: string;
   /** The type's limited configurable properties and its editable content. */
@@ -25,4 +32,22 @@ export interface SectionTypeEntry {
   minHeight: string;
   /** When true, a page may contain at most one section of this type. */
   singleton?: boolean;
+  /**
+   * Page chrome rather than page content: rendered in its normal position in `page.sections`
+   * but WITHOUT the `<section>` shell.
+   *
+   * Two reasons the shell is wrong for chrome. `position: sticky` resolves against the nearest
+   * scrolling ancestor's containing block, so a sticky navbar wrapped in a short `<section>`
+   * unsticks as soon as that element scrolls past - it must be a direct child of the page
+   * container to stick across the whole page. And `<header role="banner">` must not be nested
+   * inside `<section role="region">`.
+   *
+   * A chrome section is still a full section: present in `sections[]`, named, reorderable,
+   * removable and configurable. Only its wrapper differs.
+   */
+  chrome?: boolean;
+}
+
+export interface SectionTypeEntry extends SectionTypeMeta {
+  component: (props: SectionComponentProps) => ReactElement | null;
 }

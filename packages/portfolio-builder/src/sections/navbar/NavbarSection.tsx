@@ -2,7 +2,7 @@
 
 import type { MouseEvent } from 'react';
 import { Navbar, NavbarBrand, NavbarNav, NavLink } from '@true-tech-team/react-components';
-import type { SectionComponentProps, SectionTypeEntry } from '../types';
+import type { SectionComponentProps } from '../types';
 
 function scrollToAnchor(event: MouseEvent<HTMLAnchorElement>, anchor: string) {
   event.preventDefault();
@@ -51,15 +51,3 @@ export function NavbarSection({ section, page, anchors }: SectionComponentProps)
     </Navbar>
   );
 }
-
-export const navbarSectionEntry: SectionTypeEntry = {
-  component: NavbarSection,
-  label: 'Navigation Bar',
-  propertySchema: [
-    { key: 'brand', label: 'Brand Text', type: 'text' },
-    { key: 'sticky', label: 'Stick to top on scroll', type: 'boolean' },
-  ],
-  defaultProps: { brand: '', sticky: true },
-  minHeight: '0',
-  singleton: true,
-};

@@ -8,19 +8,41 @@ function makePage(sections: PageSection[]): PortfolioPage {
 }
 
 describe('PageRenderer', () => {
-  it('renders every section with name-derived anchors', () => {
+  // Uses the REAL registry, so this is the live check that the navbar type renders as chrome.
+  it('renders the navbar section bare, as a direct child of the page container', () => {
     const page = makePage([
       { id: 'nav', type: 'navbar', name: 'Home', showInNav: false, props: { brand: 'JT' } },
     ]);
     const { container } = render(<PageRenderer page={page} />);
-    expect(container.querySelector('section')).toHaveAttribute('id', 'home');
+
     expect(screen.getByText('JT')).toBeInTheDocument();
+    // No section shell: it would clamp the navbar's `position: sticky` to its own height and
+    // nest <header role="banner"> inside <section role="region">.
+    expect(container.querySelectorAll('section')).toHaveLength(0);
+
+    const header = container.querySelector('header[data-component="navbar"]');
+    expect(header).not.toBeNull();
+    expect(header?.parentElement).toBe(container.firstElementChild);
+  });
+
+  it('keeps a chrome section in its declared position among the sections', () => {
+    const page = makePage([
+      { id: 'nav', type: 'navbar', name: 'Home', showInNav: false, props: { brand: 'JT' } },
+      { id: 'about', type: 'navbar', name: 'About', showInNav: true, props: { brand: 'Second' } },
+    ]);
+    const { container } = render(<PageRenderer page={page} />);
+
+    const brands = [...container.querySelectorAll('[data-component="navbar-brand"]')].map(
+      (node) => node.textContent
+    );
+    expect(brands).toEqual(['JT', 'Second']);
   });
 
   // Review Focus 3
   it('renders an empty page without crashing when there are no sections', () => {
     const { container } = render(<PageRenderer page={makePage([])} />);
     expect(container.querySelectorAll('section')).toHaveLength(0);
+    expect(container.querySelector('header')).toBeNull();
   });
 
   // Review Focus 5
@@ -35,5 +57,6 @@ describe('PageRenderer', () => {
     } as unknown as PortfolioPage;
     const { container } = render(<PageRenderer page={legacy} />);
     expect(container.querySelectorAll('section')).toHaveLength(0);
+    expect(container.querySelector('header')).toBeNull();
   });
 });

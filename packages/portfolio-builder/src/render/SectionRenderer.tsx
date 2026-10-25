@@ -24,6 +24,15 @@ export function SectionRenderer({ section, page, anchors }: SectionRendererProps
     return null;
   }
   const SectionComponent = entry.component;
+  const content = <SectionComponent section={section} page={page} anchors={anchors} />;
+
+  // Page chrome renders bare, in its normal position among the sections. The shell would clamp
+  // a sticky navbar to its own height and nest <header role="banner"> inside a <section
+  // role="region">. See `SectionTypeMeta.chrome`.
+  if (entry.chrome) {
+    return content;
+  }
+
   return (
     <section
       id={anchors.get(section.id) ?? section.id}
@@ -31,7 +40,7 @@ export function SectionRenderer({ section, page, anchors }: SectionRendererProps
       className={`${styles.section} ${BACKGROUND_CLASS[section.background ?? 'transparent']}`}
       style={{ '--section-min-height': entry.minHeight } as React.CSSProperties}
     >
-      <SectionComponent section={section} page={page} anchors={anchors} />
+      {content}
     </section>
   );
 }

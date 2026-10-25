@@ -15,7 +15,7 @@ import {
 import { savePortfolioPage } from '../pages/crud';
 import { generateUniqueSlug, slugify } from '../pages/slug';
 import { recordToPage } from '../pages/mapping';
-import { SECTION_REGISTRY } from '../sections/registry';
+import { SECTION_META } from '../sections/meta';
 import { THEME_PRESETS } from '../themes/presets';
 import type { PortfolioPageRecord } from '../pages/types';
 import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
@@ -70,7 +70,7 @@ export function PortfolioPagesList({
             type: 'navbar' as const,
             name: 'Home',
             showInNav: false,
-            props: { ...SECTION_REGISTRY.navbar.defaultProps },
+            props: { ...SECTION_META.navbar.defaultProps },
           },
         ],
       });
