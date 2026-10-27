@@ -1,15 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { checkSlugAvailable } from './crud';
+import { slugify } from './slugify';
 
 const MAX_ATTEMPTS = 5;
 
-export function slugify(title: string): string {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
+export { slugify };
 
 /**
  * Generates a URL-safe slug from `title` and confirms it's available, appending a random

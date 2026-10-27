@@ -1,4 +1,4 @@
-import { slugify } from '../pages/slug';
+import { slugify } from '../pages/slugify';
 
 /**
  * Maps section id -> URL-fragment anchor, derived from section names.

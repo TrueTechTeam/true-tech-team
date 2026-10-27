@@ -21,7 +21,7 @@ describe('mapRowToRecord', () => {
       template_id: 'developer-01',
       theme_id: 'slate',
       published: false,
-      data: { sections: [section] },
+      data: { schemaVersion: 2, sections: [section] },
       created_at: '2026-01-01T00:00:00Z',
       updated_at: '2026-01-02T00:00:00Z',
     };
@@ -36,6 +36,7 @@ describe('mapRowToRecord', () => {
       templateId: 'developer-01',
       themeId: 'slate',
       published: false,
+      schemaVersion: 2,
       sections: [section],
       themeOverride: undefined,
       createdAt: '2026-01-01T00:00:00Z',
@@ -64,6 +65,46 @@ describe('mapRowToRecord', () => {
   });
 });
 
+describe('schemaVersion persistence', () => {
+  const baseRow: PortfolioPageRow = {
+    id: 'page-1',
+    user_id: 'user-1',
+    slug: 'jtrue',
+    title: 'Justin True',
+    template_id: 'developer-01',
+    theme_id: null,
+    published: false,
+    data: {},
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  };
+
+  it('reads the stored schemaVersion rather than assuming the current one', () => {
+    const record = mapRowToRecord({ ...baseRow, data: { schemaVersion: 3, sections: [] } });
+    expect(record.schemaVersion).toBe(3);
+    expect(recordToPage(record).schemaVersion).toBe(3);
+  });
+
+  it('marks a row with no stored schemaVersion as pre-pivot (1), not as current', () => {
+    const record = mapRowToRecord({ ...baseRow, data: { sections: [] } });
+    expect(record.schemaVersion).toBe(1);
+    expect(recordToPage(record).schemaVersion).toBe(1);
+  });
+
+  it('round-trips a page through pageToColumns and back', () => {
+    const page: PortfolioPage = {
+      schemaVersion: 2,
+      slug: 'jtrue',
+      title: 'Justin True',
+      templateId: 'developer-01',
+      sections: [section],
+    };
+    const columns = pageToColumns('user-1', page);
+    const record = mapRowToRecord({ ...baseRow, data: columns.data });
+    expect(recordToPage(record).schemaVersion).toBe(2);
+  });
+});
+
 describe('pageToColumns', () => {
   it('splits a PortfolioPage into real columns and a data blob', () => {
     const page: PortfolioPage = {
@@ -83,7 +124,7 @@ describe('pageToColumns', () => {
       title: 'Justin True',
       template_id: 'developer-01',
       theme_id: 'slate',
-      data: { sections: [section], themeOverride: undefined },
+      data: { schemaVersion: 2, sections: [section], themeOverride: undefined },
     });
   });
 
@@ -112,6 +153,7 @@ describe('recordToPage', () => {
       templateId: 'developer-01',
       themeId: 'slate',
       published: true,
+      schemaVersion: 2,
       sections: [section],
       themeOverride: { colors: { primary: 'var(--color-blue-500)' } },
       createdAt: '2026-01-01T00:00:00Z',
@@ -137,6 +179,7 @@ describe('recordToPage', () => {
       title: 'Justin True',
       templateId: 'developer-01',
       published: false,
+      schemaVersion: 2,
       sections: [],
       createdAt: '2026-01-01T00:00:00Z',
       updatedAt: '2026-01-01T00:00:00Z',

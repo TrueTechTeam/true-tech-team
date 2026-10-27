@@ -2,6 +2,12 @@ import type { ThemeOverride } from '@true-tech-team/react-components';
 
 export const SECTION_TYPES = ['navbar', 'header'] as const;
 
+/** The schema version this code reads and writes. */
+export const CURRENT_SCHEMA_VERSION = 2;
+
+/** Version assigned to a stored row that predates the section-type pivot (no stored version). */
+export const PRE_PIVOT_SCHEMA_VERSION = 1;
+
 export type SectionType = (typeof SECTION_TYPES)[number];
 
 export function isSectionType(value: string): value is SectionType {
@@ -23,7 +29,11 @@ export interface PageSection {
 }
 
 export interface PortfolioPage {
-  schemaVersion: 2;
+  /**
+   * Persisted per row. Normally `CURRENT_SCHEMA_VERSION`; a row loaded from the database that
+   * predates the pivot carries `PRE_PIVOT_SCHEMA_VERSION` so it stays detectable.
+   */
+  schemaVersion: number;
   slug: string;
   title: string;
   templateId: string;

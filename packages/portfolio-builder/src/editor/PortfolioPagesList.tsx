@@ -15,6 +15,7 @@ import {
 import { savePortfolioPage } from '../pages/crud';
 import { generateUniqueSlug, slugify } from '../pages/slug';
 import { recordToPage } from '../pages/mapping';
+import { CURRENT_SCHEMA_VERSION } from '../schema/types';
 import { SECTION_META } from '../sections/meta';
 import { THEME_PRESETS } from '../themes/presets';
 import type { PortfolioPageRecord } from '../pages/types';
@@ -59,7 +60,7 @@ export function PortfolioPagesList({
     setIsSubmitting(true);
     try {
       const buildPage = (slug: string) => ({
-        schemaVersion: 2 as const,
+        schemaVersion: CURRENT_SCHEMA_VERSION,
         slug,
         title: title.trim(),
         templateId: 'default',

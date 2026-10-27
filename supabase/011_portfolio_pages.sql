@@ -4,9 +4,10 @@
 -- Migration 011 — depends on 001_schema.sql
 -- A user's editable/publishable portfolio page. `data` holds the
 -- parts of PortfolioPage (from @true-tech-team/portfolio-builder)
--- not already pulled into their own column: showNav, sections,
--- themeOverride. schemaVersion is a compile-time constant, not
--- stored per-row.
+-- not already pulled into their own column: schemaVersion,
+-- sections, themeOverride. schemaVersion is stored per-row so a
+-- data migration can tell pre-pivot rows (no schemaVersion key)
+-- from current ones.
 --
 -- NOTE: this migration has not been applied to any Supabase
 -- project as part of this plan (no local dev environment, no

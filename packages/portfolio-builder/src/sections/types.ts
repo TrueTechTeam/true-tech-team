@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import type { ComponentType } from 'react';
 import type { PageSection, PortfolioPage } from '../schema/types';
 import type { PropertySchema } from '../properties/types';
 
@@ -21,6 +21,12 @@ export interface SectionComponentProps {
  * each type's `propertySchema` and `singleton` flag, and it must stay importable from server
  * code (and from `pages/crud.ts`) without dragging in the component layer. Keeping the
  * component out of this type is what makes that possible.
+ *
+ * Metadata must not import from `@true-tech-team/react-components` (or anything else that may be
+ * a `'use client'` module); `schema/clientBoundary.test.ts` guards the relative-import closure.
+ *
+ * Any user-supplied URL a section renders as a link target must pass through `isSafeHref`
+ * (`sections/safeHref.ts`); the contract, not the code, is what carries this across section types.
  */
 export interface SectionTypeMeta {
   /** Human label for the editor's section catalog, e.g. "Photo Gallery". */
@@ -49,5 +55,5 @@ export interface SectionTypeMeta {
 }
 
 export interface SectionTypeEntry extends SectionTypeMeta {
-  component: (props: SectionComponentProps) => ReactElement | null;
+  component: ComponentType<SectionComponentProps>;
 }

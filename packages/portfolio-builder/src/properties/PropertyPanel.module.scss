@@ -5,18 +5,6 @@
   padding: var(--spacing-md);
 }
 
-.fallback {
-  color: var(--color-neutral-500);
-  font-size: 0.875rem;
-}
-
-.errorSummary {
-  margin: 0;
-  padding-left: var(--spacing-md);
-  color: var(--color-red-500);
-  font-size: 0.875rem;
-}
-
 .uploadError {
   color: var(--color-red-500);
   font-size: 0.875rem;

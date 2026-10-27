@@ -37,6 +37,21 @@ describe('NavbarSection', () => {
     expect(screen.queryByRole('link', { name: 'Home' })).not.toBeInTheDocument();
   });
 
+  // The self-exclusion clause is load-bearing once the editor lets a user toggle showInNav on
+  // the navbar itself; every other fixture sets it false, which would mask a deleted clause.
+  it('never links to itself even when its own showInNav is true', () => {
+    const nav: PageSection = { ...makeNav({ brand: 'JT' }), showInNav: true };
+    const page = makePage([
+      nav,
+      { id: 'a', type: 'header', name: 'About', showInNav: true, props: {} },
+    ]);
+    renderNav(nav, page);
+
+    expect(screen.getByRole('link', { name: 'About' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Home' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+  });
+
   // Review Focus 1
   it('falls back to the page title when brand is missing or blank', () => {
     const nav = makeNav({});

@@ -23,6 +23,16 @@ describe('SECTION_META', () => {
     });
   });
 
+  // validateSectionProps catches a MISSING default but not a stray one; a typo'd key like
+  // `brnad` would otherwise sit in defaultProps forever, silently ignored.
+  it('has no defaultProps key that its propertySchema does not declare', () => {
+    Object.entries(SECTION_META).forEach(([type, meta]) => {
+      const declared = new Set(meta.propertySchema.map((field) => field.key));
+      const stray = Object.keys(meta.defaultProps).filter((key) => !declared.has(key));
+      expect(stray, `${type} defaultProps has undeclared keys`).toEqual([]);
+    });
+  });
+
   it('resolves known types and rejects unknown ones', () => {
     expect(getSectionTypeMeta('navbar')).toBe(SECTION_META.navbar);
     expect(getSectionTypeMeta('not-a-section')).toBeUndefined();

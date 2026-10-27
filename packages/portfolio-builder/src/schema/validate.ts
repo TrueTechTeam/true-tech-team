@@ -1,4 +1,4 @@
-import { isSectionType, SECTION_TYPES } from './types';
+import { CURRENT_SCHEMA_VERSION, isSectionType, SECTION_TYPES } from './types';
 // Metadata only, never `sections/registry`: that module imports the section components, and
 // pulling the component layer in here would reach every importer of `validatePortfolioPage`,
 // `pages/crud.ts` among them.
@@ -18,7 +18,8 @@ function validateField(value: unknown, field: PropertyField, path: string): stri
   const errors: string[] = [];
   const fieldPath = `${path}.${field.key}`;
 
-  if (value === undefined || value === null || value === '') {
+  const isEmptyList = field.type === 'list' && Array.isArray(value) && value.length === 0;
+  if (value === undefined || value === null || value === '' || isEmptyList) {
     if (field.required) {
       errors.push(`${fieldPath} is required and must be a non-empty ${field.type}`);
     }
@@ -52,8 +53,11 @@ function validateField(value: unknown, field: PropertyField, path: string): stri
       }
       break;
     case 'select': {
+      // Option values are declared as strings; `optionValueType` says what the STORED value is.
+      // Compare strictly against that type so `"3"` cannot pass where `3` was meant.
       const allowed = (field.options ?? []).map((option) => option.value);
-      if (!allowed.includes(String(value))) {
+      const storedType = field.optionValueType === 'number' ? 'number' : 'string';
+      if (typeof value !== storedType || !allowed.includes(String(value))) {
         errors.push(`${fieldPath} must be one of ${allowed.join(', ')}`);
       }
       break;
@@ -129,8 +133,8 @@ export function validatePortfolioPage(value: unknown): ValidationResult {
     return { valid: false, errors: ['page must be an object'] };
   }
   const errors: string[] = [];
-  if (value.schemaVersion !== 2) {
-    errors.push('schemaVersion must be 2');
+  if (value.schemaVersion !== CURRENT_SCHEMA_VERSION) {
+    errors.push(`schemaVersion must be ${CURRENT_SCHEMA_VERSION}`);
   }
   if (typeof value.slug !== 'string' || value.slug.length === 0) {
     errors.push('slug is required and must be a non-empty string');

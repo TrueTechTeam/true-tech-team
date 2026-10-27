@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { HeaderSection } from './HeaderSection';
+import { HeaderSection, cssUrl } from './HeaderSection';
 import type { PageSection, PortfolioPage } from '../../schema/types';
 
 function makeHeader(props: Record<string, unknown>): PageSection {
@@ -97,5 +97,44 @@ describe('HeaderSection', () => {
   ])('keeps an allowed href (%s)', (href) => {
     renderHeader(makeHeader({ heading: 'Hi', ctas: [{ label: 'Ok', href }] }));
     expect(screen.getByRole('link', { name: 'Ok' })).toHaveAttribute('href', href);
+  });
+
+  it('renders an allowed href with surrounding whitespace trimmed', () => {
+    renderHeader(
+      makeHeader({ heading: 'Hi', ctas: [{ label: 'Ok', href: '  https://a.example/x \t' }] })
+    );
+    expect(screen.getByRole('link', { name: 'Ok' })).toHaveAttribute('href', 'https://a.example/x');
+  });
+
+  it('renders two identical ctas without key collisions', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    renderHeader(
+      makeHeader({
+        heading: 'Hi',
+        ctas: [
+          { label: 'Same', href: '#a' },
+          { label: 'Same', href: '#a' },
+        ],
+      })
+    );
+    expect(screen.getAllByRole('link', { name: 'Same' })).toHaveLength(2);
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
+  it('emits the background image as a quoted url()', () => {
+    const { container } = renderHeader(
+      makeHeader({ heading: 'Hi', backgroundImage: 'https://x.example/a.png' })
+    );
+    const node = container.firstElementChild as HTMLElement;
+    // jsdom's CSS parser is lossy for exotic URLs, so the escaping itself is covered by cssUrl.
+    expect(node.style.backgroundImage).toBe('url("https://x.example/a.png")');
+  });
+
+  it('escapes quotes, backslashes and newlines so a URL cannot break out of url("...")', () => {
+    expect(cssUrl('https://x.example/a (1).png')).toBe('https://x.example/a (1).png');
+    expect(cssUrl('a"b')).toBe('a\\"b');
+    expect(cssUrl('a\\b')).toBe('a\\\\b');
+    expect(cssUrl('a\nb')).toBe('ab');
   });
 });
