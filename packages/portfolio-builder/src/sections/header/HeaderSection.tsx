@@ -2,6 +2,7 @@
 
 import type { SectionComponentProps } from '../types';
 import { isSafeHref } from '../safeHref';
+import { backgroundImageValue } from '../cssUrl';
 import styles from './HeaderSection.module.scss';
 
 interface Cta {
@@ -42,11 +43,6 @@ function readCtas(value: unknown): Cta[] {
   });
 }
 
-/** Escapes a value for use inside a double-quoted CSS `url("...")`. */
-export function cssUrl(value: string): string {
-  return value.replace(/[\\"]/g, (char) => `\\${char}`).replace(/[\n\r\f]/g, '');
-}
-
 export function HeaderSection({ section, page }: SectionComponentProps) {
   const heading =
     typeof section.props.heading === 'string' && section.props.heading.trim().length > 0
@@ -64,7 +60,9 @@ export function HeaderSection({ section, page }: SectionComponentProps) {
   return (
     <div
       className={align === 'center' ? styles.headerCenter : styles.header}
-      style={backgroundImage ? { backgroundImage: `url("${cssUrl(backgroundImage)}")` } : undefined}
+      style={
+        backgroundImage ? { backgroundImage: backgroundImageValue(backgroundImage) } : undefined
+      }
     >
       <h1 className={styles.heading}>{heading}</h1>
       {subheading && <p className={styles.subheading}>{subheading}</p>}

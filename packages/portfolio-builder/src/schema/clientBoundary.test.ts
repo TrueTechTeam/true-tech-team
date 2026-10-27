@@ -57,6 +57,11 @@ function runtimeImportClosure(entry: string): string[] {
       if (resolved) {
         stack.push(resolved);
       }
+      // An unresolvable relative specifier is dropped silently rather than failing. That is a
+      // residual hole of the same class this file guards against: if resolution of a real module
+      // regressed, its subtree would vanish from the closure instead of erroring. The
+      // containment assertions in the tests below are what make that regression visible - they
+      // name specific modules that MUST appear, so a collapsed closure fails loudly.
     }
   }
 

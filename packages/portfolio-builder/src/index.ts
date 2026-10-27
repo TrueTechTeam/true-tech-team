@@ -1,4 +1,4 @@
-export const PORTFOLIO_BUILDER_SCHEMA_VERSION = 2;
+export { CURRENT_SCHEMA_VERSION, PRE_PIVOT_SCHEMA_VERSION } from './schema/types';
 export type { PortfolioPage, PageSection, SectionBackground } from './schema/types';
 export type { SectionType } from './schema/types';
 export { SECTION_TYPES, isSectionType } from './schema/types';

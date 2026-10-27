@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { HeaderSection, cssUrl } from './HeaderSection';
+import { HeaderSection } from './HeaderSection';
 import type { PageSection, PortfolioPage } from '../../schema/types';
 
 function makeHeader(props: Record<string, unknown>): PageSection {
@@ -122,19 +122,15 @@ describe('HeaderSection', () => {
     spy.mockRestore();
   });
 
-  it('emits the background image as a quoted url()', () => {
+  // This asserts only that the backgroundImage prop reaches the style - NOT that it is quoted.
+  // jsdom normalises an unquoted url(...) to the quoted form on read-back, so no rendered-style
+  // assertion here can tell the two code paths apart. The quoting is pinned by pure string
+  // assertions in ../cssUrl.test.ts, which is where backgroundImageValue lives.
+  it('wires the backgroundImage prop into the element style', () => {
     const { container } = renderHeader(
       makeHeader({ heading: 'Hi', backgroundImage: 'https://x.example/a.png' })
     );
     const node = container.firstElementChild as HTMLElement;
-    // jsdom's CSS parser is lossy for exotic URLs, so the escaping itself is covered by cssUrl.
     expect(node.style.backgroundImage).toBe('url("https://x.example/a.png")');
-  });
-
-  it('escapes quotes, backslashes and newlines so a URL cannot break out of url("...")', () => {
-    expect(cssUrl('https://x.example/a (1).png')).toBe('https://x.example/a (1).png');
-    expect(cssUrl('a"b')).toBe('a\\"b');
-    expect(cssUrl('a\\b')).toBe('a\\\\b');
-    expect(cssUrl('a\nb')).toBe('ab');
   });
 });
