@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach } from 'vitest';
-import { cleanup } from '@testing-library/react';
+import { cleanup, configure } from '@testing-library/react';
 
 // vitest.config.ts does not set `test.globals: true`, so @testing-library/react's automatic
 // per-test cleanup (which only self-registers when it detects a global `afterEach`) never runs
@@ -9,6 +9,15 @@ import { cleanup } from '@testing-library/react';
 afterEach(() => {
   cleanup();
 });
+
+// `findBy*` and `waitFor` default to a 1000ms budget. Several components in
+// @true-tech-team/react-components open on an animation (Select's dropdown, Dialog), and under CPU
+// load that open plus the re-render can exceed one second - which showed up as
+// `IconField > offers every icon name...` failing with "Unable to find role=\"menu\"" only when the
+// machine was busy, never in isolation. A longer budget costs nothing: `findBy*` resolves as soon as
+// the element appears, so passing tests are not slowed, only genuinely-missing elements wait longer
+// before failing.
+configure({ asyncUtilTimeout: 5000 });
 
 // jsdom does not implement scrollIntoView; NavBar's smooth-scroll click handler calls it.
 if (!Element.prototype.scrollIntoView) {
