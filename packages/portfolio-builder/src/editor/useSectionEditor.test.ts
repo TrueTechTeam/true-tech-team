@@ -150,6 +150,17 @@ describe('useSectionEditor — editing', () => {
     expect(result.current.selectedSectionId).toBe('sec-header');
   });
 
+  it('does not become dirty or change anything when removing an absent id', async () => {
+    const { result } = await readyEditor();
+    act(() => result.current.select('sec-header'));
+    const before = result.current.page;
+    act(() => result.current.removeSection('nonexistent'));
+    expect(result.current.isDirty).toBe(false);
+    expect(result.current.page?.sections.map((s) => s.id)).toEqual(['sec-nav', 'sec-header']);
+    expect(result.current.page).toBe(before);
+    expect(result.current.selectedSectionId).toBe('sec-header');
+  });
+
   it('moves a section and becomes dirty', async () => {
     const { result } = await readyEditor();
     act(() => result.current.moveSection('sec-header', -1));
@@ -260,6 +271,29 @@ describe('useSectionEditor — saving', () => {
     expect(save).not.toHaveBeenCalled();
     expect(rendered.result.current.validationErrors.length).toBeGreaterThan(0);
     expect(rendered.result.current.saveState).toBe('error');
+  });
+
+  it('stays dirty when the page is edited while a save is in flight', async () => {
+    const { result } = await readyEditor();
+    let resolveSave: (r: PortfolioPageRecord) => void = () => {};
+    vi.spyOn(crud, 'savePortfolioPage').mockReturnValue(
+      new Promise((resolve) => {
+        resolveSave = resolve;
+      })
+    );
+    act(() => result.current.setTitle('First'));
+    let pending: Promise<void> = Promise.resolve();
+    act(() => {
+      pending = result.current.save();
+    });
+    act(() => result.current.setTitle('Second'));
+    await act(async () => {
+      resolveSave(makeRecord());
+      await pending;
+    });
+    expect(result.current.saveState).toBe('saved');
+    expect(result.current.isDirty).toBe(true);
+    expect(result.current.page?.title).toBe('Second');
   });
 
   it('clears validation errors after a successful save', async () => {

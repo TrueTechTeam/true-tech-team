@@ -234,9 +234,18 @@ export function useSectionEditor({
     setSaveState('saving');
     setSaveError(null);
     try {
-      const record = await savePortfolioPage(supabase, userId, page, pageId);
+      const saved = page;
+      const record = await savePortfolioPage(supabase, userId, saved, pageId);
       setPublishedState(record.published);
-      setIsDirty(false);
+      setPage((current) => {
+        // Only clear the dirty flag if nothing was edited while the save was in flight. Every
+        // mutation replaces the page object, so reference equality is the test - the same
+        // property `applyTransform` relies on. Otherwise a mid-save edit would look clean.
+        if (current === saved) {
+          setIsDirty(false);
+        }
+        return current;
+      });
       setSaveState('saved');
     } catch (error) {
       setSaveState('error');
