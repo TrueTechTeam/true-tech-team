@@ -1,18 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { useState } from 'react';
 import Link from 'next/link';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { Button, Dialog } from '@true-tech-team/react-components';
-import { loadPortfolioPage, savePortfolioPage } from '../pages/crud';
-import { recordToPage } from '../pages/mapping';
-import type { PortfolioPage } from '../schema/types';
-import { ThemeDropdown } from '../themes/ThemeDropdown';
-import { THEME_PRESETS } from '../themes/presets';
-import { resolveEffectiveTheme } from '../themes/resolveTheme';
-import { themeStyleVars } from '../themes/themeStyleVars';
 import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
-import { PageRenderer } from '../render/PageRenderer';
+import { EditorCanvas } from './EditorCanvas';
+import { PageSettingsDialog } from './PageSettingsDialog';
+import { SectionCatalogDialog } from './SectionCatalogDialog';
+import { SectionFormPanel } from './SectionFormPanel';
+import { SectionList } from './SectionList';
+import { useSectionEditor } from './useSectionEditor';
 import styles from './PortfolioEditor.module.scss';
 
 export interface PortfolioEditorProps {
@@ -21,48 +19,17 @@ export interface PortfolioEditorProps {
   supabase: SupabaseClient;
 }
 
-type LoadState = 'loading' | 'ready' | 'missing' | 'error';
-
 export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorProps) {
-  const [page, setPage] = useState<PortfolioPage | null>(null);
-  const [loadState, setLoadState] = useState<LoadState>('loading');
+  const editor = useSectionEditor({ pageId, userId, supabase });
   const [showPreview, setShowPreview] = useState(false);
-  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showCatalog, setShowCatalog] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoadState('loading');
-    loadPortfolioPage(supabase, pageId)
-      .then((record) => {
-        if (cancelled) {
-          return;
-        }
-        // RLS intentionally allows reading PUBLISHED rows regardless of owner (for the public
-        // route), so a record can resolve successfully yet belong to someone else - treat that
-        // the same as "not found" rather than silently loading their content.
-        if (!record || record.userId !== userId) {
-          setLoadState('missing');
-          return;
-        }
-        setPage(recordToPage(record));
-        setLoadState('ready');
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setLoadState('error');
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [supabase, pageId, userId]);
-
-  if (loadState === 'loading') {
+  if (editor.loadState === 'loading') {
     return <p>Loading…</p>;
   }
 
-  if (loadState === 'missing') {
+  if (editor.loadState === 'missing') {
     return (
       <div className={styles.stateMessage}>
         <p>This page doesn&apos;t exist or you don&apos;t have access to it.</p>
@@ -71,7 +38,7 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
     );
   }
 
-  if (loadState === 'error') {
+  if (editor.loadState === 'error') {
     return (
       <div className={styles.stateMessage}>
         <p>Couldn&apos;t load this page. Please try again.</p>
@@ -79,29 +46,23 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
     );
   }
 
+  // A pre-pivot page cannot be saved, so it is not editable. Say so instead of mounting an editor
+  // whose Save button can only ever fail. Sub-project 5 owns converting these pages.
+  if (editor.loadState === 'outdated') {
+    return (
+      <div className={styles.stateMessage}>
+        <p>
+          This page was built with an earlier version of the builder and needs converting before it
+          can be edited.
+        </p>
+        <Link href="/portfolio-builder">Back to Portfolio Builder</Link>
+      </div>
+    );
+  }
+
+  const page = editor.page;
   if (!page) {
     return <p>Loading…</p>;
-  }
-
-  function handleThemeSelect(themeId: string) {
-    setPage((current) => (current ? { ...current, themeId, themeOverride: undefined } : current));
-    setSaveState('idle');
-    setSaveError(null);
-  }
-
-  async function handleSave() {
-    if (!page) {
-      return;
-    }
-    setSaveState('saving');
-    setSaveError(null);
-    try {
-      await savePortfolioPage(supabase, userId, page, pageId);
-      setSaveState('saved');
-    } catch (err) {
-      setSaveState('error');
-      setSaveError(err instanceof Error ? err.message : 'Failed to save');
-    }
   }
 
   return (
@@ -109,40 +70,92 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
       <div className={styles.editorHeader}>
         <div className={styles.editorHeaderTitle}>
           <h2>{page.title}</h2>
-          <ThemeDropdown
-            presets={THEME_PRESETS}
-            selectedId={page.themeId ?? THEME_PRESETS[0]?.id}
-            onSelect={handleThemeSelect}
-          />
         </div>
         <div className={styles.editorHeaderActions}>
-          <Button type="button" onClick={() => setShowPreview(true)}>
+          <Button type="button" variant="ghost" onClick={() => setShowSettings(true)}>
+            Settings
+          </Button>
+          <Button type="button" variant="ghost" onClick={() => setShowPreview(true)}>
             Preview
           </Button>
-          <Button type="button" onClick={handleSave} disabled={saveState === 'saving'}>
+          <Button
+            type="button"
+            onClick={() => void editor.save()}
+            disabled={editor.saveState === 'saving'}
+          >
             Save
           </Button>
-          {saveState === 'saved' && <span className={styles.saveStatus}>Saved</span>}
-          {saveState === 'error' && saveError && (
-            <span className={styles.saveStatusError}>{saveError}</span>
+          {editor.saveState === 'saved' && <span className={styles.saveStatus}>Saved</span>}
+          {editor.saveState === 'error' && editor.saveError && (
+            <span className={styles.saveStatusError}>{editor.saveError}</span>
           )}
         </div>
       </div>
-      {/* Read-only until sub-project 2 builds the section editor on top of this shell. */}
-      <div
-        className={styles.canvas}
-        data-testid="canvas-background"
-        style={themeStyleVars(resolveEffectiveTheme(page))}
-      >
-        <PageRenderer page={page} />
+
+      {editor.validationErrors.length > 0 && (
+        <ul className={styles.validationErrors}>
+          {editor.validationErrors.map((error) => (
+            <li key={error}>{error}</li>
+          ))}
+        </ul>
+      )}
+
+      <div className={styles.workspace}>
+        <div className={styles.sidebar}>
+          <SectionList
+            sections={page.sections}
+            selectedId={editor.selectedSectionId}
+            onSelect={editor.select}
+            onMove={editor.moveSection}
+            onRemove={editor.removeSection}
+            onAddClick={() => setShowCatalog(true)}
+          />
+        </div>
+
+        <EditorCanvas page={page} selectedId={editor.selectedSectionId} onSelect={editor.select} />
+
+        <div className={styles.formPanel}>
+          <SectionFormPanel
+            section={editor.selectedSection}
+            onMetaChange={editor.updateSelectedMeta}
+            onPropsChange={editor.updateSelectedProps}
+            supabase={supabase}
+            userId={userId}
+          />
+        </div>
       </div>
+
+      {showCatalog && (
+        <SectionCatalogDialog
+          page={page}
+          onAdd={(type) => {
+            editor.addSection(type);
+            setShowCatalog(false);
+          }}
+          onClose={() => setShowCatalog(false)}
+        />
+      )}
+
+      {showSettings && (
+        <PageSettingsDialog
+          page={page}
+          published={editor.published}
+          isDirty={editor.isDirty}
+          publishError={editor.publishError}
+          onTitleChange={editor.setTitle}
+          onThemeSelect={editor.selectTheme}
+          onPublishedChange={(next) => void editor.setPublished(next)}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
+
       <Dialog
         isOpen={showPreview}
         onClose={() => setShowPreview(false)}
         title="Preview"
         size="full"
       >
-        {page && <PortfolioPreviewFrame page={page} style={{ height: '75vh' }} />}
+        <PortfolioPreviewFrame page={page} style={{ height: '75vh' }} />
       </Dialog>
     </div>
   );

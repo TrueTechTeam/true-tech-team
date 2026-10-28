@@ -1,54 +1,82 @@
 .editorRoot {
   display: flex;
   flex-direction: column;
-}
-
-.canvas {
-  margin: var(--spacing-lg) 0;
-  padding: var(--spacing-md);
-  background: color-mix(in srgb, var(--theme-surface-primary) 94%, black);
-  border: 1px solid var(--theme-border-secondary);
-  border-radius: var(--radius-md);
-}
-
-.stateMessage {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-xl);
+  gap: var(--spacing-md);
+  height: 100%;
+  min-height: 0;
 }
 
 .editorHeader {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--theme-border-secondary);
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
 }
 
 .editorHeaderTitle {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-
-  h2 {
-    margin: 0;
-  }
+  min-width: 0;
 }
 
 .editorHeaderActions {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+/* One responsive layout, no JS breakpoint branching: three columns on wide screens,
+   stacked below. */
+.workspace {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) 320px;
+  gap: var(--spacing-md);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.sidebar,
+.formPanel {
+  overflow-y: auto;
+  min-height: 0;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-sm);
+  background: var(--theme-surface);
+}
+
+@media (width <= 1100px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar,
+  .formPanel {
+    overflow-y: visible;
+  }
 }
 
 .saveStatus {
-  color: var(--color-success-600, green);
-  font-size: 0.875rem;
+  color: var(--theme-success);
 }
 
 .saveStatusError {
-  color: var(--theme-danger-text, var(--color-danger-600));
-  font-size: 0.875rem;
+  color: var(--theme-error);
+}
+
+.validationErrors {
+  margin: 0;
+  padding-left: var(--spacing-lg);
+  color: var(--theme-error);
+}
+
+.stateMessage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl);
+  text-align: center;
 }
