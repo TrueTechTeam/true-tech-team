@@ -123,6 +123,7 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
               onChange={(next) => handleEntryChange(index, next)}
               supabase={supabase}
               userId={userId}
+              idPrefix={`${field.key}-${index}`}
             />
           </div>
         );

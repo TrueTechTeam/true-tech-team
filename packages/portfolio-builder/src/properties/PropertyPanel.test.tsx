@@ -88,4 +88,14 @@ describe('PropertyPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Add Button' }));
     expect(onChange).toHaveBeenCalledWith({ ctas: [{}] });
   });
+
+  it('uses the bare field key as the DOM id when no idPrefix is given', () => {
+    renderPanel(headingSchema, { text: 'Hello' });
+    expect(screen.getByLabelText(/^Text/).id).toBe('text');
+  });
+
+  it('namespaces the DOM id with idPrefix', () => {
+    renderPanel(headingSchema, { text: 'Hello' }, { idPrefix: 'row-3' });
+    expect(screen.getByLabelText(/^Text/).id).toBe('row-3-text');
+  });
 });

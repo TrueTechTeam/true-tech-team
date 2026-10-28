@@ -14,6 +14,8 @@ export interface PropertyPanelProps {
   onChange: (values: Record<string, unknown>) => void;
   supabase: SupabaseClient;
   userId: string;
+  /** Namespaces each field's DOM id (`${idPrefix}-${key}`) so repeated panels do not collide. */
+  idPrefix?: string;
 }
 
 function renderField(
@@ -21,7 +23,8 @@ function renderField(
   values: Record<string, unknown>,
   onChange: (key: string, value: unknown) => void,
   supabase: SupabaseClient,
-  userId: string
+  userId: string,
+  idPrefix?: string
 ) {
   if (field.type === 'list') {
     return (
@@ -37,12 +40,13 @@ function renderField(
   }
 
   const rawValue = values[field.key];
+  const fieldId = idPrefix ? `${idPrefix}-${field.key}` : field.key;
 
   if (field.type === 'text') {
     return (
       <Input
         key={field.key}
-        id={field.key}
+        id={fieldId}
         label={field.label}
         value={typeof rawValue === 'string' ? rawValue : rawValue != null ? String(rawValue) : ''}
         required={field.required}
@@ -55,7 +59,7 @@ function renderField(
     return (
       <Textarea
         key={field.key}
-        id={field.key}
+        id={fieldId}
         label={field.label}
         value={typeof rawValue === 'string' ? rawValue : ''}
         required={field.required}
@@ -68,7 +72,7 @@ function renderField(
     return (
       <NumberInput
         key={field.key}
-        id={field.key}
+        id={fieldId}
         label={field.label}
         value={typeof rawValue === 'number' ? rawValue : undefined}
         min={field.min}
@@ -83,7 +87,7 @@ function renderField(
     return (
       <Checkbox
         key={field.key}
-        id={field.key}
+        id={fieldId}
         label={field.label}
         checked={rawValue === true}
         onChange={(checked) => onChange(field.key, checked)}
@@ -96,7 +100,7 @@ function renderField(
     return (
       <Select
         key={field.key}
-        id={field.key}
+        id={fieldId}
         label={field.label}
         options={field.options ?? []}
         value={stringValue}
@@ -111,7 +115,7 @@ function renderField(
     return (
       <ImageField
         key={field.key}
-        id={field.key}
+        id={fieldId}
         label={field.label}
         value={typeof rawValue === 'string' ? rawValue : ''}
         onChange={(url) => onChange(field.key, url)}
@@ -125,7 +129,7 @@ function renderField(
     return (
       <IconField
         key={field.key}
-        id={field.key}
+        id={fieldId}
         label={field.label}
         value={typeof rawValue === 'string' ? rawValue : ''}
         onChange={(name) => onChange(field.key, name)}
@@ -136,14 +140,23 @@ function renderField(
   return null;
 }
 
-export function PropertyPanel({ schema, values, onChange, supabase, userId }: PropertyPanelProps) {
+export function PropertyPanel({
+  schema,
+  values,
+  onChange,
+  supabase,
+  userId,
+  idPrefix,
+}: PropertyPanelProps) {
   function handleFieldChange(key: string, value: unknown) {
     onChange({ ...values, [key]: value });
   }
 
   return (
     <div className={styles.panel}>
-      {schema.map((field) => renderField(field, values, handleFieldChange, supabase, userId))}
+      {schema.map((field) =>
+        renderField(field, values, handleFieldChange, supabase, userId, idPrefix)
+      )}
     </div>
   );
 }

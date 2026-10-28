@@ -154,4 +154,28 @@ describe('ListField', () => {
     const { container } = renderField(field, []);
     expect(container).toBeEmptyDOMElement();
   });
+
+  describe('entry id namespacing', () => {
+    const two = [{ label: 'One' }, { label: 'Two' }];
+
+    it('gives each entry inputs with distinct ids', () => {
+      renderField(ctasField, two);
+      const ids = screen.getAllByLabelText(/^Label/).map((el) => el.id);
+      expect(ids).toEqual(['ctas-0-label', 'ctas-1-label']);
+    });
+
+    it('lets each entry be reached by its own label', () => {
+      renderField(ctasField, two);
+      expect(screen.getAllByLabelText(/^Label/)).toHaveLength(2);
+    });
+
+    it('edits only the second entry when located by its own label', () => {
+      const { onChange } = renderField(ctasField, two);
+      fireEvent.change(screen.getAllByLabelText(/^Label/)[1] as HTMLElement, {
+        target: { value: 'Changed' },
+      });
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith([{ label: 'One' }, { label: 'Changed' }]);
+    });
+  });
 });
