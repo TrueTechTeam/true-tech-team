@@ -27,8 +27,11 @@ export function EditorCanvas({ page, selectedId, onSelect }: EditorCanvasProps) 
 
   function handleSectionClick(event: MouseEvent<HTMLDivElement>, id: string) {
     // The canvas is a preview, not a live page: a click on a CTA or a nav link selects the
-    // section instead of navigating away from the editor.
+    // section instead of navigating away from the editor. This runs in the capture phase and
+    // stops propagation so a section's own handler (e.g. the navbar's history.pushState) never
+    // runs and cannot rewrite the editor's URL or history.
     event.preventDefault();
+    event.stopPropagation();
     onSelect(id);
   }
 
@@ -47,7 +50,7 @@ export function EditorCanvas({ page, selectedId, onSelect }: EditorCanvasProps) 
           className={styles.section}
           data-testid={`canvas-section-${section.id}`}
           data-selected={section.id === selectedId ? 'true' : undefined}
-          onClick={(event) => handleSectionClick(event, section.id)}
+          onClickCapture={(event) => handleSectionClick(event, section.id)}
         >
           <SectionRenderer section={section} page={page} anchors={anchors} />
         </div>

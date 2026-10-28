@@ -280,7 +280,10 @@ export function useSectionEditor({
     isDirty,
     saveState,
     saveError,
-    validationErrors,
+    // Derived, not stored separately: errors are only meaningful while the failed save they came
+    // from is still the latest word. Any edit moves saveState off 'error', which hides them, so the
+    // two can never disagree.
+    validationErrors: saveState === 'error' ? validationErrors : [],
     publishError,
     select,
     addSection,

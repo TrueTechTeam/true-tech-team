@@ -273,6 +273,34 @@ describe('useSectionEditor — saving', () => {
     expect(rendered.result.current.saveState).toBe('error');
   });
 
+  it('drops stale validation errors as soon as the page is edited, without a second save', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(
+      makeRecord({
+        sections: [
+          {
+            id: 'sec-header',
+            type: 'header',
+            name: 'Intro',
+            showInNav: true,
+            props: { heading: '', subheading: '', backgroundImage: '', align: 'left', ctas: [] },
+          },
+        ],
+      })
+    );
+    const rendered = renderEditor();
+    await waitFor(() => expect(rendered.result.current.loadState).toBe('ready'));
+    await act(async () => {
+      await rendered.result.current.save();
+    });
+    expect(rendered.result.current.validationErrors.length).toBeGreaterThan(0);
+
+    act(() => rendered.result.current.select('sec-header'));
+    act(() => rendered.result.current.updateSelectedProps({ heading: 'Hello' }));
+
+    expect(rendered.result.current.saveState).toBe('idle');
+    expect(rendered.result.current.validationErrors).toEqual([]);
+  });
+
   it('stays dirty when the page is edited while a save is in flight', async () => {
     const { result } = await readyEditor();
     let resolveSave: (r: PortfolioPageRecord) => void = () => {};

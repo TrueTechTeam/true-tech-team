@@ -82,7 +82,9 @@ export function PageSettingsDialog({
           {isDirty && <span className={styles.hint}>Save your changes before publishing.</span>}
           {published && (
             <span className={styles.publicUrl}>
-              <a href={publicUrl}>{publicUrl}</a>
+              <a href={publicUrl} target="_blank" rel="noopener noreferrer">
+                {publicUrl}
+              </a>
             </span>
           )}
           {publishError && <span className={styles.error}>{publishError}</span>}

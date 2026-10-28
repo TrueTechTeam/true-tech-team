@@ -100,6 +100,8 @@ describe('PageSettingsDialog', () => {
     renderDialog({ published: true });
     const link = screen.getByRole('link', { name: /\/p\/jtrue/ });
     expect(link).toHaveAttribute('href', '/p/jtrue');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
   it('hides the public URL while the page is a draft', () => {

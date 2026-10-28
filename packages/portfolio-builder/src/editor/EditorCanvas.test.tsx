@@ -64,6 +64,19 @@ describe('EditorCanvas', () => {
     expect(event.defaultPrevented).toBe(true);
   });
 
+  it('selects without touching the URL or history when a previewed nav link is clicked', () => {
+    const { onSelect } = renderCanvas(makePage([navbar, headerWithCta]));
+    const hashBefore = window.location.hash;
+    const lengthBefore = window.history.length;
+    const link = screen.getByRole('link', { name: 'Intro' });
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+    link.dispatchEvent(event);
+    expect(onSelect).toHaveBeenCalledWith('sec-nav');
+    expect(window.location.hash).toBe(hashBefore);
+    expect(window.history.length).toBe(lengthBefore);
+    expect(event.defaultPrevented).toBe(true);
+  });
+
   it('marks the selected section', () => {
     renderCanvas(makePage([navbar, headerWithCta]), 'sec-header');
     expect(screen.getByTestId('canvas-section-sec-header')).toHaveAttribute(
