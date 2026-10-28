@@ -5,6 +5,7 @@ import { Input, Textarea, NumberInput, Checkbox, Select } from '@true-tech-team/
 import type { PropertyField, PropertySchema } from './types';
 import { ImageField } from './ImageField';
 import { IconField } from './IconField';
+import { ListField } from './ListField';
 import styles from './PropertyPanel.module.scss';
 
 export interface PropertyPanelProps {
@@ -23,9 +24,16 @@ function renderField(
   userId: string
 ) {
   if (field.type === 'list') {
-    // The list editor (add/remove/reorder of sub-forms) lands in sub-project 2, where this panel
-    // is actually wired into the editor. Nothing renders PropertyPanel in this sub-project.
-    return null;
+    return (
+      <ListField
+        key={field.key}
+        field={field}
+        value={values[field.key]}
+        onChange={(next) => onChange(field.key, next)}
+        supabase={supabase}
+        userId={userId}
+      />
+    );
   }
 
   const rawValue = values[field.key];

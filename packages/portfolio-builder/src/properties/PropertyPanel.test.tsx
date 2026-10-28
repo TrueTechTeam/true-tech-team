@@ -66,8 +66,26 @@ describe('PropertyPanel', () => {
     expect(screen.queryByLabelText('Width')).not.toBeInTheDocument();
   });
 
-  it('renders nothing for a list field until its editor exists', () => {
-    renderPanel([{ key: 'ctas', label: 'Buttons', type: 'list', itemSchema: [] }], { ctas: [] });
-    expect(screen.queryByLabelText('Buttons')).not.toBeInTheDocument();
+  const ctasSchema: PropertySchema = [
+    {
+      key: 'ctas',
+      label: 'Buttons',
+      type: 'list',
+      itemLabel: 'Button',
+      itemSchema: [{ key: 'label', label: 'Label', type: 'text' }],
+    },
+  ];
+
+  it('renders a list field through ListField', () => {
+    renderPanel(ctasSchema, { ctas: [{ label: 'One' }] });
+    expect(screen.getByText('Buttons')).toBeInTheDocument();
+    expect(screen.getByText('Button 1')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('One')).toBeInTheDocument();
+  });
+
+  it('reports a list change under the field key', () => {
+    const { onChange } = renderPanel(ctasSchema, { ctas: [] });
+    fireEvent.click(screen.getByRole('button', { name: 'Add Button' }));
+    expect(onChange).toHaveBeenCalledWith({ ctas: [{}] });
   });
 });

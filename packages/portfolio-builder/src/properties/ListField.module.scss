@@ -1,0 +1,42 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.label {
+  font-weight: 600;
+  color: var(--theme-text-primary);
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-sm);
+  background: var(--theme-surface);
+}
+
+.entryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xs);
+}
+
+.entryTitle {
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+}
+
+.entryControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.empty {
+  color: var(--theme-text-secondary);
+}
