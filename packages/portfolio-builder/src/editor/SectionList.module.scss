@@ -15,9 +15,9 @@
   align-items: center;
   gap: var(--spacing-xs);
   padding: var(--spacing-xs);
-  border: 1px solid var(--theme-border);
+  border: 1px solid var(--theme-border-secondary);
   border-radius: var(--radius-sm);
-  background: var(--theme-surface);
+  background: var(--theme-surface-primary);
 }
 
 .rowSelected {
