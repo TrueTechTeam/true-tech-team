@@ -15,11 +15,11 @@ import {
 import { savePortfolioPage } from '../pages/crud';
 import { generateUniqueSlug, slugify } from '../pages/slug';
 import { recordToPage } from '../pages/mapping';
-import { CURRENT_SCHEMA_VERSION } from '../schema/types';
-import { SECTION_META } from '../sections/meta';
-import { THEME_PRESETS } from '../themes/presets';
+import { buildPageFromTemplate } from '../templates/buildPageFromTemplate';
+import { getTemplate, TEMPLATE_IDS } from '../templates/registry';
 import type { PortfolioPageRecord } from '../pages/types';
 import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
+import { TemplatePicker } from './TemplatePicker';
 import styles from './PortfolioPagesList.module.scss';
 
 export interface PortfolioPagesListProps {
@@ -37,6 +37,7 @@ export function PortfolioPagesList({
 }: PortfolioPagesListProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [title, setTitle] = useState('');
+  const [templateId, setTemplateId] = useState<string>(TEMPLATE_IDS[0] ?? 'blank');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -52,6 +53,7 @@ export function PortfolioPagesList({
   function handleCloseDialog() {
     setIsDialogOpen(false);
     setTitle('');
+    setTemplateId(TEMPLATE_IDS[0] ?? 'blank');
     setError(null);
   }
 
@@ -59,34 +61,19 @@ export function PortfolioPagesList({
     setError(null);
     setIsSubmitting(true);
     try {
-      const buildPage = (slug: string) => ({
-        schemaVersion: CURRENT_SCHEMA_VERSION,
-        slug,
-        title: title.trim(),
-        templateId: 'default',
-        themeId: THEME_PRESETS[0]?.id,
-        sections: [
-          {
-            id: crypto.randomUUID(),
-            type: 'navbar' as const,
-            name: 'Home',
-            showInNav: false,
-            props: { ...SECTION_META.navbar.defaultProps },
-          },
-          {
-            id: crypto.randomUUID(),
-            type: 'header' as const,
-            name: 'Intro',
-            showInNav: true,
-            props: { ...SECTION_META.header.defaultProps, heading: title.trim() },
-          },
-        ],
-      });
-
+      const template = getTemplate(templateId) ?? getTemplate(TEMPLATE_IDS[0] ?? 'blank');
+      if (!template) {
+        setError('No templates are available.');
+        return;
+      }
       const slug = await generateUniqueSlug(supabase, title);
       let record: PortfolioPageRecord;
       try {
-        record = await savePortfolioPage(supabase, userId, buildPage(slug));
+        record = await savePortfolioPage(
+          supabase,
+          userId,
+          buildPageFromTemplate(template, title.trim(), slug)
+        );
       } catch (err) {
         // generateUniqueSlug's availability check is RLS-scoped (see its own doc
         // comment) - it can look available here even when another user's
@@ -96,7 +83,11 @@ export function PortfolioPagesList({
         if (err instanceof Error && err.message.includes('already taken')) {
           const base = slugify(title) || 'page';
           const suffix = crypto.randomUUID().replace(/-/g, '').slice(0, 6);
-          record = await savePortfolioPage(supabase, userId, buildPage(`${base}-${suffix}`));
+          record = await savePortfolioPage(
+            supabase,
+            userId,
+            buildPageFromTemplate(template, title.trim(), `${base}-${suffix}`)
+          );
         } else {
           throw err;
         }
@@ -186,6 +177,7 @@ export function PortfolioPagesList({
           </>
         }
       >
+        <TemplatePicker selectedId={templateId} onSelect={setTemplateId} />
         <Input
           id="new-page-title"
           label="Title"
