@@ -65,3 +65,35 @@ describe('TemplatePicker', () => {
     expect(screen.getByRole('group', { name: /template/i })).toBeInTheDocument();
   });
 });
+
+describe('TemplatePicker thumbnails and selection', () => {
+  it('renders a thumbnail inside every card', () => {
+    renderPicker();
+    for (const id of TEMPLATE_IDS) {
+      expect(screen.getByTestId(`template-thumbnail-${id}`)).toBeInTheDocument();
+    }
+  });
+
+  it('keeps the card accessible name to just the label', () => {
+    renderPicker(TEMPLATE_IDS[0]!);
+    for (const id of TEMPLATE_IDS) {
+      const button = screen.getByRole('button', { name: TEMPLATES[id]!.label });
+      expect(button).toContainElement(screen.getByTestId(`template-thumbnail-${id}`));
+    }
+  });
+
+  it('shows a non-colour selected indicator on the selected card only', () => {
+    const selected = TEMPLATE_IDS[1]!;
+    renderPicker(selected);
+    const indicators = screen.getAllByTestId('selected-indicator');
+    expect(indicators).toHaveLength(1);
+    expect(screen.getByRole('button', { name: TEMPLATES[selected]!.label })).toContainElement(
+      indicators[0]!
+    );
+  });
+
+  it('shows no selected indicator for an unknown selectedId', () => {
+    renderPicker('nope');
+    expect(screen.queryByTestId('selected-indicator')).not.toBeInTheDocument();
+  });
+});

@@ -1,6 +1,7 @@
 'use client';
 
 import { TEMPLATE_IDS, TEMPLATES } from '../templates/registry';
+import { TemplateThumbnail } from './TemplateThumbnail';
 import styles from './TemplatePicker.module.scss';
 
 export interface TemplatePickerProps {
@@ -24,15 +25,22 @@ export function TemplatePicker({ selectedId, onSelect }: TemplatePickerProps) {
           if (!template) {
             return null;
           }
+          const isSelected = id === selectedId;
           return (
             <button
               key={id}
               type="button"
               className={styles.card}
-              aria-pressed={id === selectedId}
+              aria-pressed={isSelected}
               onClick={() => onSelect(id)}
             >
-              {template.label}
+              <TemplateThumbnail template={template} />
+              <span className={styles.cardLabel}>{template.label}</span>
+              {isSelected && (
+                <span className={styles.check} aria-hidden="true" data-testid="selected-indicator">
+                  &#10003;
+                </span>
+              )}
             </button>
           );
         })}

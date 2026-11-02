@@ -1,0 +1,28 @@
+// The page renders at a 1200px-wide virtual viewport and is shrunk to 0.15 scale, so the frame is
+// 180px wide. 800px of virtual height (120px on screen) shows the navbar, hero and the top of the
+// next sections, which is enough to read as a page.
+$virtual-width: 1200px;
+$virtual-height: 800px;
+$scale: 0.15;
+
+.frame {
+  position: relative;
+  width: $virtual-width * $scale;
+  height: $virtual-height * $scale;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  border: 1px solid var(--theme-border-secondary);
+  border-radius: var(--radius-sm);
+  background: var(--theme-background-primary);
+}
+
+.page {
+  width: $virtual-width;
+  height: $virtual-height;
+  overflow: hidden;
+  transform: scale($scale);
+  transform-origin: top left;
+  background: var(--theme-background-primary);
+  color: var(--theme-text-primary);
+}

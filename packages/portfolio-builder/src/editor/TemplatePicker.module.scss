@@ -11,11 +11,16 @@
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--spacing-xs);
 }
 
 .card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
   padding: var(--spacing-sm);
   border: 1px solid var(--theme-border-secondary);
   border-radius: var(--radius-sm);
@@ -26,9 +31,34 @@
   text-align: left;
 }
 
+.cardLabel {
+  align-self: flex-start;
+}
+
+// Check badge: a second, non-colour signal that the card is selected.
+.check {
+  position: absolute;
+  top: var(--spacing-xs);
+  right: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--theme-primary);
+  color: var(--theme-text-on-primary);
+  font-weight: 700;
+  line-height: 1;
+}
+
 .card[aria-pressed='true'] {
+  // A thick ring offset from the card edge reads as a distinct shape, not just a colour change, and
+  // the bold label backs it up in low-contrast themes.
   border-color: var(--theme-primary);
-  box-shadow: inset 0 0 0 1px var(--theme-primary);
+  outline: 3px solid var(--theme-primary);
+  outline-offset: 2px;
+  font-weight: 700;
 }
 
 .description {
