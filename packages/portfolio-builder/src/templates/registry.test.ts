@@ -78,8 +78,22 @@ describe('template registry', () => {
       for (const section of template.sections) {
         const schema = SECTION_META[section.type].propertySchema;
         const allowed = new Set(schema.map((field) => field.key));
-        for (const propKey of Object.keys(section.props ?? {})) {
+        for (const [propKey, value] of Object.entries(section.props ?? {})) {
           expect(allowed, `${key} / ${section.name} / ${propKey}`).toContain(propKey);
+          // validateSectionProps iterates the schema, not the props bag, so an invented key inside
+          // a list item is ignored by validation AND rendering. Guard it here.
+          const field = schema.find((candidate) => candidate.key === propKey);
+          if (Array.isArray(value) && field?.type === 'list' && field.itemSchema) {
+            const itemKeys = new Set(field.itemSchema.map((itemField) => itemField.key));
+            value.forEach((item, index) => {
+              for (const itemKey of Object.keys((item ?? {}) as Record<string, unknown>)) {
+                expect(
+                  itemKeys,
+                  `${key} / ${section.name} / ${propKey}[${index}] / ${itemKey}`
+                ).toContain(itemKey);
+              }
+            });
+          }
         }
       }
     }
