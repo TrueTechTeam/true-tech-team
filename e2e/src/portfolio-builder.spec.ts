@@ -48,6 +48,18 @@ test.describe('portfolio builder: create from template, edit, publish', () => {
         timeout: 30_000,
       });
     }
+
+    // ...and the template's THEME reached the page: the canvas carries Graphic Design's preset
+    // ('coral-reef', primary = --color-coral-500) as a scoped custom property. A computed custom
+    // property has its var() substituted, and the library's minified CSS spells #ff7f50 as the
+    // named color 'coral', so accept either spelling. The Slate default resolves to #06f, so this
+    // cannot pass on an un-themed page.
+    const canvas = page.getByTestId('canvas-background');
+    await expect(canvas).toBeVisible({ timeout: 30_000 });
+    const primary = await canvas.evaluate((el) =>
+      getComputedStyle(el).getPropertyValue('--theme-primary').trim()
+    );
+    expect(primary).toMatch(/^(coral|#ff7f50)$/i);
   });
 
   test('editing a section updates the live canvas, and the page saves', async ({ page }) => {
@@ -58,7 +70,10 @@ test.describe('portfolio builder: create from template, edit, publish', () => {
     await page.getByRole('button', { name: /^\d+\. Portfolio$/ }).click();
     const heading = page.getByLabel(/^Heading/);
     await heading.fill('My Best Work');
-    await expect(page.getByText('My Best Work')).toBeVisible();
+    // Scoped to the editor canvas so a sidebar/form echo of the heading cannot satisfy it.
+    await expect(page.getByTestId('canvas-background').getByText('My Best Work')).toBeVisible({
+      timeout: 10_000,
+    });
 
     await page.getByRole('button', { name: /^save$/i }).click();
     await expect(page.getByText(/^saved$/i)).toBeVisible({ timeout: 30_000 });
