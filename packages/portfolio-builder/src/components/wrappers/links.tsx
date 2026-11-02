@@ -1,5 +1,6 @@
 import { NavLink, type IconName } from '@true-tech-team/react-components';
 import type { PropertySchema } from '../../properties/types';
+import { isSafeHref } from '../../sections/safeHref';
 import styles from './links.module.scss';
 
 export interface LinkButtonItemProps {
@@ -24,9 +25,19 @@ export function LinkButtonItem(props: Record<string, unknown>) {
   const label = typeof props.label === 'string' ? props.label : '';
   const href = typeof props.href === 'string' ? props.href : '#';
   const icon = typeof props.icon === 'string' ? (props.icon as IconName) : undefined;
-  const target = props.openInNewTab === true ? '_blank' : undefined;
+  if (!isSafeHref(href)) {
+    // Drop the link entirely: a dead control beats a live javascript: URL.
+    return null;
+  }
+  const newTab = props.openInNewTab === true;
   return (
-    <NavLink href={href} icon={icon} target={target} variant="pill">
+    <NavLink
+      href={href}
+      icon={icon}
+      target={newTab ? '_blank' : undefined}
+      rel={newTab ? 'noopener noreferrer' : undefined}
+      variant="pill"
+    >
       {label}
     </NavLink>
   );
@@ -57,9 +68,19 @@ export function IconLinkButtonItem(props: Record<string, unknown>) {
   const href = typeof props.href === 'string' ? props.href : '#';
   const icon = typeof props.icon === 'string' ? (props.icon as IconName) : 'external-link';
   const ariaLabel = typeof props.ariaLabel === 'string' ? props.ariaLabel : '';
-  const target = props.openInNewTab === true ? '_blank' : undefined;
+  if (!isSafeHref(href)) {
+    return null;
+  }
+  const newTab = props.openInNewTab === true;
   return (
-    <NavLink href={href} icon={icon} target={target} variant="ghost" aria-label={ariaLabel}>
+    <NavLink
+      href={href}
+      icon={icon}
+      target={newTab ? '_blank' : undefined}
+      rel={newTab ? 'noopener noreferrer' : undefined}
+      variant="ghost"
+      aria-label={ariaLabel}
+    >
       <span className={styles.srOnly}>{ariaLabel}</span>
     </NavLink>
   );

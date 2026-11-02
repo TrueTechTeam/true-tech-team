@@ -51,3 +51,82 @@ describe('IconLinkButtonItem', () => {
     );
   });
 });
+
+const UNSAFE_HREFS = [
+  'javascript:alert(1)',
+  'JaVaScRiPt:alert(1)',
+  'data:text/html,<script>alert(1)</script>',
+  'vbscript:msgbox(1)',
+  '//evil.example.com',
+  '/\\evil.example.com',
+];
+
+const SAFE_HREFS = [
+  'https://example.com',
+  'http://example.com',
+  'mailto:a@example.com',
+  'tel:+15551234567',
+  '#contact',
+  '/about',
+];
+
+describe('LinkButtonItem href safety', () => {
+  it.each(UNSAFE_HREFS)('does not render a link for the unsafe href %s', (href) => {
+    render(<LinkButtonItem label="Click" href={href} />);
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it.each(SAFE_HREFS)('renders a link for the safe href %s', (href) => {
+    render(<LinkButtonItem label="Click" href={href} />);
+    expect(screen.getByRole('link', { name: 'Click' })).toHaveAttribute('href', href);
+  });
+
+  it('adds rel="noopener noreferrer" when opening in a new tab', () => {
+    render(<LinkButtonItem label="Click" href="https://example.com" openInNewTab />);
+    const link = screen.getByRole('link', { name: 'Click' });
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', expect.stringContaining('noopener'));
+    expect(link).toHaveAttribute('rel', expect.stringContaining('noreferrer'));
+  });
+
+  it('sets neither target nor rel when not opening in a new tab', () => {
+    render(<LinkButtonItem label="Click" href="https://example.com" />);
+    const link = screen.getByRole('link', { name: 'Click' });
+    expect(link).not.toHaveAttribute('target');
+    expect(link).not.toHaveAttribute('rel');
+  });
+});
+
+describe('IconLinkButtonItem href safety', () => {
+  it.each(UNSAFE_HREFS)('does not render a link for the unsafe href %s', (href) => {
+    render(<IconLinkButtonItem href={href} icon="external-link" ariaLabel="Open" />);
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it.each(SAFE_HREFS)('renders a link for the safe href %s', (href) => {
+    render(<IconLinkButtonItem href={href} icon="external-link" ariaLabel="Open" />);
+    expect(screen.getByRole('link', { name: 'Open' })).toHaveAttribute('href', href);
+  });
+
+  it('adds rel="noopener noreferrer" when opening in a new tab', () => {
+    render(
+      <IconLinkButtonItem
+        href="https://example.com"
+        icon="external-link"
+        ariaLabel="Open"
+        openInNewTab
+      />
+    );
+    const link = screen.getByRole('link', { name: 'Open' });
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', expect.stringContaining('noopener'));
+    expect(link).toHaveAttribute('rel', expect.stringContaining('noreferrer'));
+  });
+
+  it('sets neither target nor rel when not opening in a new tab', () => {
+    render(<IconLinkButtonItem href="https://example.com" icon="external-link" ariaLabel="Open" />);
+    const link = screen.getByRole('link', { name: 'Open' });
+    expect(link).not.toHaveAttribute('target');
+    expect(link).not.toHaveAttribute('rel');
+  });
+});
