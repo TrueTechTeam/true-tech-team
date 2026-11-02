@@ -68,6 +68,20 @@ describe('buildPageFromTemplate', () => {
     expect(page.sections[1]?.props).not.toBe(SECTION_META.header.defaultProps);
   });
 
+  it('deep-copies nested props so pages built from one template share no array instances', () => {
+    const pageA = buildPageFromTemplate(software, 'A', 'a');
+    const pageB = buildPageFromTemplate(software, 'B', 'b');
+    const ctasA = (pageA.sections[1]?.props as Record<string, unknown>)['ctas'];
+    const ctasB = (pageB.sections[1]?.props as Record<string, unknown>)['ctas'];
+    const templateCtas = software.sections[1]?.props?.['ctas'];
+    expect(Array.isArray(ctasA)).toBe(true);
+    expect(ctasA).toEqual(ctasB);
+    expect(ctasA).not.toBe(ctasB);
+    // And not the template's own array either.
+    expect(ctasA).toEqual(templateCtas);
+    expect(ctasA).not.toBe(templateCtas);
+  });
+
   // Review Focus 2
   it('gives every section a unique id, and two builds share no ids', () => {
     const first = buildPageFromTemplate(software, 'A', 'a');

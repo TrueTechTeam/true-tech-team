@@ -23,12 +23,13 @@ export function buildPageFromTemplate(
     name: templateSection.name,
     showInNav: templateSection.showInNav,
     ...(templateSection.background === undefined ? {} : { background: templateSection.background }),
-    // Spread both: never alias the module-level defaults into the page, or the first edit would
-    // mutate the metadata for every page in the process.
-    props: {
+    // Deep-copy the merge: a shallow spread would still share nested values (e.g. `ctas` arrays)
+    // with the template module and the section metadata, so an in-place edit on one page would
+    // leak into every other page built from the same template.
+    props: structuredClone({
       ...SECTION_META[templateSection.type].defaultProps,
       ...(templateSection.props ?? {}),
-    },
+    }),
   }));
 
   return {
