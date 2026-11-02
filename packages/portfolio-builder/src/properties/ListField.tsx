@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { Button, IconButton } from '@true-tech-team/react-components';
 import type { PropertyField, PropertySchema } from './types';
@@ -42,6 +43,15 @@ function withoutNestedLists(schema: PropertySchema): PropertySchema {
 }
 
 export function ListField({ field, value, onChange, supabase, userId }: ListFieldProps) {
+  const entries = readEntries(value);
+
+  // The sub-forms below close over the entry OBJECT, not its index, because an async edit (an
+  // ImageField upload) can resolve after the user has reordered. `handleMove` splices the same
+  // object references, so identity survives a reorder while an index does not. The ref keeps the
+  // lookup against the CURRENT array rather than the one captured at render time.
+  const entriesRef = useRef(entries);
+  entriesRef.current = entries;
+
   const itemSchema = field.itemSchema;
   if (!itemSchema) {
     // A `list` field with no `itemSchema` is a metadata bug, not user data. Render nothing rather
@@ -49,13 +59,19 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
     return null;
   }
 
-  const entries = readEntries(value);
   const entrySchema = withoutNestedLists(itemSchema);
   const itemLabel = field.itemLabel ?? 'Item';
   const canAdd = field.maxItems === undefined || entries.length < field.maxItems;
 
-  function handleEntryChange(index: number, next: Record<string, unknown>) {
-    onChange(entries.map((entry, i) => (i === index ? next : entry)));
+  function handleEntryChange(entry: Record<string, unknown>, next: Record<string, unknown>) {
+    const current = entriesRef.current;
+    const index = current.indexOf(entry);
+    if (index === -1) {
+      // The entry was removed while an edit was in flight. Dropping the write is correct: there is
+      // no longer a target, and appending it would resurrect deleted content.
+      return;
+    }
+    onChange(current.map((candidate, i) => (i === index ? next : candidate)));
   }
 
   function handleAdd() {
@@ -120,7 +136,7 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
             <PropertyPanel
               schema={entrySchema}
               values={entry}
-              onChange={(next) => handleEntryChange(index, next)}
+              onChange={(next) => handleEntryChange(entry, next)}
               supabase={supabase}
               userId={userId}
               idPrefix={`${field.key}-${index}`}

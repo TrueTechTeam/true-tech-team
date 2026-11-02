@@ -1,7 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { ListField } from './ListField';
+import * as assets from '../assets/upload';
+import type { PortfolioAsset } from '../assets/types';
 import type { PropertyField } from './types';
 
 const fakeSupabase = {} as SupabaseClient;
@@ -176,6 +178,103 @@ describe('ListField', () => {
       });
       expect(onChange).toHaveBeenCalledTimes(1);
       expect(onChange).toHaveBeenCalledWith([{ label: 'One' }, { label: 'Changed' }]);
+    });
+  });
+
+  // An async edit (an ImageField upload) can resolve AFTER the user reorders or removes. The real
+  // hazard is the STALE CLOSURE held by the pending upload, not a DOM node: React reuses the node
+  // at an index key, and that node's handler is refreshed on every render. So these tests start a
+  // real upload, hold it pending, change the list, and only then resolve it.
+  describe('deferred entry changes', () => {
+    const galleryField: PropertyField = {
+      key: 'items',
+      label: 'Items',
+      type: 'list',
+      itemLabel: 'Item',
+      itemSchema: [{ key: 'src', label: 'Photo', type: 'image' }],
+    };
+
+    function renderGallery(
+      value: Array<Record<string, unknown>>,
+      onChange: (next: Array<Record<string, unknown>>) => void
+    ) {
+      const ui = (current: Array<Record<string, unknown>>) => (
+        <ListField
+          field={galleryField}
+          value={current}
+          onChange={onChange}
+          supabase={fakeSupabase}
+          userId="user-1"
+        />
+      );
+      const result = render(ui(value));
+      return { rerender: (next: Array<Record<string, unknown>>) => result.rerender(ui(next)) };
+    }
+
+    function startUpload(inputIndex: number) {
+      let resolveUpload!: (asset: PortfolioAsset) => void;
+      vi.spyOn(assets, 'uploadPortfolioAsset').mockReturnValue(
+        new Promise<PortfolioAsset>((resolve) => {
+          resolveUpload = resolve;
+        })
+      );
+      const file = new File(['x'], 'new.png', { type: 'image/png' });
+      const inputs = screen.getAllByLabelText('Upload new image');
+      fireEvent.change(inputs[inputIndex] as HTMLElement, { target: { files: [file] } });
+      return (url: string) => resolveUpload({ id: url, publicUrl: url } as PortfolioAsset);
+    }
+
+    beforeEach(() => {
+      vi.spyOn(assets, 'listPortfolioAssets').mockResolvedValue([]);
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('applies a deferred entry change to the entry it started on, not to its old position', async () => {
+      const first = { src: 'first.png' };
+      const second = { src: 'second.png' };
+      const onChange = vi.fn<(next: Array<Record<string, unknown>>) => void>();
+      const { rerender } = renderGallery([first, second], onChange);
+
+      // The upload starts on entry 1 ...
+      const finishUpload = startUpload(0);
+
+      // ... the user moves entry 1 down before it resolves ...
+      fireEvent.click(screen.getByRole('button', { name: 'Move Item 1 down' }));
+      expect(onChange).toHaveBeenCalledWith([second, first]);
+      onChange.mockClear();
+      rerender([second, first]);
+
+      // ... and then the upload lands. It belongs to 'first', which is now at index 1.
+      finishUpload('https://cdn.example.com/uploaded.png');
+
+      await waitFor(() => expect(onChange).toHaveBeenCalled());
+      expect(
+        onChange.mock.calls[0]?.[0],
+        'a deferred edit must not overwrite the entry now at the old index'
+      ).toEqual([{ src: 'second.png' }, { src: 'https://cdn.example.com/uploaded.png' }]);
+    });
+
+    it('drops a deferred entry change when its entry was removed', async () => {
+      const first = { src: 'first.png' };
+      const second = { src: 'second.png' };
+      const onChange = vi.fn<(next: Array<Record<string, unknown>>) => void>();
+      const { rerender } = renderGallery([first, second], onChange);
+
+      const finishUpload = startUpload(0);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Remove Item 1' }));
+      onChange.mockClear();
+      rerender([second]);
+
+      finishUpload('https://cdn.example.com/uploaded.png');
+
+      // Let the pending upload's continuation run, then assert nothing was written.
+      await waitFor(() => expect(assets.uploadPortfolioAsset).toHaveBeenCalled());
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(onChange).not.toHaveBeenCalled();
     });
   });
 });
