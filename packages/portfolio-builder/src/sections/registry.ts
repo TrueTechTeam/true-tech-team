@@ -3,6 +3,7 @@ import type { SectionTypeEntry } from './types';
 import { SECTION_META } from './meta';
 import { NavbarSection } from './navbar/NavbarSection';
 import { HeaderSection } from './header/HeaderSection';
+import { GallerySection } from './gallery/GallerySection';
 
 /**
  * Each section type's metadata joined to its component.
@@ -16,6 +17,7 @@ import { HeaderSection } from './header/HeaderSection';
 export const SECTION_REGISTRY: Record<SectionType, SectionTypeEntry> = {
   navbar: { ...SECTION_META.navbar, component: NavbarSection },
   header: { ...SECTION_META.header, component: HeaderSection },
+  gallery: { ...SECTION_META.gallery, component: GallerySection },
 };
 
 export function getSectionTypeEntry(type: string): SectionTypeEntry | undefined {

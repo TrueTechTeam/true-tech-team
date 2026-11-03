@@ -2,6 +2,7 @@ import { isSectionType, type SectionType } from '../schema/types';
 import type { SectionTypeMeta } from './types';
 import { navbarSectionMeta } from './navbar/meta';
 import { headerSectionMeta } from './header/meta';
+import { gallerySectionMeta } from './gallery/meta';
 
 /**
  * Every section type's server-safe metadata.
@@ -13,6 +14,7 @@ import { headerSectionMeta } from './header/meta';
 export const SECTION_META: Record<SectionType, SectionTypeMeta> = {
   navbar: navbarSectionMeta,
   header: headerSectionMeta,
+  gallery: gallerySectionMeta,
 };
 
 export function getSectionTypeMeta(type: string): SectionTypeMeta | undefined {
