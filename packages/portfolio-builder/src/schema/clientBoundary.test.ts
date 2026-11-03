@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /**
@@ -21,6 +21,10 @@ import { fileURLToPath } from 'node:url';
  * future `meta.ts` importing a value from `@true-tech-team/react-components` whose module is
  * `'use client'`: that is a package specifier, so this test cannot see it - hence the rule on
  * `SectionTypeMeta` that metadata must not import from the component library.
+ *
+ * The package-specifier hole is closed separately by `packageValueImportsIn` below: every section
+ * metadata file (`sections/meta.ts` and each `sections/<type>/meta.ts`, discovered by reading the
+ * directory) may import only relative specifiers or type-only package imports.
  *
  * Anti-vacuity: a resolver that silently stops resolving would shrink every closure to its entry
  * and make the emptiness assertions pass for free. So the closure tests also assert which
@@ -73,6 +77,142 @@ function clientModulesIn(entry: string): string[] {
     .filter((file) => /^\s*(['"])use client\1/m.test(readFileSync(file, 'utf8')))
     .map((file) => relative(here, file));
 }
+
+/**
+ * Non-relative (package) specifiers that `source` imports or re-exports at RUNTIME. Pure: takes file
+ * content, returns offending specifiers, so it can be unit-tested against fixtures.
+ *
+ * Rules:
+ *  - relative specifiers (`.`-prefixed) are skipped - the closure walk above already covers them;
+ *  - `import type ...` / `export type ...` are skipped - erased at compile time;
+ *  - `import { type A, type B } from 'pkg'` (EVERY specifier `type`-prefixed) is ALLOWED. DECISION:
+ *    without `verbatimModuleSyntax` (not set in this repo's tsconfig) TypeScript and SWC elide the
+ *    whole statement, so nothing reaches the bundle. If that flag is ever enabled such a statement
+ *    emits a bare `import 'pkg'`, and this allowance must be revisited. A mixed `{ type A, b }`,
+ *    an empty `{}`, a default import, `* as ns` and `export * from` are all treated as value imports;
+ *  - side-effect imports (`import 'pkg'`) are flagged.
+ * Dynamic `import()` is not inspected.
+ */
+export function packageValueImportsIn(source: string): string[] {
+  const code = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const offending: string[] = [];
+
+  const fromPattern =
+    /^\s*(?:import|export)\s+(?!type[\s{*])([^;'"]*?)\s*from\s*['"]([^'"]+)['"]/gm;
+  for (const [, clause, specifier] of code.matchAll(fromPattern)) {
+    if (specifier.startsWith('.')) {
+      continue;
+    }
+    const named = /^\{([^}]*)\}$/.exec(clause.trim());
+    const entries = named
+      ? named[1]
+          .split(',')
+          .map((e) => e.trim())
+          .filter(Boolean)
+      : [];
+    const allTypeOnly = entries.length > 0 && entries.every((e) => /^type\s/.test(e));
+    if (!allTypeOnly) {
+      offending.push(specifier);
+    }
+  }
+
+  for (const [, specifier] of code.matchAll(/^\s*import\s+['"]([^'"]+)['"]/gm)) {
+    if (!specifier.startsWith('.')) {
+      offending.push(specifier);
+    }
+  }
+
+  return offending;
+}
+
+const toPosix = (path: string): string => path.split(sep).join('/');
+
+/** `sections/meta.ts` plus every `sections/<type>/meta.ts`, discovered from the directory. */
+function sectionMetaFiles(): string[] {
+  const sectionsDir = resolve(here, '../sections');
+  const perType = readdirSync(sectionsDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => join(sectionsDir, entry.name, 'meta.ts'))
+    .filter((file) => existsSync(file));
+  return [join(sectionsDir, 'meta.ts'), ...perType];
+}
+
+describe('packageValueImportsIn (checker fixtures)', () => {
+  it('allows type-only and relative imports', () => {
+    expect(packageValueImportsIn(`import type { A } from 'pkg';`)).toEqual([]);
+    expect(packageValueImportsIn(`export type { A } from 'pkg';`)).toEqual([]);
+    expect(
+      packageValueImportsIn(`import { x } from './x';
+export { y } from '../y';`)
+    ).toEqual([]);
+    expect(packageValueImportsIn(`import { a, type B } from '../schema/types';`)).toEqual([]);
+  });
+
+  it('allows an import whose every specifier is type-prefixed (elided), per the documented decision', () => {
+    expect(packageValueImportsIn(`import { type A, type B } from 'pkg';`)).toEqual([]);
+  });
+
+  it('flags value imports from packages', () => {
+    expect(packageValueImportsIn(`import { Button } from '@scope/pkg';`)).toEqual(['@scope/pkg']);
+    expect(packageValueImportsIn(`import Def from 'pkg';`)).toEqual(['pkg']);
+    expect(packageValueImportsIn(`import * as ns from "pkg";`)).toEqual(['pkg']);
+    expect(packageValueImportsIn(`export { Z } from 'pkg';`)).toEqual(['pkg']);
+    expect(packageValueImportsIn(`export * from 'pkg';`)).toEqual(['pkg']);
+    expect(packageValueImportsIn(`import 'pkg/side-effect';`)).toEqual(['pkg/side-effect']);
+    expect(packageValueImportsIn(`import { type A, b } from 'pkg';`)).toEqual(['pkg']);
+    expect(packageValueImportsIn(`import {} from 'pkg';`)).toEqual(['pkg']);
+  });
+
+  it('handles multi-line statements', () => {
+    expect(
+      packageValueImportsIn(`import {
+  type A,
+  Button,
+} from 'pkg';`)
+    ).toEqual(['pkg']);
+    expect(
+      packageValueImportsIn(`import {
+  type A,
+  type B,
+} from 'pkg';`)
+    ).toEqual([]);
+    expect(
+      packageValueImportsIn(`import type {
+  A,
+  B,
+} from 'pkg';`)
+    ).toEqual([]);
+  });
+
+  it('ignores import-looking text inside comments', () => {
+    expect(
+      packageValueImportsIn(`/*
+import { Button } from 'pkg';
+*/
+// import { B } from 'pkg';`)
+    ).toEqual([]);
+  });
+});
+
+describe('section metadata imports (package specifier guard)', () => {
+  it('discovers the known metadata files, so the scan is not vacuous', () => {
+    const found = sectionMetaFiles().map((f) => toPosix(relative(resolve(here, '../sections'), f)));
+    expect(found.length).toBeGreaterThan(0);
+    expect(found).toEqual(
+      expect.arrayContaining(['meta.ts', 'navbar/meta.ts', 'header/meta.ts', 'gallery/meta.ts'])
+    );
+  });
+
+  it('imports only relative specifiers or type-only packages in every section meta file', () => {
+    const violations = sectionMetaFiles().flatMap((file) =>
+      packageValueImportsIn(readFileSync(file, 'utf8')).map(
+        (specifier) =>
+          `${toPosix(relative(resolve(here, '..'), file))} imports a value from package '${specifier}' - section metadata must stay React-free; use a relative import or 'import type'`
+      )
+    );
+    expect(violations).toEqual([]);
+  });
+});
 
 describe('server/client module boundary', () => {
   it('keeps validate.ts free of any transitive "use client" module', () => {
