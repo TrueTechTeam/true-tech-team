@@ -81,7 +81,7 @@ export const softwareTemplate: TemplateDefinition = {
       props: {
         heading: 'Get in touch',
         intro: 'Replace this with a line about what you would like people to contact you for.',
-        email: 'Replace this with your email address',
+        email: '',
         phone: '',
         links: [{ label: 'Replace with a link', href: 'https://example.com' }],
       },

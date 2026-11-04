@@ -80,7 +80,7 @@ export const graphicDesignTemplate: TemplateDefinition = {
       props: {
         heading: 'Work with me',
         intro: 'Replace this with your typical turnaround and the kind of projects you take on.',
-        email: 'Replace this with your email address',
+        email: '',
         phone: '',
         links: [{ label: 'Replace with a link', href: 'https://example.com' }],
       },

@@ -79,7 +79,7 @@ export const cartographyTemplate: TemplateDefinition = {
       props: {
         heading: 'Get in touch',
         intro: 'Replace this with what you would like people to contact you about.',
-        email: 'Replace this with your email address',
+        email: '',
         phone: '',
         links: [{ label: 'Replace with a link', href: 'https://example.com' }],
       },

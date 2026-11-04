@@ -75,7 +75,7 @@ export const projectManagerTemplate: TemplateDefinition = {
         heading: 'Get in touch',
         intro:
           'Replace this with how you would like people to reach you, or add a scheduling link below.',
-        email: 'Replace this with your email address',
+        email: '',
         phone: '',
         links: [{ label: 'Replace with a link', href: 'https://example.com' }],
       },
