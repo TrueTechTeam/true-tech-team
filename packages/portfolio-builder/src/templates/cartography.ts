@@ -1,5 +1,10 @@
 import type { TemplateDefinition } from './types';
 
+// Neutral grey tile, the same placeholder the primitives use. The gallery's `image` field is
+// required, so a seeded entry needs a real value; the user replaces it with an upload.
+const PLACEHOLDER_IMAGE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='400' height='300' fill='%23e5e7eb'/%3E%3C/svg%3E";
+
 export const cartographyTemplate: TemplateDefinition = {
   id: 'cartography',
   label: 'Cartography',
@@ -27,35 +32,56 @@ export const cartographyTemplate: TemplateDefinition = {
       },
     },
     {
-      type: 'header',
+      type: 'gallery',
       name: 'Map Gallery',
       showInNav: true,
       background: 'secondary',
       props: {
         heading: 'Map Gallery',
-        subheading: 'Replace this with a map you have made and the story it tells.',
-        align: 'left',
+        columns: 3,
+        images: [
+          {
+            image: PLACEHOLDER_IMAGE,
+            alt: 'Replace this with a description of a map you have made',
+            caption: 'Replace this with the story the map tells.',
+          },
+          {
+            image: PLACEHOLDER_IMAGE,
+            alt: 'Replace this with a description of a second map',
+            caption: 'Replace this with the data and the audience behind it.',
+          },
+        ],
       },
     },
     {
-      type: 'header',
+      type: 'faq',
       name: 'Techniques',
       showInNav: true,
       props: {
         heading: 'Techniques',
-        subheading: 'The tools, projections and data sources you work with.',
-        align: 'left',
+        items: [
+          {
+            question: 'Replace this with a question about your tools',
+            answer: 'Replace this with the software, projections and data sources you work with.',
+          },
+          {
+            question: 'Replace this with a question about your process',
+            answer: 'Replace this with how you go from raw data to a finished map.',
+          },
+        ],
       },
     },
     {
-      type: 'header',
+      type: 'contact',
       name: 'Contact',
       showInNav: true,
       background: 'secondary',
       props: {
         heading: 'Get in touch',
-        subheading: 'Add an email address or a link to your preferred contact method.',
-        align: 'center',
+        intro: 'Replace this with what you would like people to contact you about.',
+        email: 'you@example.com',
+        phone: '',
+        links: [{ label: 'Replace with a link', href: 'https://example.com' }],
       },
     },
   ],

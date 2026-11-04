@@ -27,35 +27,49 @@ export const marketingTemplate: TemplateDefinition = {
       },
     },
     {
-      type: 'header',
+      type: 'cards',
       name: 'Campaigns',
       showInNav: true,
       background: 'secondary',
       props: {
         heading: 'Campaigns',
-        subheading: 'Describe a campaign, the audience and the channel mix.',
-        align: 'left',
+        style: 'static',
+        items: [
+          {
+            title: 'Replace with a campaign name',
+            body: 'Replace this with the audience and the channel mix.',
+          },
+          {
+            title: 'Replace with another campaign name',
+            body: 'Replace this with what you set out to achieve.',
+          },
+        ],
       },
     },
     {
-      type: 'header',
+      type: 'metrics',
       name: 'Results',
       showInNav: true,
       props: {
         heading: 'Results',
-        subheading: 'The numbers that mattered, and how you moved them.',
-        align: 'left',
+        animate: false,
+        items: [
+          { value: 0, label: 'Replace with a result, e.g. Conversion lift', suffix: '%' },
+          { value: 0, label: 'Replace with another result, e.g. Leads generated', suffix: '' },
+        ],
       },
     },
     {
-      type: 'header',
+      type: 'contact',
       name: 'Contact',
       showInNav: true,
       background: 'secondary',
       props: {
         heading: 'Get in touch',
-        subheading: 'Add an email address and what you are looking for.',
-        align: 'center',
+        intro: 'Replace this with what you are looking for.',
+        email: 'you@example.com',
+        phone: '',
+        links: [{ label: 'Replace with a link', href: 'https://example.com' }],
       },
     },
   ],

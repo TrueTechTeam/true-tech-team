@@ -27,35 +27,57 @@ export const projectManagerTemplate: TemplateDefinition = {
       },
     },
     {
-      type: 'header',
+      type: 'cards',
       name: 'Case Studies',
       showInNav: true,
       background: 'secondary',
       props: {
         heading: 'Case Studies',
-        subheading: 'Pick one project and describe the problem, your role and the outcome.',
-        align: 'left',
+        style: 'static',
+        items: [
+          {
+            title: 'Replace with a project name',
+            body: 'Replace this with the problem, your role and the outcome.',
+          },
+          {
+            title: 'Replace with another project name',
+            body: 'Replace this with the problem, your role and the outcome.',
+          },
+        ],
       },
     },
     {
-      type: 'header',
+      type: 'timeline',
       name: 'Approach',
       showInNav: true,
       props: {
         heading: 'Approach',
-        subheading: 'How you plan, communicate and keep delivery predictable.',
-        align: 'left',
+        entries: [
+          {
+            period: 'Step 1',
+            title: 'Replace this with how you start a project',
+            body: 'Replace this with how you scope, plan and align stakeholders.',
+          },
+          {
+            period: 'Step 2',
+            title: 'Replace this with how you keep delivery on track',
+            body: 'Replace this with how you communicate progress and handle risk.',
+          },
+        ],
       },
     },
     {
-      type: 'header',
+      type: 'contact',
       name: 'Contact',
       showInNav: true,
       background: 'secondary',
       props: {
         heading: 'Get in touch',
-        subheading: 'Add an email address or a scheduling link.',
-        align: 'center',
+        intro:
+          'Replace this with how you would like people to reach you, or add a scheduling link below.',
+        email: 'you@example.com',
+        phone: '',
+        links: [{ label: 'Replace with a link', href: 'https://example.com' }],
       },
     },
   ],

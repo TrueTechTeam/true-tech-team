@@ -1,5 +1,10 @@
 import type { TemplateDefinition } from './types';
 
+// Neutral grey tile, the same placeholder the primitives use. The gallery's `image` field is
+// required, so a seeded entry needs a real value; the user replaces it with an upload.
+const PLACEHOLDER_IMAGE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='400' height='300' fill='%23e5e7eb'/%3E%3C/svg%3E";
+
 export const graphicDesignTemplate: TemplateDefinition = {
   id: 'graphic-design',
   label: 'Graphic Design',
@@ -27,35 +32,57 @@ export const graphicDesignTemplate: TemplateDefinition = {
       },
     },
     {
-      type: 'header',
+      type: 'gallery',
       name: 'Portfolio',
       showInNav: true,
       background: 'secondary',
       props: {
         heading: 'Portfolio',
-        subheading: 'Replace this with your strongest piece and a line about the brief.',
-        align: 'left',
+        columns: 3,
+        images: [
+          {
+            image: PLACEHOLDER_IMAGE,
+            alt: 'Replace this with a description of your strongest piece',
+            caption: 'Replace this with a line about the brief.',
+          },
+          {
+            image: PLACEHOLDER_IMAGE,
+            alt: 'Replace this with a description of a second piece',
+            caption: 'Replace this with a line about the client and the result.',
+          },
+        ],
       },
     },
     {
-      type: 'header',
+      type: 'cards',
       name: 'Services',
       showInNav: true,
       props: {
         heading: 'Services',
-        subheading: 'What you offer, and who it is for.',
-        align: 'left',
+        style: 'static',
+        items: [
+          {
+            title: 'Replace with a service you offer',
+            body: 'Replace this with what the service includes and who it is for.',
+          },
+          {
+            title: 'Replace with another service',
+            body: 'Replace this with what the client gets from it.',
+          },
+        ],
       },
     },
     {
-      type: 'header',
+      type: 'contact',
       name: 'Contact',
       showInNav: true,
       background: 'secondary',
       props: {
         heading: 'Work with me',
-        subheading: 'Add an email address and your typical turnaround.',
-        align: 'center',
+        intro: 'Replace this with your typical turnaround and the kind of projects you take on.',
+        email: 'you@example.com',
+        phone: '',
+        links: [{ label: 'Replace with a link', href: 'https://example.com' }],
       },
     },
   ],
