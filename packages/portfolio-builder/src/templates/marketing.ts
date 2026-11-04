@@ -67,7 +67,7 @@ export const marketingTemplate: TemplateDefinition = {
       props: {
         heading: 'Get in touch',
         intro: 'Replace this with what you are looking for.',
-        email: 'you@example.com',
+        email: 'Replace this with your email address',
         phone: '',
         links: [{ label: 'Replace with a link', href: 'https://example.com' }],
       },

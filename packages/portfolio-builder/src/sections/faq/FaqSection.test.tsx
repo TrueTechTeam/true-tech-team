@@ -35,17 +35,20 @@ describe('FaqSection', () => {
     expect(screen.getByText('Where are you?')).toBeInTheDocument();
   });
 
-  it('renders answers visible at rest (open by default, since the canvas is inert)', () => {
+  it('renders the first answer visible at rest (open by default, since the canvas is inert)', () => {
     renderFaq({ items: [A, B] });
     expect(screen.getByText('Yes, part time.')).toBeVisible();
-    expect(screen.getByText('Remote.')).toBeVisible();
   });
 
-  it('marks every accordion expanded at rest', () => {
-    renderFaq({ items: [A, B] });
+  it('marks only the first accordion expanded at rest and the rest collapsed', () => {
+    renderFaq({ items: [A, B, { question: 'Rates?', answer: 'Ask.' }] });
     const headers = screen.getAllByRole('button');
-    expect(headers).toHaveLength(2);
-    headers.forEach((header) => expect(header).toHaveAttribute('aria-expanded', 'true'));
+    expect(headers).toHaveLength(3);
+    // aria-expanded, not toBeVisible: jsdom does not apply the stylesheet, so visibility proves
+    // nothing about whether an accordion is actually collapsed.
+    expect(headers[0]).toHaveAttribute('aria-expanded', 'true');
+    expect(headers[1]).toHaveAttribute('aria-expanded', 'false');
+    expect(headers[2]).toHaveAttribute('aria-expanded', 'false');
   });
 
   it.each([null, 'x', {}, 7, undefined])('renders the empty state for items = %j', (items) => {

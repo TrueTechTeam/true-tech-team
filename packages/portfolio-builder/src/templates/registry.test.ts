@@ -99,22 +99,35 @@ describe('template registry', () => {
     }
   });
 
-  it('every CTA href in every template is a safe href', () => {
+  it('every href in every list field of every template is a safe href', () => {
+    // Walks ALL list props rather than naming `ctas`, so a type added later (contact `links`,
+    // logoStrip entries, ...) is covered without touching this test.
+    let checked = 0;
     for (const [key, template] of entries) {
       for (const section of template.sections) {
-        const ctas = section.props?.['ctas'];
-        if (!Array.isArray(ctas)) {
-          continue;
-        }
-        for (const cta of ctas) {
-          const href = (cta as { href?: unknown }).href;
-          expect(typeof href, `${key} / ${section.name} cta href type`).toBe('string');
-          expect(isSafeHref(href as string), `${key} / ${section.name} href ${String(href)}`).toBe(
-            true
-          );
+        for (const [propKey, value] of Object.entries(section.props ?? {})) {
+          if (!Array.isArray(value)) {
+            continue;
+          }
+          value.forEach((item, index) => {
+            if (typeof item !== 'object' || item === null) {
+              return;
+            }
+            for (const [itemKey, href] of Object.entries(item)) {
+              if (!/href$/i.test(itemKey)) {
+                continue;
+              }
+              const where = `${key} / ${section.name} / ${propKey}[${index}].${itemKey}`;
+              expect(typeof href, `${where} type`).toBe('string');
+              expect(isSafeHref(href as string), `${where} = ${String(href)}`).toBe(true);
+              checked += 1;
+            }
+          });
         }
       }
     }
+    // Anti-vacuity: the templates seed CTAs and contact links, so a walk that finds none is broken.
+    expect(checked).toBeGreaterThan(0);
   });
 
   it('every CTA href pointing at an anchor targets a section that exists in the same template', () => {
