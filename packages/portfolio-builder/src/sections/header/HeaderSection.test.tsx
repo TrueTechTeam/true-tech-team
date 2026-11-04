@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { HeaderSection } from './HeaderSection';
@@ -132,5 +134,12 @@ describe('HeaderSection', () => {
     );
     const node = container.firstElementChild as HTMLElement;
     expect(node.style.backgroundImage).toBe('url("https://x.example/a.png")');
+  });
+
+  it('declares a text colour on the heading rather than inheriting one', () => {
+    // jsdom cannot resolve CSS custom properties or SCSS modules, so assert the declaration.
+    const source = readFileSync(resolve(__dirname, './HeaderSection.module.scss'), 'utf8');
+    const body = /\.heading\s*\{([^}]*)\}/.exec(source)?.[1] ?? '';
+    expect(body).toMatch(/color:\s*var\(--theme-text-primary\)/);
   });
 });

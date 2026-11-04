@@ -1,8 +1,19 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { EditorCanvas } from './EditorCanvas';
 import { PageRenderer } from '../render/PageRenderer';
 import { CURRENT_SCHEMA_VERSION, type PageSection, type PortfolioPage } from '../schema/types';
+
+// jsdom does not resolve CSS custom properties or load SCSS modules, so a computed-colour
+// assertion would pass vacuously. Assert the declaration in the stylesheet source instead.
+function ruleBody(scssPath: string, selector: string): string {
+  const source = readFileSync(resolve(__dirname, scssPath), 'utf8');
+  const escaped = selector.replace('.', '\\.');
+  const match = new RegExp(`${escaped}\\s*\\{([^}]*)\\}`).exec(source);
+  return match?.[1] ?? '';
+}
 
 function makePage(sections: PageSection[]): PortfolioPage {
   return {
@@ -104,6 +115,21 @@ describe('EditorCanvas', () => {
   it('shows an empty state for a page with no sections', () => {
     renderCanvas(makePage([]));
     expect(screen.getByText(/nothing here yet/i)).toBeInTheDocument();
+  });
+
+  it('declares its own text colour so content does not inherit the app theme text', () => {
+    expect(ruleBody('./EditorCanvas.module.scss', '.canvas')).toMatch(
+      /color:\s*var\(--theme-text-primary\)/
+    );
+  });
+
+  it('still renders its headings under that canvas when the page has no theme', () => {
+    // resolveEffectiveTheme(page) is undefined here: no inline vars are set, so legibility rests
+    // entirely on the stylesheet colour declaration above plus the global theme variables.
+    renderCanvas(makePage([headerWithCta]));
+    const canvas = screen.getByTestId('canvas-background');
+    expect(canvas.getAttribute('style') ?? '').not.toContain('--theme-');
+    expect(canvas).toContainElement(screen.getByText('Your name here'));
   });
 });
 
