@@ -3,6 +3,7 @@
 import type { CSSProperties } from 'react';
 import type { SectionComponentProps } from '../types';
 import { backgroundImageValue } from '../cssUrl';
+import { readRecordList } from '../readProps';
 import styles from './GallerySection.module.scss';
 
 interface GalleryImage {
@@ -11,23 +12,13 @@ interface GalleryImage {
   caption?: string;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
 /**
  * Reads stored gallery entries defensively. Stored data is untrusted — a hand-edited row or an
  * older client can put anything here — so a non-array reads as empty and an entry without a usable
  * image URL is skipped rather than rendering an empty tile.
  */
 function readImages(value: unknown): GalleryImage[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-  return value.flatMap((entry) => {
-    if (!isRecord(entry)) {
-      return [];
-    }
+  return readRecordList(value).flatMap((entry) => {
     const image = typeof entry['image'] === 'string' ? entry['image'] : '';
     if (image.length === 0) {
       return [];
