@@ -1,0 +1,31 @@
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.heading {
+  margin: 0;
+  color: var(--theme-text-primary);
+}
+
+.intro {
+  margin: 0;
+  color: var(--theme-text-secondary);
+  white-space: pre-line;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  color: var(--theme-text-primary);
+  overflow-wrap: anywhere;
+}

@@ -3,6 +3,9 @@ import type { SectionTypeMeta } from './types';
 import { navbarSectionMeta } from './navbar/meta';
 import { headerSectionMeta } from './header/meta';
 import { gallerySectionMeta } from './gallery/meta';
+import { richTextSectionMeta } from './richText/meta';
+import { contactSectionMeta } from './contact/meta';
+import { timelineSectionMeta } from './timeline/meta';
 
 /**
  * Every section type's server-safe metadata.
@@ -15,6 +18,9 @@ export const SECTION_META: Record<SectionType, SectionTypeMeta> = {
   navbar: navbarSectionMeta,
   header: headerSectionMeta,
   gallery: gallerySectionMeta,
+  richText: richTextSectionMeta,
+  contact: contactSectionMeta,
+  timeline: timelineSectionMeta,
 };
 
 export function getSectionTypeMeta(type: string): SectionTypeMeta | undefined {

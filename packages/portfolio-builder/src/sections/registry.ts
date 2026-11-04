@@ -4,6 +4,9 @@ import { SECTION_META } from './meta';
 import { NavbarSection } from './navbar/NavbarSection';
 import { HeaderSection } from './header/HeaderSection';
 import { GallerySection } from './gallery/GallerySection';
+import { RichTextSection } from './richText/RichTextSection';
+import { ContactSection } from './contact/ContactSection';
+import { TimelineSection } from './timeline/TimelineSection';
 
 /**
  * Each section type's metadata joined to its component.
@@ -18,6 +21,9 @@ export const SECTION_REGISTRY: Record<SectionType, SectionTypeEntry> = {
   navbar: { ...SECTION_META.navbar, component: NavbarSection },
   header: { ...SECTION_META.header, component: HeaderSection },
   gallery: { ...SECTION_META.gallery, component: GallerySection },
+  richText: { ...SECTION_META.richText, component: RichTextSection },
+  contact: { ...SECTION_META.contact, component: ContactSection },
+  timeline: { ...SECTION_META.timeline, component: TimelineSection },
 };
 
 export function getSectionTypeEntry(type: string): SectionTypeEntry | undefined {
