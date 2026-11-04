@@ -7,6 +7,8 @@ import { GallerySection } from './gallery/GallerySection';
 import { RichTextSection } from './richText/RichTextSection';
 import { ContactSection } from './contact/ContactSection';
 import { TimelineSection } from './timeline/TimelineSection';
+import { CardsSection } from './cards/CardsSection';
+import { MetricsSection } from './metrics/MetricsSection';
 
 /**
  * Each section type's metadata joined to its component.
@@ -24,6 +26,8 @@ export const SECTION_REGISTRY: Record<SectionType, SectionTypeEntry> = {
   richText: { ...SECTION_META.richText, component: RichTextSection },
   contact: { ...SECTION_META.contact, component: ContactSection },
   timeline: { ...SECTION_META.timeline, component: TimelineSection },
+  cards: { ...SECTION_META.cards, component: CardsSection },
+  metrics: { ...SECTION_META.metrics, component: MetricsSection },
 };
 
 export function getSectionTypeEntry(type: string): SectionTypeEntry | undefined {

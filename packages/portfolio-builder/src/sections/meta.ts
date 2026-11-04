@@ -6,6 +6,8 @@ import { gallerySectionMeta } from './gallery/meta';
 import { richTextSectionMeta } from './richText/meta';
 import { contactSectionMeta } from './contact/meta';
 import { timelineSectionMeta } from './timeline/meta';
+import { cardsSectionMeta } from './cards/meta';
+import { metricsSectionMeta } from './metrics/meta';
 
 /**
  * Every section type's server-safe metadata.
@@ -21,6 +23,8 @@ export const SECTION_META: Record<SectionType, SectionTypeMeta> = {
   richText: richTextSectionMeta,
   contact: contactSectionMeta,
   timeline: timelineSectionMeta,
+  cards: cardsSectionMeta,
+  metrics: metricsSectionMeta,
 };
 
 export function getSectionTypeMeta(type: string): SectionTypeMeta | undefined {

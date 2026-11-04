@@ -7,6 +7,8 @@ export const SECTION_TYPES = [
   'richText',
   'contact',
   'timeline',
+  'cards',
+  'metrics',
 ] as const;
 
 /** The schema version this code reads and writes. */
