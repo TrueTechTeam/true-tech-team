@@ -52,6 +52,10 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
   const entriesRef = useRef(entries);
   entriesRef.current = entries;
 
+  // Maps an entry object to the object that replaced it after an edit. A WeakMap so replaced
+  // entries garbage-collect naturally and there is nothing to prune.
+  const superseded = useRef(new WeakMap<object, Record<string, unknown>>());
+
   const itemSchema = field.itemSchema;
   if (!itemSchema) {
     // A `list` field with no `itemSchema` is a metadata bug, not user data. Render nothing rather
@@ -65,13 +69,34 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
 
   function handleEntryChange(entry: Record<string, unknown>, next: Record<string, unknown>) {
     const current = entriesRef.current;
-    const index = current.indexOf(entry);
-    if (index === -1) {
-      // The entry was removed while an edit was in flight. Dropping the write is correct: there is
-      // no longer a target, and appending it would resurrect deleted content.
+    let target: Record<string, unknown> | undefined = entry;
+    let index = current.indexOf(entry);
+    // `PropertyPanel` builds every edit as a NEW object, so editing any sibling field while an
+    // upload is in flight replaces the entry this callback captured. Follow the supersession chain
+    // to the entry's current incarnation before concluding it is gone.
+    while (index === -1 && target) {
+      target = superseded.current.get(target);
+      index = target ? current.indexOf(target) : -1;
+    }
+    if (index === -1 || !target) {
+      // Nothing in the chain is still in the array: the entry was genuinely removed while an edit
+      // was in flight. Dropping the write is correct - appending it would resurrect deleted content.
       return;
     }
-    onChange(current.map((candidate, i) => (i === index ? next : candidate)));
+    // A deferred write was built from the entry as it was when the edit began, so applying it
+    // wholesale would revert any sibling fields edited since. Apply only the keys it changed.
+    let replacement = next;
+    if (target !== entry) {
+      const patch: Record<string, unknown> = {};
+      for (const key of Object.keys(next)) {
+        if (next[key] !== entry[key]) {
+          patch[key] = next[key];
+        }
+      }
+      replacement = { ...target, ...patch };
+    }
+    superseded.current.set(target, replacement);
+    onChange(current.map((candidate, i) => (i === index ? replacement : candidate)));
   }
 
   function handleAdd() {

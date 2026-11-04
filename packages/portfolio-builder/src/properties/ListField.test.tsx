@@ -196,11 +196,12 @@ describe('ListField', () => {
 
     function renderGallery(
       value: Array<Record<string, unknown>>,
-      onChange: (next: Array<Record<string, unknown>>) => void
+      onChange: (next: Array<Record<string, unknown>>) => void,
+      field: PropertyField = galleryField
     ) {
       const ui = (current: Array<Record<string, unknown>>) => (
         <ListField
-          field={galleryField}
+          field={field}
           value={current}
           onChange={onChange}
           supabase={fakeSupabase}
@@ -275,6 +276,46 @@ describe('ListField', () => {
       await waitFor(() => expect(assets.uploadPortfolioAsset).toHaveBeenCalled());
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(onChange).not.toHaveBeenCalled();
+    });
+
+    // The fixture gap that hid this bug: with one field per entry there is no sibling to edit.
+    // PropertyPanel builds every edit as a NEW object, so editing `alt` replaces the entry the
+    // pending upload is holding.
+    it('applies a deferred upload after a sibling field edit replaced the entry', async () => {
+      const imageAltField: PropertyField = {
+        key: 'items',
+        label: 'Items',
+        type: 'list',
+        itemLabel: 'Item',
+        itemSchema: [
+          { key: 'image', label: 'Photo', type: 'image' },
+          { key: 'alt', label: 'Alt text', type: 'text', required: true },
+        ],
+      };
+      const first = { image: 'first.png', alt: '' };
+      const second = { image: 'second.png', alt: 'Second' };
+      const onChange = vi.fn<(next: Array<Record<string, unknown>>) => void>();
+      const { rerender } = renderGallery([first, second], onChange, imageAltField);
+
+      const finishUpload = startUpload(0);
+
+      // The user types alt text while the upload is in flight ...
+      fireEvent.change(screen.getAllByLabelText(/Alt text/)[0] as HTMLElement, {
+        target: { value: 'A lighthouse' },
+      });
+      const edited = onChange.mock.calls[0]?.[0];
+      expect(edited).toEqual([{ image: 'first.png', alt: 'A lighthouse' }, second]);
+      onChange.mockClear();
+      rerender(edited as Array<Record<string, unknown>>);
+
+      // ... then the upload lands on the entry that edit replaced.
+      finishUpload('https://cdn.example.com/uploaded.png');
+
+      await waitFor(() => expect(onChange).toHaveBeenCalled());
+      expect(
+        onChange.mock.calls[0]?.[0],
+        'the URL must land on the same entry as the alt text typed meanwhile'
+      ).toEqual([{ image: 'https://cdn.example.com/uploaded.png', alt: 'A lighthouse' }, second]);
     });
   });
 });
