@@ -81,7 +81,9 @@ describe('LinkButtonItem href safety', () => {
     expect(screen.getByRole('link', { name: 'Click' })).toHaveAttribute('href', href);
   });
 
-  it('adds rel="noopener noreferrer" when opening in a new tab', () => {
+  // Verifies `target`. The `rel` assertions pass whether or not OUR code passes `rel`, because
+  // NavLink defaults `rel` for `target="_blank"`; links.rel.test.tsx is where `rel` is pinned.
+  it('renders target="_blank" with a noopener noreferrer rel in the DOM when opening in a new tab', () => {
     render(<LinkButtonItem label="Click" href="https://example.com" openInNewTab />);
     const link = screen.getByRole('link', { name: 'Click' });
     expect(link).toHaveAttribute('target', '_blank');
@@ -108,7 +110,9 @@ describe('IconLinkButtonItem href safety', () => {
     expect(screen.getByRole('link', { name: 'Open' })).toHaveAttribute('href', href);
   });
 
-  it('adds rel="noopener noreferrer" when opening in a new tab', () => {
+  // Verifies `target`. The `rel` assertions pass whether or not OUR code passes `rel`, because
+  // NavLink defaults `rel` for `target="_blank"`; links.rel.test.tsx is where `rel` is pinned.
+  it('renders target="_blank" with a noopener noreferrer rel in the DOM when opening in a new tab', () => {
     render(
       <IconLinkButtonItem
         href="https://example.com"

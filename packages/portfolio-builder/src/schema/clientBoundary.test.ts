@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SECTION_TYPES } from './types';
 
 /**
  * Guards the server/client boundary that the section-type split exists to maintain.
@@ -12,19 +13,23 @@ import { fileURLToPath } from 'node:url';
  * break at request time - a failure neither `next build` (the route is dynamic) nor a jsdom test
  * (no RSC layer) can see. So assert it statically instead.
  *
- * Shape and limits of the guard. It walks the RUNTIME import closure of three entry points
- * (`schema/validate.ts`, `sections/meta.ts`, `pages/crud.ts`) following only RELATIVE
- * `import ... from` / `export ... from` specifiers, skipping `import type`/`export type`, and
- * fails if any module in a closure starts with a `'use client'` directive. It protects the
- * *metadata* closure. It does NOT follow non-relative specifiers (package imports), dynamic
- * `import()`, or side-effect-only imports (`import './x'`). The one real residual risk is a
- * future `meta.ts` importing a value from `@true-tech-team/react-components` whose module is
- * `'use client'`: that is a package specifier, so this test cannot see it - hence the rule on
- * `SectionTypeMeta` that metadata must not import from the component library.
+ * Shape and limits of the guard. It has two halves.
  *
- * The package-specifier hole is closed separately by `packageValueImportsIn` below: every section
- * metadata file (`sections/meta.ts` and each `sections/<type>/meta.ts`, discovered by reading the
- * directory) may import only relative specifiers or type-only package imports.
+ *  1. Relative closure walk. It walks the RUNTIME import closure of three entry points
+ *     (`schema/validate.ts`, `sections/meta.ts`, `pages/crud.ts`) following only RELATIVE
+ *     `import ... from` / `export ... from` specifiers, skipping `import type`/`export type`, and
+ *     fails if any module in a closure starts with a `'use client'` directive.
+ *  2. Package value imports in metadata files. The walk cannot see package specifiers, so
+ *     `packageValueImportsIn` (below) separately scans `sections/meta.ts` and every
+ *     `sections/<type>/meta.ts` (discovered by reading the directory) and fails on any value
+ *     import from a package - e.g. `@true-tech-team/react-components`, whose modules are
+ *     `'use client'`. Type-only package imports are allowed. This enforces the rule on
+ *     `SectionTypeMeta` that metadata must not import from the component library.
+ *
+ * What it still does NOT cover: dynamic `import()`, `require()`, side-effect-only RELATIVE imports
+ * (`import './x'`, which the walk skips), and package value imports in any file that is not a
+ * section metadata file - so a relative helper reachable from a meta file that itself imports a
+ * client component from a package slips through both halves.
  *
  * Anti-vacuity: a resolver that silently stops resolving would shrink every closure to its entry
  * and make the emptiness assertions pass for free. So the closure tests also assert which
@@ -195,12 +200,11 @@ import { Button } from 'pkg';
 });
 
 describe('section metadata imports (package specifier guard)', () => {
-  it('discovers the known metadata files, so the scan is not vacuous', () => {
+  it('scans a meta.ts for every section type, so the scan is not vacuous', () => {
     const found = sectionMetaFiles().map((f) => toPosix(relative(resolve(here, '../sections'), f)));
-    expect(found.length).toBeGreaterThan(0);
-    expect(found).toEqual(
-      expect.arrayContaining(['meta.ts', 'navbar/meta.ts', 'header/meta.ts', 'gallery/meta.ts'])
-    );
+    expect(found).toContain('meta.ts');
+    // Derived from SECTION_TYPES so it maintains itself as types are added.
+    expect(found).toEqual(expect.arrayContaining(SECTION_TYPES.map((type) => `${type}/meta.ts`)));
   });
 
   it('imports only relative specifiers or type-only packages in every section meta file', () => {

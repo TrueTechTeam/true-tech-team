@@ -48,6 +48,12 @@ describe('ContactSection', () => {
     );
   });
 
+  it('renders no list at all when there are no contacts (the default state of a new section)', () => {
+    renderContact({ heading: 'Contact', intro: '', email: '', phone: '', links: [] });
+    expect(screen.queryByRole('list')).not.toBeInTheDocument();
+    expect(document.querySelectorAll('ul')).toHaveLength(0);
+  });
+
   it('renders no link for an empty or non-string email and phone', () => {
     renderContact({ email: '  ', phone: 7 });
     expect(screen.queryAllByRole('link')).toHaveLength(0);
