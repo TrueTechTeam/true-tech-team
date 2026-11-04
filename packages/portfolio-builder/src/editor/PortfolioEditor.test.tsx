@@ -222,7 +222,14 @@ describe('PortfolioEditor — saving and publishing', () => {
   it('changes the theme from page settings and applies it to the canvas', async () => {
     await ready();
     fireEvent.click(screen.getByRole('button', { name: /settings/i }));
-    await userEvent.click(screen.getByRole('button', { name: /^slate /i }));
+    // findBy, not getBy: the Dialog mounts its content behind an enter animation (it reports
+    // data-state="entering" first), so a synchronous query can run before the ThemeDropdown
+    // trigger exists.
+    //
+    // The name is anchored exactly, not /^slate /. Library 1.3.0 tightened the Dropdown's
+    // accessible-name computation so the decorative colour swatches no longer leak into it: the
+    // trigger is now named exactly "Slate" rather than "Slate " plus swatch text.
+    await userEvent.click(await screen.findByRole('button', { name: /^slate$/i }));
     await userEvent.click(screen.getByText('Coral Reef'));
     await waitFor(() =>
       expect(screen.getByTestId('canvas-background')).toHaveStyle({
