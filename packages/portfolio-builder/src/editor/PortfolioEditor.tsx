@@ -101,7 +101,7 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
       )}
 
       <div className={styles.workspace}>
-        <div className={styles.sidebar}>
+        <div className={styles.sidebar} data-testid="editor-sidebar">
           <SectionList
             sections={page.sections}
             selectedId={editor.selectedSectionId}
@@ -114,7 +114,7 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
 
         <EditorCanvas page={page} selectedId={editor.selectedSectionId} onSelect={editor.select} />
 
-        <div className={styles.formPanel}>
+        <div className={styles.formPanel} data-testid="editor-form-panel">
           <SectionFormPanel
             section={editor.selectedSection}
             onMetaChange={editor.updateSelectedMeta}

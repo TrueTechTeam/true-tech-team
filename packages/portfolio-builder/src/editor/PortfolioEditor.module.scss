@@ -2,16 +2,36 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  height: 100%;
   min-height: 0;
+}
+
+/* Fit the viewport structurally, with no hard-coded offsets. The editor mounts as a direct child
+   of <body>, between the app header and footer, so while it is on screen the body becomes a flex
+   column the height of the viewport: the chrome keeps its natural size, the editor takes whatever
+   is left, and the panes scroll internally. If the app header or footer changes height, the
+   editor simply gets more or less room. Only applies where the panes sit side by side; below the
+   breakpoint the layout stacks and the page scrolls normally. */
+@media (width > 1100px) {
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- CSS Modules :global */
+  :global(body):has(.editorRoot) {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .editorRoot {
+    flex: 1 1 0;
+  }
 }
 
 .editorHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   flex-wrap: wrap;
+  padding: var(--spacing-md) var(--spacing-lg) 0;
 }
 
 .editorHeaderTitle {
@@ -36,16 +56,26 @@
   gap: var(--spacing-md);
   flex: 1 1 auto;
   min-height: 0;
+  padding: 0 var(--spacing-lg) var(--spacing-md);
 }
 
+/* The side panes are chrome floating above the flat canvas: elevation (shadow) separates them,
+   not a border, and the canvas itself stays flat. */
 .sidebar,
 .formPanel {
+  position: relative;
   overflow-y: auto;
   min-height: 0;
   padding: var(--spacing-sm);
-  border: 1px solid var(--theme-border-secondary);
   border-radius: var(--radius-sm);
   background: var(--theme-surface-primary);
+  box-shadow: var(--theme-shadow-md);
+}
+
+@media (width > 1100px) {
+  .workspace {
+    grid-template-rows: minmax(0, 1fr);
+  }
 }
 
 @media (width <= 1100px) {
@@ -69,7 +99,7 @@
 
 .validationErrors {
   margin: 0;
-  padding-left: var(--spacing-lg);
+  padding: 0 var(--spacing-lg) 0 var(--spacing-xl);
   color: var(--theme-error);
 }
 

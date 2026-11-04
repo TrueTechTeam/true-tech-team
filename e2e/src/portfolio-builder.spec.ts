@@ -79,6 +79,32 @@ test.describe('portfolio builder: create from template, edit, publish', () => {
     await expect(page.getByText(/^saved$/i)).toBeVisible({ timeout: 30_000 });
   });
 
+  test('the editor fits the viewport: panes scroll, the page does not', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/portfolio-builder');
+    await page.getByRole('link', { name: new RegExp(pageTitle) }).click();
+    await page.waitForURL(/\/portfolio-builder\/edit\//);
+    await expect(page.getByTestId('canvas-background')).toBeVisible({ timeout: 30_000 });
+
+    const m = await page.evaluate(() => {
+      const panes = [
+        document.querySelector('[data-testid="editor-sidebar"]'),
+        document.querySelector('[data-testid="canvas-background"]'),
+        document.querySelector('[data-testid="editor-form-panel"]'),
+      ];
+      return {
+        docHeight: document.documentElement.scrollHeight,
+        innerHeight: window.innerHeight,
+        panesOverflow: panes.map((p) => (p ? p.scrollHeight > p.clientHeight : null)),
+      };
+    });
+    // Only the panes scroll: the page must fit the viewport...
+    expect(m.docHeight).toBeLessThanOrEqual(m.innerHeight + 2);
+    // ...and the scrolling moved INTO a pane rather than vanishing.
+    expect(m.panesOverflow).not.toContain(null);
+    expect(m.panesOverflow).toContain(true);
+  });
+
   test('publishing surfaces the public URL', async ({ page }) => {
     await page.goto('/portfolio-builder');
     await page.getByRole('link', { name: new RegExp(pageTitle) }).click();
