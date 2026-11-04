@@ -9,6 +9,9 @@ import { ContactSection } from './contact/ContactSection';
 import { TimelineSection } from './timeline/TimelineSection';
 import { CardsSection } from './cards/CardsSection';
 import { MetricsSection } from './metrics/MetricsSection';
+import { TestimonialsSection } from './testimonials/TestimonialsSection';
+import { FaqSection } from './faq/FaqSection';
+import { LogoStripSection } from './logoStrip/LogoStripSection';
 
 /**
  * Each section type's metadata joined to its component.
@@ -28,6 +31,9 @@ export const SECTION_REGISTRY: Record<SectionType, SectionTypeEntry> = {
   timeline: { ...SECTION_META.timeline, component: TimelineSection },
   cards: { ...SECTION_META.cards, component: CardsSection },
   metrics: { ...SECTION_META.metrics, component: MetricsSection },
+  testimonials: { ...SECTION_META.testimonials, component: TestimonialsSection },
+  faq: { ...SECTION_META.faq, component: FaqSection },
+  logoStrip: { ...SECTION_META.logoStrip, component: LogoStripSection },
 };
 
 export function getSectionTypeEntry(type: string): SectionTypeEntry | undefined {

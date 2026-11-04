@@ -8,6 +8,9 @@ import { contactSectionMeta } from './contact/meta';
 import { timelineSectionMeta } from './timeline/meta';
 import { cardsSectionMeta } from './cards/meta';
 import { metricsSectionMeta } from './metrics/meta';
+import { testimonialsSectionMeta } from './testimonials/meta';
+import { faqSectionMeta } from './faq/meta';
+import { logoStripSectionMeta } from './logoStrip/meta';
 
 /**
  * Every section type's server-safe metadata.
@@ -25,6 +28,9 @@ export const SECTION_META: Record<SectionType, SectionTypeMeta> = {
   timeline: timelineSectionMeta,
   cards: cardsSectionMeta,
   metrics: metricsSectionMeta,
+  testimonials: testimonialsSectionMeta,
+  faq: faqSectionMeta,
+  logoStrip: logoStripSectionMeta,
 };
 
 export function getSectionTypeMeta(type: string): SectionTypeMeta | undefined {

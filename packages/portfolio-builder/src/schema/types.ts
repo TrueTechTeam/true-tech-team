@@ -9,6 +9,9 @@ export const SECTION_TYPES = [
   'timeline',
   'cards',
   'metrics',
+  'testimonials',
+  'faq',
+  'logoStrip',
 ] as const;
 
 /** The schema version this code reads and writes. */
