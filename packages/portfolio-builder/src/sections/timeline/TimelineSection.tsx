@@ -1,7 +1,7 @@
 'use client';
 
 import type { SectionComponentProps } from '../types';
-import { readRecordList } from '../readProps';
+import { readHeading, readRecordList, readText } from '../readProps';
 import styles from './TimelineSection.module.scss';
 
 interface TimelineEntry {
@@ -16,24 +16,23 @@ interface TimelineEntry {
  */
 function readEntries(value: unknown): TimelineEntry[] {
   return readRecordList(value).flatMap((entry): TimelineEntry[] => {
-    const title = typeof entry['title'] === 'string' ? entry['title'] : '';
+    const title = readText(entry['title']);
     if (title.trim().length === 0) {
       return [];
     }
+    const body = readText(entry['body']);
     return [
       {
-        period: typeof entry['period'] === 'string' ? entry['period'] : '',
+        period: readText(entry['period']),
         title,
-        ...(typeof entry['body'] === 'string' && entry['body'].length > 0
-          ? { body: entry['body'] }
-          : {}),
+        ...(body.length > 0 ? { body } : {}),
       },
     ];
   });
 }
 
 export function TimelineSection({ section }: SectionComponentProps) {
-  const heading = typeof section.props['heading'] === 'string' ? section.props['heading'] : '';
+  const heading = readHeading(section.props);
   const entries = readEntries(section.props['entries']);
 
   return (

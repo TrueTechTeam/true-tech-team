@@ -2,7 +2,7 @@
 
 import { AvatarItem } from '../../components/wrappers/avatar';
 import type { SectionComponentProps } from '../types';
-import { readRecordList } from '../readProps';
+import { readHeading, readRecordList, readText } from '../readProps';
 import styles from './TestimonialsSection.module.scss';
 
 interface Testimonial {
@@ -12,24 +12,20 @@ interface Testimonial {
   avatar: string;
 }
 
-function text(value: unknown): string {
-  return typeof value === 'string' ? value : '';
-}
-
 /** An entry without a quote or an author has nothing to attribute and is skipped. */
 function readTestimonials(value: unknown): Testimonial[] {
   return readRecordList(value).flatMap((entry): Testimonial[] => {
-    const quote = text(entry['quote']);
-    const author = text(entry['author']);
+    const quote = readText(entry['quote']);
+    const author = readText(entry['author']);
     if (quote.trim().length === 0 || author.trim().length === 0) {
       return [];
     }
-    return [{ quote, author, role: text(entry['role']), avatar: text(entry['avatar']) }];
+    return [{ quote, author, role: readText(entry['role']), avatar: readText(entry['avatar']) }];
   });
 }
 
 export function TestimonialsSection({ section }: SectionComponentProps) {
-  const heading = text(section.props['heading']);
+  const heading = readHeading(section.props);
   const items = readTestimonials(section.props['items']);
 
   return (

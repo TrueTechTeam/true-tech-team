@@ -1,6 +1,7 @@
 'use client';
 
 import type { SectionComponentProps } from '../types';
+import { readHeading } from '../readProps';
 import styles from './RichTextSection.module.scss';
 
 /**
@@ -18,7 +19,7 @@ function readParagraphs(value: unknown): string[] {
 }
 
 export function RichTextSection({ section }: SectionComponentProps) {
-  const heading = typeof section.props['heading'] === 'string' ? section.props['heading'] : '';
+  const heading = readHeading(section.props);
   const paragraphs = readParagraphs(section.props['body']);
   const align = section.props['align'] === 'center' ? 'center' : 'left';
 

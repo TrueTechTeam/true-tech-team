@@ -2,7 +2,7 @@
 
 import type { SectionComponentProps } from '../types';
 import { isSafeHref } from '../safeHref';
-import { readRecordList } from '../readProps';
+import { readHeading, readRecordList, readText } from '../readProps';
 import styles from './ContactSection.module.scss';
 
 interface ContactLink {
@@ -40,8 +40,8 @@ function readLinks(value: unknown): ContactLink[] {
 }
 
 export function ContactSection({ section }: SectionComponentProps) {
-  const heading = typeof section.props['heading'] === 'string' ? section.props['heading'] : '';
-  const intro = typeof section.props['intro'] === 'string' ? section.props['intro'] : '';
+  const heading = readHeading(section.props);
+  const intro = readText(section.props['intro']);
   const email = contactHref('mailto', section.props['email']);
   const phone = contactHref('tel', section.props['phone']);
   const links = readLinks(section.props['links']);

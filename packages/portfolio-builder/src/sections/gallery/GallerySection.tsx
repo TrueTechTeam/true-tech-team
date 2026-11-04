@@ -3,7 +3,7 @@
 import type { CSSProperties } from 'react';
 import type { SectionComponentProps } from '../types';
 import { backgroundImageValue } from '../cssUrl';
-import { readRecordList } from '../readProps';
+import { readHeading, readRecordList, readText } from '../readProps';
 import styles from './GallerySection.module.scss';
 
 interface GalleryImage {
@@ -19,24 +19,23 @@ interface GalleryImage {
  */
 function readImages(value: unknown): GalleryImage[] {
   return readRecordList(value).flatMap((entry) => {
-    const image = typeof entry['image'] === 'string' ? entry['image'] : '';
+    const image = readText(entry['image']);
     if (image.length === 0) {
       return [];
     }
+    const caption = readText(entry['caption']);
     return [
       {
         image,
-        alt: typeof entry['alt'] === 'string' ? entry['alt'] : '',
-        ...(typeof entry['caption'] === 'string' && entry['caption'].length > 0
-          ? { caption: entry['caption'] }
-          : {}),
+        alt: readText(entry['alt']),
+        ...(caption.length > 0 ? { caption } : {}),
       },
     ];
   });
 }
 
 export function GallerySection({ section }: SectionComponentProps) {
-  const heading = typeof section.props['heading'] === 'string' ? section.props['heading'] : '';
+  const heading = readHeading(section.props);
   const rawColumns = section.props['columns'];
   const columns = rawColumns === 2 || rawColumns === 3 || rawColumns === 4 ? rawColumns : 3;
   const images = readImages(section.props['images']);

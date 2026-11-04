@@ -3,7 +3,7 @@
 import { CardItem } from '../../components/wrappers/card';
 import { FlipCardItem } from '../../components/wrappers/expand';
 import type { SectionComponentProps } from '../types';
-import { readRecordList } from '../readProps';
+import { readHeading, readRecordList, readText } from '../readProps';
 import styles from './CardsSection.module.scss';
 
 interface CardEntry {
@@ -15,22 +15,22 @@ interface CardEntry {
 /** An entry without a title has no front face to show and is skipped. */
 function readCards(value: unknown): CardEntry[] {
   return readRecordList(value).flatMap((entry): CardEntry[] => {
-    const title = typeof entry['title'] === 'string' ? entry['title'] : '';
+    const title = readText(entry['title']);
     if (title.trim().length === 0) {
       return [];
     }
     return [
       {
         title,
-        body: typeof entry['body'] === 'string' ? entry['body'] : '',
-        backText: typeof entry['backText'] === 'string' ? entry['backText'] : '',
+        body: readText(entry['body']),
+        backText: readText(entry['backText']),
       },
     ];
   });
 }
 
 export function CardsSection({ section }: SectionComponentProps) {
-  const heading = typeof section.props['heading'] === 'string' ? section.props['heading'] : '';
+  const heading = readHeading(section.props);
   const flip = section.props['style'] === 'flip';
   const cards = readCards(section.props['items']);
 

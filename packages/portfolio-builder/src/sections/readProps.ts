@@ -22,3 +22,13 @@ export function readRecordList(value: unknown): Record<string, unknown>[] {
   }
   return value.filter(isRecord);
 }
+
+/** Reads a string prop; anything else (missing, number, null, object) reads as empty. */
+export function readText(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+/** Reads the `heading` prop that most section types share, as a string ('' when absent). */
+export function readHeading(props: Record<string, unknown>): string {
+  return readText(props['heading']);
+}

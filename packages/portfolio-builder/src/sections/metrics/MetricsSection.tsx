@@ -2,7 +2,7 @@
 
 import { CountUpItem, KpiItem } from '../../components/wrappers/metrics';
 import type { SectionComponentProps } from '../types';
-import { readRecordList } from '../readProps';
+import { readHeading, readRecordList, readText } from '../readProps';
 import styles from './MetricsSection.module.scss';
 
 interface MetricEntry {
@@ -24,15 +24,15 @@ function readMetrics(value: unknown): MetricEntry[] {
     return [
       {
         value: metricValue,
-        label: typeof entry['label'] === 'string' ? entry['label'] : '',
-        suffix: typeof entry['suffix'] === 'string' ? entry['suffix'] : '',
+        label: readText(entry['label']),
+        suffix: readText(entry['suffix']),
       },
     ];
   });
 }
 
 export function MetricsSection({ section }: SectionComponentProps) {
-  const heading = typeof section.props['heading'] === 'string' ? section.props['heading'] : '';
+  const heading = readHeading(section.props);
   const animate = section.props['animate'] === true;
   const metrics = readMetrics(section.props['items']);
 

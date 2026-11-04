@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isRecord, readRecordList } from './readProps';
+import { isRecord, readHeading, readRecordList, readText } from './readProps';
 
 describe('isRecord', () => {
   it('accepts plain objects', () => {
@@ -28,5 +28,26 @@ describe('readRecordList', () => {
 
   it('returns an empty array for an empty array', () => {
     expect(readRecordList([])).toEqual([]);
+  });
+});
+
+describe('readText', () => {
+  it('returns a string unchanged, including the empty string', () => {
+    expect(readText('hello')).toBe('hello');
+    expect(readText('')).toBe('');
+  });
+
+  it.each([null, undefined, 7, true, {}, [], ['x']])('reads %j as an empty string', (value) => {
+    expect(readText(value)).toBe('');
+  });
+});
+
+describe('readHeading', () => {
+  it('reads the heading prop', () => {
+    expect(readHeading({ heading: 'Hello' })).toBe('Hello');
+  });
+
+  it.each([{}, { heading: 3 }, { heading: null }])('reads %j as empty', (props) => {
+    expect(readHeading(props)).toBe('');
   });
 });

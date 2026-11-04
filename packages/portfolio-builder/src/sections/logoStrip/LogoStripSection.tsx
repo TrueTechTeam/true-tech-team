@@ -3,7 +3,7 @@
 import type { SectionComponentProps } from '../types';
 import { backgroundImageValue } from '../cssUrl';
 import { isSafeHref } from '../safeHref';
-import { readRecordList } from '../readProps';
+import { readHeading, readRecordList, readText } from '../readProps';
 import styles from './LogoStripSection.module.scss';
 
 interface Logo {
@@ -19,15 +19,15 @@ interface Logo {
  */
 function readLogos(value: unknown): Logo[] {
   return readRecordList(value).flatMap((entry): Logo[] => {
-    const image = typeof entry['image'] === 'string' ? entry['image'] : '';
+    const image = readText(entry['image']);
     if (image.length === 0) {
       return [];
     }
-    const rawHref = typeof entry['href'] === 'string' ? entry['href'].trim() : '';
+    const rawHref = readText(entry['href']).trim();
     return [
       {
         image,
-        alt: typeof entry['alt'] === 'string' ? entry['alt'] : '',
+        alt: readText(entry['alt']),
         ...(rawHref.length > 0 && isSafeHref(rawHref) ? { href: rawHref } : {}),
       },
     ];
@@ -35,7 +35,7 @@ function readLogos(value: unknown): Logo[] {
 }
 
 export function LogoStripSection({ section }: SectionComponentProps) {
-  const heading = typeof section.props['heading'] === 'string' ? section.props['heading'] : '';
+  const heading = readHeading(section.props);
   const logos = readLogos(section.props['items']);
 
   return (
