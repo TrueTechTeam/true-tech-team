@@ -19,6 +19,19 @@ describe('THEME_PRESETS', () => {
   });
 });
 
+describe('dark presets', () => {
+  it('keep the canvas darker than the surface (elevation goes lighter, COLOR-4)', () => {
+    const shade = (v?: string) => Number(/-(\d+)\)$/.exec(v ?? '')?.[1]);
+    const dark = THEME_PRESETS.filter((preset) => preset.mode === 'dark');
+    expect(dark).toHaveLength(4);
+    for (const preset of dark) {
+      const c = preset.overrides.colors;
+      // In a dark ramp a larger shade number is darker.
+      expect(shade(c?.backgroundPrimary), preset.id).toBeGreaterThan(shade(c?.surfacePrimary));
+    }
+  });
+});
+
 describe('getThemePreset', () => {
   it('resolves every declared preset id to itself', () => {
     for (const preset of THEME_PRESETS) {
@@ -34,7 +47,7 @@ describe('getThemePreset', () => {
     const preset = getThemePreset('ocean');
     expect(preset?.overrides.colors?.primary).toBe('var(--color-cyan-500)');
     expect(preset?.overrides.colors?.secondary).toBe('var(--color-navy-500)');
-    expect(preset?.overrides.colors?.backgroundPrimary).toBe('var(--color-slate-50)');
+    expect(preset?.overrides.colors?.backgroundPrimary).toBe('var(--color-cyan-50)');
   });
 
   it('builds the midnight preset (dark) with its documented families', () => {

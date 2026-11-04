@@ -24,8 +24,12 @@ export function buildLightPreset(
         secondary: colorVar(secondaryFamily, 500),
         secondaryHover: colorVar(secondaryFamily, 600),
         secondaryActive: colorVar(secondaryFamily, 700),
-        backgroundPrimary: colorVar(neutralFamily, 50),
-        backgroundSecondary: colorVar(neutralFamily, 100),
+        // Canvas layers are a faint tint of the PRIMARY family (COLOR-3: tints, not a wash).
+        // Neutral families 50 are all ~#fafafa, so deriving these from neutral made every light
+        // preset look white. Tertiary stays neutral: primary-200 is a saturated wash on some
+        // families (orange-200 is #ffcc80).
+        backgroundPrimary: colorVar(primaryFamily, 50),
+        backgroundSecondary: colorVar(primaryFamily, 100),
         backgroundTertiary: colorVar(neutralFamily, 200),
         surfacePrimary: colorVar(neutralFamily, 50),
         surfaceSecondary: colorVar(neutralFamily, 100),

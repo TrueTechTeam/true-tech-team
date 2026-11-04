@@ -1,3 +1,4 @@
+/* COLOR-4: light-mode layers need a border (fill difference alone is ~1.1:1). No shadow (SHADOW-3). */
 .section {
   padding: var(--spacing-xxl) var(--spacing-md);
   display: flex;
@@ -5,6 +6,7 @@
   gap: var(--spacing-lg);
   width: 100%;
   min-height: var(--section-min-height, 0);
+  border-top: 1px solid var(--theme-border-secondary);
 }
 
 .backgroundPrimary {

@@ -13,8 +13,8 @@ describe('buildLightPreset', () => {
     expect(preset.overrides.colors?.secondary).toBe('var(--color-slate-500)');
     expect(preset.overrides.colors?.secondaryHover).toBe('var(--color-slate-600)');
     expect(preset.overrides.colors?.secondaryActive).toBe('var(--color-slate-700)');
-    expect(preset.overrides.colors?.backgroundPrimary).toBe('var(--color-slate-50)');
-    expect(preset.overrides.colors?.backgroundSecondary).toBe('var(--color-slate-100)');
+    expect(preset.overrides.colors?.backgroundPrimary).toBe('var(--color-blue-50)');
+    expect(preset.overrides.colors?.backgroundSecondary).toBe('var(--color-blue-100)');
     expect(preset.overrides.colors?.backgroundTertiary).toBe('var(--color-slate-200)');
     expect(preset.overrides.colors?.surfacePrimary).toBe('var(--color-slate-50)');
     expect(preset.overrides.colors?.surfaceSecondary).toBe('var(--color-slate-100)');
@@ -24,6 +24,13 @@ describe('buildLightPreset', () => {
     expect(preset.overrides.colors?.textTertiary).toBe('var(--color-slate-400)');
     expect(preset.overrides.colors?.borderPrimary).toBe('var(--color-slate-200)');
     expect(preset.overrides.colors?.borderSecondary).toBe('var(--color-slate-300)');
+  });
+
+  it('gives different primary families different backgroundPrimary values', () => {
+    // Regression: when backgrounds came from the neutral family every light preset collapsed to ~white.
+    const a = buildLightPreset('a', 'A', 'blue', 'slate', 'slate');
+    const b = buildLightPreset('b', 'B', 'orange', 'slate', 'slate');
+    expect(a.overrides.colors?.backgroundPrimary).not.toBe(b.overrides.colors?.backgroundPrimary);
   });
 
   it('does not set a mode field inside overrides', () => {
