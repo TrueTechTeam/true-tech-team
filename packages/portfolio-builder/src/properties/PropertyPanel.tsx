@@ -16,6 +16,8 @@ export interface PropertyPanelProps {
   userId: string;
   /** Namespaces each field's DOM id (`${idPrefix}-${key}`) so repeated panels do not collide. */
   idPrefix?: string;
+  /** Tighter padding and gaps, for a panel nested inside another container such as a list entry. */
+  dense?: boolean;
 }
 
 function renderField(
@@ -147,13 +149,14 @@ export function PropertyPanel({
   supabase,
   userId,
   idPrefix,
+  dense = false,
 }: PropertyPanelProps) {
   function handleFieldChange(key: string, value: unknown) {
     onChange({ ...values, [key]: value });
   }
 
   return (
-    <div className={styles.panel}>
+    <div className={dense ? `${styles.panel} ${styles.panelDense}` : styles.panel}>
       {schema.map((field) =>
         renderField(field, values, handleFieldChange, supabase, userId, idPrefix)
       )}

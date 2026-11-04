@@ -65,6 +65,7 @@ export function SectionList({
               <IconButton
                 icon="chevron-up"
                 size="sm"
+                className={styles.chevron}
                 aria-label={`Move ${section.name} up (section ${position})`}
                 disabled={index === 0}
                 onClick={() => onMove(section.id, -1)}
@@ -72,6 +73,7 @@ export function SectionList({
               <IconButton
                 icon="chevron-down"
                 size="sm"
+                className={styles.chevron}
                 aria-label={`Move ${section.name} down (section ${position})`}
                 disabled={index === sections.length - 1}
                 onClick={() => onMove(section.id, 1)}
@@ -87,7 +89,7 @@ export function SectionList({
         );
       })}
 
-      <Button type="button" variant="ghost" onClick={onAddClick}>
+      <Button type="button" variant="ghost" startIcon="plus" onClick={onAddClick}>
         Add Section
       </Button>
 

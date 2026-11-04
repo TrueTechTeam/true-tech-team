@@ -138,6 +138,7 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
               <span className={styles.entryControls}>
                 <IconButton
                   icon="chevron-up"
+                  className={styles.chevron}
                   aria-label={`Move ${title} up`}
                   size="sm"
                   disabled={index === 0}
@@ -145,6 +146,7 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
                 />
                 <IconButton
                   icon="chevron-down"
+                  className={styles.chevron}
                   aria-label={`Move ${title} down`}
                   size="sm"
                   disabled={index === entries.length - 1}
@@ -159,6 +161,7 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
               </span>
             </div>
             <PropertyPanel
+              dense
               schema={entrySchema}
               values={entry}
               onChange={(next) => handleEntryChange(entry, next)}

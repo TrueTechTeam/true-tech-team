@@ -26,6 +26,25 @@ function renderList(sections: PageSection[], selectedId: string | null = null) {
 }
 
 describe('SectionList', () => {
+  it('gives the Add Section button a plus icon', () => {
+    renderList([]);
+    const button = screen.getByRole('button', { name: 'Add Section' });
+    expect(button.querySelector('[data-testid="icon-plus"]')).not.toBeNull();
+  });
+
+  it('marks every chevron with the local class that neutralises the library disabled fill', () => {
+    renderList([makeSection({ id: 'a', name: 'Home' }), makeSection({ id: 'b', name: 'Intro' })]);
+    const up = screen.getByRole('button', { name: 'Move Home up (section 1)' });
+    const down = screen.getByRole('button', { name: 'Move Intro down (section 2)' });
+    expect(up).toBeDisabled();
+    expect(up.className).toMatch(/chevron/);
+    expect(down).toBeDisabled();
+    expect(down.className).toMatch(/chevron/);
+    expect(screen.getByRole('button', { name: 'Move Home down (section 1)' }).className).toMatch(
+      /chevron/
+    );
+  });
+
   it('renders a row per section showing its name and type label', () => {
     renderList([
       makeSection({ id: 'a', type: 'navbar', name: 'Home' }),

@@ -101,6 +101,18 @@ describe('ListField', () => {
     expect(screen.getByRole('button', { name: 'Move Button 2 down' })).toBeDisabled();
   });
 
+  it('marks the entry chevrons with the local class that neutralises the library disabled fill', () => {
+    renderField(ctasField, [{ label: 'One' }, { label: 'Two' }]);
+    expect(screen.getByRole('button', { name: 'Move Button 1 up' }).className).toMatch(/chevron/);
+    expect(screen.getByRole('button', { name: 'Move Button 2 down' }).className).toMatch(/chevron/);
+  });
+
+  it('renders each entry body in the dense panel so padding does not stack on the entry padding', () => {
+    renderField(ctasField, [{ label: 'One' }]);
+    const panel = screen.getByDisplayValue('One').closest('[class*="panel"]');
+    expect(panel?.className).toMatch(/panelDense/);
+  });
+
   it('propagates an edit inside an entry without disturbing its siblings', () => {
     const { onChange } = renderField(ctasField, [{ label: 'One' }, { label: 'Two' }]);
     fireEvent.change(screen.getAllByLabelText(/^Label/)[0] as HTMLElement, {

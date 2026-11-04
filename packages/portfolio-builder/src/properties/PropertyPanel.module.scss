@@ -5,6 +5,13 @@
   padding: var(--spacing-md);
 }
 
+// A list entry already supplies its own padding; stacking the full panel padding on top of it
+// pushed every nested field ~24px in from the entry border.
+.panelDense {
+  gap: var(--spacing-sm);
+  padding: 0;
+}
+
 .uploadError {
   color: var(--color-red-500);
   font-size: 0.875rem;
@@ -41,5 +48,5 @@
 }
 
 .thumbnailSelected {
-  border-color: var(--color-primary-500);
+  border-color: var(--theme-primary);
 }

@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { FilePicker, type FileError } from '@true-tech-team/react-components';
 import { listPortfolioAssets, uploadPortfolioAsset } from '../assets/upload';
+import { maxSizeForKind } from '../assets/validate';
 import type { PortfolioAsset } from '../assets/types';
 import styles from './PropertyPanel.module.scss';
 
@@ -12,10 +14,12 @@ export interface ImageFieldProps {
   supabase: SupabaseClient;
   userId: string;
   label?: string;
+  /** Accepted for call-site parity with the other fields; FilePicker's props do not expose `id`. */
   id?: string;
 }
 
 const ACCEPTED_IMAGE_MIME_TYPES = 'image/jpeg,image/png,image/webp,image/gif';
+const MAX_IMAGE_BYTES = maxSizeForKind('image');
 
 export function ImageField({
   value,
@@ -23,7 +27,6 @@ export function ImageField({
   supabase,
   userId,
   label = 'Image',
-  id = 'image-field-upload',
 }: ImageFieldProps) {
   const [assetList, setAssetList] = useState<PortfolioAsset[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -46,8 +49,10 @@ export function ImageField({
     };
   }, [supabase, userId]);
 
-  async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+  async function handleFiles(files: File[]) {
+    // FilePicker also reports an empty selection (every file was rejected, and `onError` follows
+    // with the reasons), so there is nothing to upload and the error must not be cleared here.
+    const file = files[0];
     if (!file) {
       return;
     }
@@ -59,6 +64,10 @@ export function ImageField({
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : 'Failed to upload image');
     }
+  }
+
+  function handleRejected(errors: FileError[]) {
+    setUploadError(errors[0]?.message ?? 'That file cannot be uploaded');
   }
 
   return (
@@ -77,8 +86,15 @@ export function ImageField({
           </button>
         ))}
       </div>
-      <label htmlFor={id}>Upload new image</label>
-      <input id={id} type="file" accept={ACCEPTED_IMAGE_MIME_TYPES} onChange={handleUpload} />
+      <FilePicker
+        aria-label="Upload new image"
+        accept={ACCEPTED_IMAGE_MIME_TYPES}
+        maxSize={MAX_IMAGE_BYTES}
+        showPreview={false}
+        showFileList={false}
+        onChange={handleFiles}
+        onError={handleRejected}
+      />
       {uploadError && <p className={styles.uploadError}>{uploadError}</p>}
     </div>
   );

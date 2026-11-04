@@ -34,9 +34,19 @@
 .entryControls {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: 2px;
 }
 
 .empty {
   color: var(--theme-text-secondary);
+}
+
+/*
+ * The library's ghost IconButton paints its disabled state with a filled
+ * --button-bg-disabled background, so a disabled chevron read as a solid box - more prominent
+ * than the enabled ones. `button.` raises specificity over the library rule without !important.
+ */
+button.chevron:disabled {
+  background-color: transparent;
+  opacity: 0.4;
 }
