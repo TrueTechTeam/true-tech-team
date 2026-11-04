@@ -107,6 +107,28 @@ test.describe('portfolio builder: create from template, edit, publish', () => {
     const anon = await context.newPage();
     await anon.goto(publicPath, { timeout: 90_000 });
     await expect(anon.getByText('My Best Work')).toBeVisible({ timeout: 30_000 });
+
+    // The new section types, as a real visitor receives them. Each assertion is scoped to this
+    // anonymous page and names text only the template's seed data supplies.
+    // gallery: both seeded entries render as role="img" tiles carrying their alt text.
+    const gallery = anon.locator('#portfolio');
+    await expect(gallery.getByRole('img')).toHaveCount(2);
+    await expect(
+      anon.getByRole('img', {
+        name: 'Replace this with a description of your strongest piece',
+        exact: true,
+      })
+    ).toBeVisible();
+    await expect(
+      anon.getByRole('img', {
+        name: 'Replace this with a description of a second piece',
+        exact: true,
+      })
+    ).toBeVisible();
+    // cards: a seeded card title is visible (the cards section is static style, so it is the header).
+    await expect(anon.getByText('Replace with a service you offer', { exact: true })).toBeVisible();
+    // contact: its heading rendered (a heading role, so the "Work with me" hero CTA cannot satisfy it).
+    await expect(anon.getByRole('heading', { name: 'Work with me', exact: true })).toBeVisible();
     await context.close();
   });
 
