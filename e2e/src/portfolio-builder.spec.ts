@@ -8,6 +8,11 @@ const unique = Date.now();
 const pageTitle = `E2E Graphic Design ${unique}`;
 let publicPath = '';
 
+/** The host app's own marketing copy, from the root layout. It must never reach a portfolio. */
+const APP_DESCRIPTION = 'Showcasing innovative tech projects and solutions from the True Tech Team';
+/** The host app's own favicon. */
+const APP_FAVICON = '/logo.svg';
+
 test.describe('portfolio builder: create from template, edit, publish', () => {
   test('the page list is reachable (not access-denied)', async ({ page }) => {
     await page.goto('/portfolio-builder', { timeout: 90_000 });
@@ -187,6 +192,46 @@ test.describe('portfolio builder: create from template, edit, publish', () => {
       .poll(() => target.evaluate((el) => el.getBoundingClientRect().top), { timeout: 10_000 })
       .toBeLessThan(150);
     await expect(target).toBeInViewport();
+    await context.close();
+  });
+
+  test('the published page carries none of the host app branding', async ({ browser }) => {
+    expect(publicPath, 'publish step must run first').not.toBe('');
+    const context = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+    const anon = await context.newPage();
+    await anon.goto(publicPath, { timeout: 90_000 });
+    // The app shell pins itself to dark in a mount effect, so wait for the page to hydrate
+    // before reading `data-theme` - otherwise this asserts the pre-hydration HTML.
+    await expect(anon.getByText('My Best Work')).toBeVisible({ timeout: 30_000 });
+
+    const branding = await anon.evaluate(() => ({
+      descriptions: [...document.querySelectorAll('meta[name="description"]')].map(
+        (m) => m.getAttribute('content') ?? ''
+      ),
+      icons: [...document.querySelectorAll('link[rel~="icon"]')].map(
+        (l) => l.getAttribute('href') ?? ''
+      ),
+    }));
+
+    // Soft, so one run reports all three leaks rather than stopping at the first.
+    // 1. The app's marketing copy is not this portfolio's description.
+    expect
+      .soft(branding.descriptions, 'app description must not reach a portfolio')
+      .not.toContain(APP_DESCRIPTION);
+    // 2. The True Tech Team favicon does not brand this portfolio.
+    expect
+      .soft(branding.icons, 'app favicon must not brand a portfolio')
+      .not.toContain(APP_FAVICON);
+    // 3. The page is not forced dark. The Graphic Design template seeds the 'coral-reef' preset,
+    //    which is a LIGHT theme; the app shell's `dark` must not win over it. Polled because the
+    //    shell and the portfolio both write `data-theme` during hydration.
+    await expect.soft
+      .poll(() => anon.evaluate(() => document.documentElement.getAttribute('data-theme')), {
+        message: 'a light-themed portfolio must not render dark',
+        timeout: 10_000,
+      })
+      .toBe('light');
+
     await context.close();
   });
 

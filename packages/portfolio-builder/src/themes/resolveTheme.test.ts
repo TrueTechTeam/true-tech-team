@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveEffectiveTheme } from './resolveTheme';
+import { resolveEffectiveMode, resolveEffectiveTheme } from './resolveTheme';
 import type { PortfolioPage } from '../schema/types';
 
 function makePage(overrides: Partial<PortfolioPage> = {}): PortfolioPage {
@@ -36,5 +36,33 @@ describe('resolveEffectiveTheme', () => {
   it('returns undefined when themeId does not match any known preset', () => {
     const page = makePage({ themeId: 'not-a-real-preset' });
     expect(resolveEffectiveTheme(page)).toBeUndefined();
+  });
+});
+
+describe('resolveEffectiveMode', () => {
+  it("returns a light preset's mode", () => {
+    expect(resolveEffectiveMode(makePage({ themeId: 'coral-reef' }))).toBe('light');
+  });
+
+  it("returns a dark preset's mode", () => {
+    expect(resolveEffectiveMode(makePage({ themeId: 'midnight' }))).toBe('dark');
+  });
+
+  it('returns light when no themeId is set', () => {
+    expect(resolveEffectiveMode(makePage())).toBe('light');
+  });
+
+  it('returns light when themeId does not match any known preset', () => {
+    expect(resolveEffectiveMode(makePage({ themeId: 'not-a-real-preset' }))).toBe('light');
+  });
+
+  // A themeOverride is colours only - it carries no mode - so the preset named by themeId still
+  // decides, rather than silently falling back to light and inverting a dark page.
+  it("keeps the preset's mode when a themeOverride replaces its colours", () => {
+    const page = makePage({
+      themeId: 'midnight',
+      themeOverride: { colors: { primary: 'var(--color-blue-500)' } },
+    });
+    expect(resolveEffectiveMode(page)).toBe('dark');
   });
 });

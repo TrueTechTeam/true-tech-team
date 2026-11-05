@@ -72,7 +72,7 @@ describe('generateMetadata', () => {
 
     const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'jtrue' }) });
 
-    expect(metadata).toEqual({ title: 'Justin True' });
+    expect(metadata.title).toBe('Justin True');
   });
 
   it('falls back to a generic title when the slug does not resolve', async () => {
@@ -80,6 +80,34 @@ describe('generateMetadata', () => {
 
     const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'missing' }) });
 
-    expect(metadata).toEqual({ title: 'Portfolio' });
+    expect(metadata.title).toBe('Portfolio');
+  });
+
+  // The host app's branding must not reach someone's portfolio. `null` is Next.js's "remove this
+  // inherited field"; `undefined` or an absent key would let the root layout's values through,
+  // so these assert null exactly rather than merely falsy.
+  it("carries no description, rather than inheriting the app's", async () => {
+    vi.spyOn(portfolioBuilder, 'loadPortfolioPageBySlug').mockResolvedValue(makeRecord());
+
+    const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'jtrue' }) });
+
+    expect(metadata.description).toBeNull();
+  });
+
+  it("carries no icon, rather than inheriting the app's favicon", async () => {
+    vi.spyOn(portfolioBuilder, 'loadPortfolioPageBySlug').mockResolvedValue(makeRecord());
+
+    const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'jtrue' }) });
+
+    expect(metadata.icons).toBeNull();
+  });
+
+  it('suppresses the app description and icon even for a slug that does not resolve', async () => {
+    vi.spyOn(portfolioBuilder, 'loadPortfolioPageBySlug').mockResolvedValue(null);
+
+    const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'missing' }) });
+
+    expect(metadata.description).toBeNull();
+    expect(metadata.icons).toBeNull();
   });
 });
