@@ -9,11 +9,14 @@
   flex-direction: column;
   width: 100%;
   min-height: var(--section-min-height, 0);
+  border-top: 1px solid var(--theme-border-secondary);
 }
 
-/* The divider separates adjacent sections, so the first one has nothing above it to divide from. */
-.section:not(:first-child) {
-  border-top: 1px solid var(--theme-border-secondary);
+/* The divider separates adjacent sections, so the first one has nothing above it to divide from.
+   `data-first` rather than sibling position: the editor wraps every section in its own element. */
+
+.section[data-first='true'] {
+  border-top: none;
 }
 
 /* LAYOUT-1: --spacing-md side padding on mobile, --spacing-xl on desktop (769px = library desktop). */
@@ -33,6 +36,15 @@
   .inner {
     padding-inline: var(--spacing-xl);
   }
+}
+
+/* A hero draws its own full-width band and constrains its own content, so the shell wrapper
+   neither caps its width nor adds a gutter. */
+.innerBleed {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
 }
 
 .backgroundPrimary {

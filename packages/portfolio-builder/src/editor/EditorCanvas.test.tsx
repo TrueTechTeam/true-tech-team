@@ -168,4 +168,19 @@ describe('the public render path stays free of editor affordances', () => {
     cta.dispatchEvent(event);
     expect(event.defaultPrevented).toBe(false);
   });
+
+  it('marks only the first section as first, though each is wrapped in its own element', () => {
+    const body: PageSection = {
+      id: 'sec-body',
+      type: 'richText',
+      name: 'Body',
+      showInNav: true,
+      props: { heading: 'B', body: 'text' },
+    };
+    renderCanvas(makePage([headerWithCta, body]));
+    const first = screen.getByTestId('canvas-section-sec-header').querySelector('section');
+    const second = screen.getByTestId('canvas-section-sec-body').querySelector('section');
+    expect(first).toHaveAttribute('data-first', 'true');
+    expect(second).not.toHaveAttribute('data-first');
+  });
 });

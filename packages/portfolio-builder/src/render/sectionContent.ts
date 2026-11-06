@@ -13,6 +13,18 @@ import type { PropertySchema } from '../properties/types';
  */
 const TITLE_KEYS = new Set(['heading', 'subheading']);
 
+/** A list entry that could render something: a record with a non-blank string or a number. */
+function isRenderableEntry(entry: unknown): boolean {
+  if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) {
+    return false;
+  }
+  return Object.values(entry).some(
+    (v) =>
+      (typeof v === 'string' && v.trim().length > 0) ||
+      (typeof v === 'number' && Number.isFinite(v))
+  );
+}
+
 export function hasSectionContent(schema: PropertySchema, props: Record<string, unknown>): boolean {
   return schema.some((field) => {
     if (TITLE_KEYS.has(field.key)) {
@@ -21,7 +33,7 @@ export function hasSectionContent(schema: PropertySchema, props: Record<string, 
     const value = props[field.key];
     switch (field.type) {
       case 'list':
-        return Array.isArray(value) && value.length > 0;
+        return Array.isArray(value) && value.some(isRenderableEntry);
       case 'text':
       case 'textarea':
       case 'image':

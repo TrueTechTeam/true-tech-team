@@ -124,9 +124,10 @@ describe('GallerySection', () => {
 
     it('sizes tiles from the effective column count, which the responsive steps override', () => {
       expect(body(String.raw`\.grid`)).toMatch(/--cols:\s*var\(--gallery-columns,\s*3\)/);
-      expect(body(String.raw`\.figure`)).toMatch(
-        /flex:\s*0 0 calc\(\(100% - \(var\(--cols\) - 1\) \* var\(--spacing-md\)\) \/ var\(--cols\)\);/
-      );
+      // Whitespace-insensitive: compare with every space removed, so reformatting the calc() does
+      // not break this but changing any term of it (e.g. a hard-coded divisor) still does.
+      const flex = body(String.raw`\.figure`).replace(/\s+/g, '');
+      expect(flex).toContain('flex:00calc((100%-(var(--cols)-1)*var(--spacing-md))/var(--cols));');
       expect(source).toMatch(/@media \(width <= 900px\)\s*\{\s*\.grid\s*\{\s*--cols:\s*2/);
       expect(source).toMatch(/@media \(width <= 560px\)\s*\{\s*\.grid\s*\{\s*--cols:\s*1/);
     });

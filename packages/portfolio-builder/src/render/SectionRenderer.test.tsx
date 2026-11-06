@@ -135,4 +135,26 @@ describe('SectionRenderer', () => {
       expect(minHeight(container)).toBe('60vh');
     });
   });
+
+  it('sets data-first only when told the section is first', () => {
+    const section = makeSection();
+    const page = makePage([section]);
+    const { container, rerender } = render(
+      <SectionRenderer section={section} page={page} anchors={new Map()} isFirst />
+    );
+    expect(container.querySelector('section')).toHaveAttribute('data-first', 'true');
+    rerender(<SectionRenderer section={section} page={page} anchors={new Map()} />);
+    expect(container.querySelector('section')).not.toHaveAttribute('data-first');
+  });
+
+  it('gives a hero the bleed wrapper and every other section the constrained one', () => {
+    const hero = renderSection(
+      makeSection({ type: 'header' as PageSection['type'], props: {} }),
+      new Map()
+    );
+    expect(hero.container.querySelector('section > div')?.className).toMatch(/innerBleed/);
+    hero.unmount();
+    const other = renderSection(makeSection(), new Map());
+    expect(other.container.querySelector('section > div')?.className).not.toMatch(/innerBleed/);
+  });
 });

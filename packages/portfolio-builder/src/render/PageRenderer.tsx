@@ -6,8 +6,14 @@ export function PageRenderer({ page }: { page: PortfolioPage }) {
   const anchors = sectionAnchors(page.sections);
   return (
     <div>
-      {page.sections.map((section) => (
-        <SectionRenderer key={section.id} section={section} page={page} anchors={anchors} />
+      {page.sections.map((section, index) => (
+        <SectionRenderer
+          key={section.id}
+          section={section}
+          page={page}
+          anchors={anchors}
+          isFirst={index === 0}
+        />
       ))}
     </div>
   );

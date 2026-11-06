@@ -60,4 +60,28 @@ describe('PageRenderer', () => {
     expect(container.querySelectorAll('section')).toHaveLength(0);
     expect(container.querySelector('header')).toBeNull();
   });
+
+  // The divider is drawn on every section but the first. The signal is explicit (not :first-child)
+  // so the editor, which wraps each section, can use it too.
+  it('does not mark a hero under a navbar as first, so it keeps its divider', () => {
+    const page = makePage([
+      { id: 'nav', type: 'navbar', name: 'Home', showInNav: false, props: { brand: 'JT' } },
+      { id: 'a', type: 'header', name: 'About', showInNav: true, props: { heading: 'A' } },
+      { id: 'b', type: 'richText', name: 'Body', showInNav: true, props: { heading: 'B' } },
+    ]);
+    const { container } = render(<PageRenderer page={page} />);
+    const sections = [...container.querySelectorAll('section')];
+    expect(sections).toHaveLength(2);
+    expect(sections.map((s) => s.getAttribute('data-first'))).toEqual([null, null]);
+  });
+
+  it('marks a content section as first when it is the first entry', () => {
+    const page = makePage([
+      { id: 'a', type: 'header', name: 'About', showInNav: true, props: { heading: 'A' } },
+      { id: 'b', type: 'richText', name: 'Body', showInNav: true, props: { heading: 'B' } },
+    ]);
+    const { container } = render(<PageRenderer page={page} />);
+    const sections = [...container.querySelectorAll('section')];
+    expect(sections.map((s) => s.getAttribute('data-first'))).toEqual(['true', null]);
+  });
 });

@@ -11,18 +11,25 @@ const BACKGROUND_CLASS: Record<SectionBackground, string> = {
 };
 
 /**
- * Types that keep their `minHeight` even when populated: a hero is meant to fill the viewport, so
- * its height is a design choice rather than a floor for missing content.
+ * Hero types. A hero is meant to fill the viewport, so it keeps its `minHeight` even when
+ * populated, and it paints its own full-width band (background image) and constrains its own
+ * content, so the shell must not constrain it.
  */
-const KEEPS_MIN_HEIGHT: ReadonlySet<string> = new Set(['header']);
+const HERO_TYPES: ReadonlySet<string> = new Set(['header']);
 
 export interface SectionRendererProps {
   section: PageSection;
   page: PortfolioPage;
   anchors: Map<string, string>;
+  /**
+   * True for the first section of the page. The divider between sections is drawn on every
+   * section but this one. A signal rather than `:first-child` because the editor wraps each
+   * section in its own element, so sibling position says nothing there.
+   */
+  isFirst?: boolean;
 }
 
-export function SectionRenderer({ section, page, anchors }: SectionRendererProps) {
+export function SectionRenderer({ section, page, anchors, isFirst }: SectionRendererProps) {
   const entry = getSectionTypeEntry(section.type);
   if (!entry) {
     // Data written by a newer client, or a pre-pivot (schemaVersion 1) row whose sections have
@@ -42,7 +49,7 @@ export function SectionRenderer({ section, page, anchors }: SectionRendererProps
 
   // `minHeight` is a floor for an empty section; a populated one sizes to its content.
   const reserveHeight =
-    KEEPS_MIN_HEIGHT.has(section.type) || !hasSectionContent(entry.propertySchema, section.props);
+    HERO_TYPES.has(section.type) || !hasSectionContent(entry.propertySchema, section.props);
   const style = (
     reserveHeight ? { '--section-min-height': entry.minHeight } : {}
   ) as React.CSSProperties;
@@ -52,9 +59,12 @@ export function SectionRenderer({ section, page, anchors }: SectionRendererProps
       id={anchors.get(section.id) ?? section.id}
       aria-label={section.name}
       className={`${styles.section} ${BACKGROUND_CLASS[section.background ?? 'transparent']}`}
+      data-first={isFirst ? 'true' : undefined}
       style={style}
     >
-      <div className={styles.inner}>{content}</div>
+      <div className={HERO_TYPES.has(section.type) ? styles.innerBleed : styles.inner}>
+        {content}
+      </div>
     </section>
   );
 }

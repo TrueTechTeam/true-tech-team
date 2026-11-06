@@ -142,4 +142,29 @@ describe('HeaderSection', () => {
     const body = /\.heading\s*\{([^}]*)\}/.exec(source)?.[1] ?? '';
     expect(body).toMatch(/color:\s*var\(--theme-text-primary\)/);
   });
+
+  // jsdom cannot lay anything out, so assert the declarations. The band (.header/.headerCenter)
+  // is full width and carries the image; the content inside it is what gets capped and centred.
+  it('constrains the hero content, not the background band', () => {
+    const source = readFileSync(resolve(__dirname, './HeaderSection.module.scss'), 'utf8');
+    const content = /(?:^|\n)\.content\s*\{([^}]*)\}/.exec(source)?.[1] ?? '';
+    const band = /(?:^|\n)\.header,\s*\.headerCenter\s*\{([^}]*)\}/.exec(source)?.[1] ?? '';
+    expect(content).toMatch(/max-width:\s*var\(--content-width-page\)/);
+    expect(content).toMatch(/margin-inline:\s*auto/);
+    expect(band).toMatch(/background-size:\s*cover/);
+    expect(band).not.toMatch(/max-width/);
+  });
+
+  it('keeps the background on the outer band with the content nested inside it', () => {
+    const { container } = renderHeader(
+      makeHeader({ heading: 'Hi', backgroundImage: 'https://x.example/a.png' })
+    );
+    const band = container.firstElementChild as HTMLElement;
+    const heading = screen.getByRole('heading', { name: 'Hi' });
+    expect(band.style.backgroundImage).toContain('a.png');
+    expect(band.firstElementChild).toContainElement(heading);
+    expect(band.firstElementChild).not.toBe(heading);
+    // The nested wrapper must be the one the stylesheet constrains.
+    expect(band.firstElementChild?.className).toMatch(/content/);
+  });
 });

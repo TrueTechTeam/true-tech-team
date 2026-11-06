@@ -44,7 +44,7 @@ export function EditorCanvas({ page, selectedId, onSelect }: EditorCanvasProps) 
       {page.sections.length === 0 && (
         <p className={styles.empty}>Nothing here yet. Add a section to get started.</p>
       )}
-      {page.sections.map((section) => (
+      {page.sections.map((section, index) => (
         <div
           key={section.id}
           className={styles.section}
@@ -52,7 +52,7 @@ export function EditorCanvas({ page, selectedId, onSelect }: EditorCanvasProps) 
           data-selected={section.id === selectedId ? 'true' : undefined}
           onClickCapture={(event) => handleSectionClick(event, section.id)}
         >
-          <SectionRenderer section={section} page={page} anchors={anchors} />
+          <SectionRenderer section={section} page={page} anchors={anchors} isFirst={index === 0} />
         </div>
       ))}
     </div>

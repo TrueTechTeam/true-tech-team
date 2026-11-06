@@ -32,7 +32,7 @@ describe('hasSectionContent', () => {
   });
 
   it('is true for a non-empty list', () => {
-    expect(hasSectionContent(schema, { items: [{}] })).toBe(true);
+    expect(hasSectionContent(schema, { items: [{ q: 'x' }] })).toBe(true);
   });
 
   it('is true for body text', () => {
@@ -41,5 +41,23 @@ describe('hasSectionContent', () => {
 
   it('is true for an image', () => {
     expect(hasSectionContent(schema, { bg: 'https://x/y.png' })).toBe(true);
+  });
+
+  it('is false for a list whose entries could not render anything', () => {
+    expect(hasSectionContent(schema, { items: [null] })).toBe(false);
+    expect(hasSectionContent(schema, { items: [undefined, 3, 'x', [], {}] })).toBe(false);
+    expect(hasSectionContent(schema, { items: [{ a: '  ', b: null, c: true }] })).toBe(false);
+  });
+
+  it('is true when at least one list entry has something to render', () => {
+    expect(hasSectionContent(schema, { items: [null, { a: '' }, { q: 'Why?' }] })).toBe(true);
+    expect(hasSectionContent(schema, { items: [{ value: 0 }] })).toBe(true);
+  });
+
+  it('does not throw on any input', () => {
+    expect(() => hasSectionContent([], {})).not.toThrow();
+    expect(() =>
+      hasSectionContent(schema, { items: [NaN, Symbol('x')], body: null })
+    ).not.toThrow();
   });
 });

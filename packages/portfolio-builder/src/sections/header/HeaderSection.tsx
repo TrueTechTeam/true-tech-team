@@ -64,21 +64,23 @@ export function HeaderSection({ section, page }: SectionComponentProps) {
         backgroundImage ? { backgroundImage: backgroundImageValue(backgroundImage) } : undefined
       }
     >
-      <h1 className={styles.heading}>{heading}</h1>
-      {subheading && <p className={styles.subheading}>{subheading}</p>}
-      {ctas.length > 0 && (
-        <div className={styles.ctas}>
-          {ctas.map((cta) => (
-            <a
-              key={cta.key}
-              className={cta.variant === 'secondary' ? styles.ctaSecondary : styles.cta}
-              href={cta.href}
-            >
-              {cta.label}
-            </a>
-          ))}
-        </div>
-      )}
+      <div className={styles.content}>
+        <h1 className={styles.heading}>{heading}</h1>
+        {subheading && <p className={styles.subheading}>{subheading}</p>}
+        {ctas.length > 0 && (
+          <div className={styles.ctas}>
+            {ctas.map((cta) => (
+              <a
+                key={cta.key}
+                className={cta.variant === 'secondary' ? styles.ctaSecondary : styles.cta}
+                href={cta.href}
+              >
+                {cta.label}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
