@@ -12,6 +12,9 @@ let publicPath = '';
 const APP_DESCRIPTION = 'Showcasing innovative tech projects and solutions from the True Tech Team';
 /** The host app's own favicon. */
 const APP_FAVICON = '/logo.svg';
+/** What the published page emits so the first paint already carries its own mode. */
+const LIGHT_MODE_SCRIPT = "document.documentElement.dataset.theme='light'";
+const DARK_MODE_SCRIPT = "document.documentElement.dataset.theme='dark'";
 
 test.describe('portfolio builder: create from template, edit, publish', () => {
   test('the page list is reachable (not access-denied)', async ({ page }) => {
@@ -231,6 +234,67 @@ test.describe('portfolio builder: create from template, edit, publish', () => {
         timeout: 10_000,
       })
       .toBe('light');
+    // 4. ...and it is not forced dark for the FIRST PAINT either. `data-theme` above is the
+    //    hydrated DOM; this asserts the markup the server actually sent, where the page's own
+    //    mode must already be set ahead of its content. Without this the page paints dark for a
+    //    frame, which is still being forced dark.
+    const html = await (await anon.request.get(publicPath)).text();
+    expect
+      .soft(html, 'server HTML must set the light mode before painting')
+      .toContain(LIGHT_MODE_SCRIPT);
+    expect
+      .soft(html, 'server HTML must not set the dark mode on a light page')
+      .not.toContain(DARK_MODE_SCRIPT);
+    expect
+      .soft(
+        html.indexOf(LIGHT_MODE_SCRIPT),
+        'the mode must be set before the portfolio content is parsed'
+      )
+      .toBeLessThan(html.indexOf('My Best Work'));
+
+    await context.close();
+  });
+
+  // Four of the twenty presets are dark, and a fix aimed at making light pages light is exactly
+  // the kind that inverts them. This switches the live page to a dark preset through the real
+  // theme dropdown and asserts the published result goes dark, first paint included.
+  test('a dark preset still publishes dark', async ({ page, browser }) => {
+    expect(publicPath, 'publish step must run first').not.toBe('');
+
+    await page.goto('/portfolio-builder');
+    await page.getByRole('link', { name: new RegExp(pageTitle) }).click();
+    await page.waitForURL(/\/portfolio-builder\/edit\//);
+
+    await page.getByRole('button', { name: /settings/i }).click();
+    // The dropdown trigger is labelled with the current preset; Graphic Design seeds Coral Reef.
+    await page.getByRole('button', { name: /coral reef/i }).click();
+    await page.getByText('Midnight', { exact: true }).click();
+    await expect(page.getByRole('button', { name: /midnight/i })).toBeVisible();
+    await page.getByRole('button', { name: /^done$/i }).click();
+
+    await page.getByRole('button', { name: /^save$/i }).click();
+    await expect(page.getByText(/^saved$/i)).toBeVisible({ timeout: 30_000 });
+
+    const context = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+    const anon = await context.newPage();
+    await anon.goto(publicPath, { timeout: 90_000 });
+    await expect(anon.getByText('My Best Work')).toBeVisible({ timeout: 30_000 });
+
+    // The server HTML sets dark before painting...
+    const html = await (await anon.request.get(publicPath)).text();
+    expect
+      .soft(html, 'server HTML must set the dark mode for a dark preset')
+      .toContain(DARK_MODE_SCRIPT);
+    expect
+      .soft(html, 'server HTML must not set the light mode on a dark page')
+      .not.toContain(LIGHT_MODE_SCRIPT);
+    // ...and hydration leaves it dark rather than reverting to the light default.
+    await expect.soft
+      .poll(() => anon.evaluate(() => document.documentElement.getAttribute('data-theme')), {
+        message: 'a dark-themed portfolio must stay dark',
+        timeout: 10_000,
+      })
+      .toBe('dark');
 
     await context.close();
   });

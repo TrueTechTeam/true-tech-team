@@ -59,6 +59,61 @@ describe('PortfolioPublicPage', () => {
       PortfolioPublicPage({ params: Promise.resolve({ slug: 'unpublished-slug' }) })
     ).rejects.toThrow('NEXT_NOT_FOUND');
   });
+
+  // The root layout renders <html data-theme="dark"> for every route, so a light portfolio would
+  // paint with the dark token block until hydration. The page emits a script that sets the mode
+  // during parse, ahead of its own markup, so the FIRST paint is already correct. These assert the
+  // markup the server sends; the e2e test asserts it in the delivered HTML.
+  describe('the pre-hydration theme mode script', () => {
+    async function scriptFor(record: PortfolioPageRecord) {
+      vi.spyOn(portfolioBuilder, 'loadPortfolioPageBySlug').mockResolvedValue(record);
+      const { container } = render(
+        await PortfolioPublicPage({ params: Promise.resolve({ slug: record.slug }) })
+      );
+      return container.querySelector('script')?.innerHTML ?? null;
+    }
+
+    it('sets light for a page on a light preset', async () => {
+      expect(await scriptFor(makeRecord({ themeId: 'coral-reef' }))).toBe(
+        "document.documentElement.dataset.theme='light'"
+      );
+    });
+
+    it('sets dark for a page on a dark preset', async () => {
+      expect(await scriptFor(makeRecord({ themeId: 'midnight' }))).toBe(
+        "document.documentElement.dataset.theme='dark'"
+      );
+    });
+
+    it('sets light when the page names no theme', async () => {
+      expect(await scriptFor(makeRecord())).toBe("document.documentElement.dataset.theme='light'");
+    });
+
+    // Stored page data must not be able to reach the script body.
+    it('emits a fixed literal for an unrecognised theme id', async () => {
+      expect(await scriptFor(makeRecord({ themeId: "x';alert(1);//" }))).toBe(
+        "document.documentElement.dataset.theme='light'"
+      );
+    });
+
+    it('runs before the portfolio markup, so the first paint is already themed', async () => {
+      vi.spyOn(portfolioBuilder, 'loadPortfolioPageBySlug').mockResolvedValue(
+        makeRecord({ themeId: 'coral-reef' })
+      );
+      const { container } = render(
+        await PortfolioPublicPage({ params: Promise.resolve({ slug: 'jtrue' }) })
+      );
+
+      const script = container.querySelector('script');
+      const view = container.querySelector('[data-testid="themed-page-view"]');
+      expect(script).not.toBeNull();
+      expect(view).not.toBeNull();
+      // DOCUMENT_POSITION_FOLLOWING: the view comes after the script.
+      expect(script!.compareDocumentPosition(view!) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING
+      );
+    });
+  });
 });
 
 describe('generateMetadata', () => {
@@ -83,9 +138,12 @@ describe('generateMetadata', () => {
     expect(metadata.title).toBe('Portfolio');
   });
 
-  // The host app's branding must not reach someone's portfolio. `null` is Next.js's "remove this
-  // inherited field"; `undefined` or an absent key would let the root layout's values through,
-  // so these assert null exactly rather than merely falsy.
+  // The host app's branding must not reach someone's portfolio. What makes that work is the key
+  // being PRESENT - Next's `mergeMetadata` uses `for...in`, which visits an `undefined`-valued key
+  // too, and resolves both `undefined` and `null` to "emit nothing"; only an absent key inherits.
+  // So these assert `null` exactly to pin the chosen spelling (which says the suppression out
+  // loud) rather than because `undefined` would behave differently. The e2e branding test is what
+  // pins the actual behaviour: no description and no icon tag reach a visitor.
   it("carries no description, rather than inheriting the app's", async () => {
     vi.spyOn(portfolioBuilder, 'loadPortfolioPageBySlug').mockResolvedValue(makeRecord());
 

@@ -16,10 +16,21 @@ export interface PageThemeModeProps {
  * flushes child effects before parent ones, so the provider a portfolio renders for itself always
  * loses that race: the app's `dark` lands last and forces dark onto a light-themed portfolio.
  *
- * So assert the page's mode, and assert it again if anything replaces it. A portfolio only ever
- * renders as a whole document - the published page at `/p/<slug>`, or the editor preview inside
- * its own iframe - so owning `<html>` here is correct in both, and in neither does any other UI
- * share the document.
+ * So assert the page's mode, and assert it again if anything replaces it.
+ *
+ * PRECONDITION: at most one instance per document. Two instances with different modes would each
+ * see the other's write as a change to revert and re-write at each other through their observers,
+ * without end, hanging the tab. Nothing enforces this, so it is on the caller: render this only
+ * from a component that owns the whole document. The two places that do are the published page at
+ * `/p/<slug>` and the editor preview, which is only ever loaded inside its own iframe and so has a
+ * document of its own; in neither does any other UI share the document.
+ *
+ * It also deliberately does NOT restore the previous `data-theme` on unmount - only the observer
+ * is torn down. That is safe because nothing client-navigates away from a portfolio: the one link
+ * to `/p/<slug>` in this app (`PageSettingsDialog`) is an `<a target="_blank">`, so leaving a
+ * portfolio is always a full page load that discards the document anyway. Restoring on unmount
+ * would be the wrong behaviour for the preview iframe besides, where this component unmounting
+ * means a new page is being rendered into the same document.
  */
 export function PageThemeMode({ mode }: PageThemeModeProps) {
   useEffect(() => {

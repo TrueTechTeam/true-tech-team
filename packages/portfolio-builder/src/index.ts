@@ -35,7 +35,7 @@ export { recordToPage } from './pages/mapping';
 export { slugify, generateUniqueSlug } from './pages/slug';
 
 export { PortfolioPreviewReceiver } from './preview/PortfolioPreviewReceiver';
-export { resolveEffectiveTheme } from './themes/resolveTheme';
+export { resolveEffectiveTheme, resolveEffectiveMode } from './themes/resolveTheme';
 export {
   PREVIEW_READY_MESSAGE,
   PREVIEW_UPDATE_MESSAGE,
