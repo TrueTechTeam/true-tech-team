@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { GallerySection } from './GallerySection';
@@ -101,5 +103,32 @@ describe('GallerySection', () => {
     vi.mocked(backgroundImageValue).mockReturnValueOnce('url("sentinel")');
     renderGallery({ images: [A] });
     expect(screen.getByRole('img')).toHaveStyle({ backgroundImage: 'url("sentinel")' });
+  });
+
+  // jsdom has no layout engine, so it cannot show that a short row is centred. Assert the
+  // declarations in the .module.scss source that produce it.
+  describe('grid stylesheet', () => {
+    const source = readFileSync(resolve(__dirname, './GallerySection.module.scss'), 'utf8');
+    // Body of the top-level rule whose selector is exactly `selector` (line-anchored, so the
+    // `.grid` inside an @media block, which is indented, does not match).
+    const body = (selector: string) =>
+      new RegExp(String.raw`(?:^|
+)${selector}\s*\{([^}]*)\}`).exec(source)?.[1] ?? '';
+
+    it('wraps and centres tiles so a short final row is centred, not left with a hole', () => {
+      const grid = body(String.raw`\.grid`);
+      expect(grid).toMatch(/display:\s*flex/);
+      expect(grid).toMatch(/flex-wrap:\s*wrap/);
+      expect(grid).toMatch(/justify-content:\s*center/);
+    });
+
+    it('sizes tiles from the effective column count, which the responsive steps override', () => {
+      expect(body(String.raw`\.grid`)).toMatch(/--cols:\s*var\(--gallery-columns,\s*3\)/);
+      expect(body(String.raw`\.figure`)).toMatch(
+        /flex:\s*0 0 calc\(\(100% - \(var\(--cols\) - 1\) \* var\(--spacing-md\)\) \/ var\(--cols\)\);/
+      );
+      expect(source).toMatch(/@media \(width <= 900px\)\s*\{\s*\.grid\s*\{\s*--cols:\s*2/);
+      expect(source).toMatch(/@media \(width <= 560px\)\s*\{\s*\.grid\s*\{\s*--cols:\s*1/);
+    });
   });
 });

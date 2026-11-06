@@ -27,8 +27,16 @@ vi.mock('../sections/registry', () => {
     minHeight: '0',
     chrome: true,
   };
+  // Same shape as `content` but with a list field, so a section can be populated.
+  const listedEntry = {
+    ...contentEntry,
+    propertySchema: [{ key: 'items', label: 'Items', type: 'list', itemSchema: [] }],
+    minHeight: '60vh',
+  } as unknown as typeof contentEntry;
   const entries: Record<string, typeof contentEntry> = {
     content: contentEntry,
+    listed: listedEntry,
+    header: listedEntry,
     chrome: chromeEntry,
   };
   return {
@@ -90,5 +98,41 @@ describe('SectionRenderer', () => {
   it('falls back to the section id when no anchor was computed', () => {
     const { container } = renderSection(makeSection({ id: 'sec' }), new Map());
     expect(container.querySelector('section')).toHaveAttribute('id', 'sec');
+  });
+
+  it('wraps the content in the inner container that carries the max-width and gutter', () => {
+    const { container } = renderSection(makeSection(), new Map());
+    const inner = container.querySelector('section > div');
+    expect(inner).not.toBeNull();
+    expect(inner).toContainElement(screen.getByText(/stub:body/));
+  });
+
+  describe('min-height is a floor for an empty section', () => {
+    const minHeight = (container: HTMLElement) =>
+      container.querySelector('section')?.style.getPropertyValue('--section-min-height');
+
+    it('applies it while the section has no content', () => {
+      const { container } = renderSection(
+        makeSection({ type: 'listed' as PageSection['type'], props: { items: [] } }),
+        new Map()
+      );
+      expect(minHeight(container)).toBe('60vh');
+    });
+
+    it('drops it once the section is populated', () => {
+      const { container } = renderSection(
+        makeSection({ type: 'listed' as PageSection['type'], props: { items: [{ a: 1 }] } }),
+        new Map()
+      );
+      expect(minHeight(container)).toBe('');
+    });
+
+    it('keeps it on a populated header, which is meant to fill the viewport', () => {
+      const { container } = renderSection(
+        makeSection({ type: 'header' as PageSection['type'], props: { items: [{ a: 1 }] } }),
+        new Map()
+      );
+      expect(minHeight(container)).toBe('60vh');
+    });
   });
 });

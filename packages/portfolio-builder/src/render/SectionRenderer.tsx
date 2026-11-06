@@ -1,5 +1,6 @@
 import type { PageSection, PortfolioPage, SectionBackground } from '../schema/types';
 import { getSectionTypeEntry } from '../sections/registry';
+import { hasSectionContent } from './sectionContent';
 import styles from './Section.module.scss';
 
 const BACKGROUND_CLASS: Record<SectionBackground, string> = {
@@ -8,6 +9,12 @@ const BACKGROUND_CLASS: Record<SectionBackground, string> = {
   tertiary: styles.backgroundTertiary,
   transparent: styles.backgroundTransparent,
 };
+
+/**
+ * Types that keep their `minHeight` even when populated: a hero is meant to fill the viewport, so
+ * its height is a design choice rather than a floor for missing content.
+ */
+const KEEPS_MIN_HEIGHT: ReadonlySet<string> = new Set(['header']);
 
 export interface SectionRendererProps {
   section: PageSection;
@@ -33,14 +40,21 @@ export function SectionRenderer({ section, page, anchors }: SectionRendererProps
     return content;
   }
 
+  // `minHeight` is a floor for an empty section; a populated one sizes to its content.
+  const reserveHeight =
+    KEEPS_MIN_HEIGHT.has(section.type) || !hasSectionContent(entry.propertySchema, section.props);
+  const style = (
+    reserveHeight ? { '--section-min-height': entry.minHeight } : {}
+  ) as React.CSSProperties;
+
   return (
     <section
       id={anchors.get(section.id) ?? section.id}
       aria-label={section.name}
       className={`${styles.section} ${BACKGROUND_CLASS[section.background ?? 'transparent']}`}
-      style={{ '--section-min-height': entry.minHeight } as React.CSSProperties}
+      style={style}
     >
-      {content}
+      <div className={styles.inner}>{content}</div>
     </section>
   );
 }

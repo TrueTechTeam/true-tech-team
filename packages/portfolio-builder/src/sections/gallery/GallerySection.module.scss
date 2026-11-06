@@ -10,25 +10,35 @@
   color: var(--theme-text-primary);
 }
 
+/* A short final row is centred rather than left-aligned with a hole beside it, so two images in a
+   three-column gallery sit in the middle instead of leaving an empty cell. A grid cannot centre a
+   partial last row, hence flex-wrap. `--cols` is the effective column count: it follows the stored
+   `--gallery-columns` and the responsive steps below override it. (The responsive steps cannot
+   override `--gallery-columns` itself - the inline style on the element would win.) */
 .grid {
-  display: grid;
+  --cols: var(--gallery-columns, 3);
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--spacing-md);
-  grid-template-columns: repeat(var(--gallery-columns, 3), minmax(0, 1fr));
 }
 
 @media (width <= 900px) {
   .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    --cols: 2;
   }
 }
 
 @media (width <= 560px) {
   .grid {
-    grid-template-columns: minmax(0, 1fr);
+    --cols: 1;
   }
 }
 
 .figure {
+  flex: 0 0 calc((100% - (var(--cols) - 1) * var(--spacing-md)) / var(--cols));
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);

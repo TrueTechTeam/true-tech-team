@@ -1,12 +1,38 @@
 /* COLOR-4: light-mode layers need a border (fill difference alone is ~1.1:1). No shadow (SHADOW-3). */
+
+/* The section is the full-bleed band: it owns the background and the vertical rhythm. Its content
+   lives in `.inner`, which LAYOUT-1 constrains to the page width and centres, so a background can
+   span the viewport while the text keeps a readable measure. */
 .section {
-  padding: var(--spacing-xxl) var(--spacing-md);
+  padding: var(--spacing-xxl) 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
   width: 100%;
   min-height: var(--section-min-height, 0);
+}
+
+/* The divider separates adjacent sections, so the first one has nothing above it to divide from. */
+.section:not(:first-child) {
   border-top: 1px solid var(--theme-border-secondary);
+}
+
+/* LAYOUT-1: --spacing-md side padding on mobile, --spacing-xl on desktop (769px = library desktop). */
+.inner {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--content-width-page);
+  margin-inline: auto;
+  padding-inline: var(--spacing-md);
+}
+
+@media (width >= 769px) {
+  .inner {
+    padding-inline: var(--spacing-xl);
+  }
 }
 
 .backgroundPrimary {
