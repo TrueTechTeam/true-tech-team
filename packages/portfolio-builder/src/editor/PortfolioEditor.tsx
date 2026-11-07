@@ -150,6 +150,7 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
           publishError={editor.publishError}
           onTitleChange={editor.setTitle}
           onThemeSelect={editor.selectTheme}
+          onThemeModeSelect={editor.selectThemeMode}
           onPublishedChange={(next) => void editor.setPublished(next)}
           onClose={() => setShowSettings(false)}
         />

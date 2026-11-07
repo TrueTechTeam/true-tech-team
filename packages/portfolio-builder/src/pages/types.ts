@@ -15,6 +15,7 @@ export interface PortfolioPageRecord {
    */
   schemaVersion?: number;
   sections: PageSection[];
+  themeMode?: PortfolioPage['themeMode'];
   themeOverride?: PortfolioPage['themeOverride'];
   createdAt: string;
   updatedAt: string;

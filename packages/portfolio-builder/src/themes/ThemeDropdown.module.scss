@@ -1,3 +1,10 @@
+.themePicker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: flex-start;
+}
+
 .triggerLabel,
 .item {
   display: flex;

@@ -105,6 +105,95 @@ describe('schemaVersion persistence', () => {
   });
 });
 
+describe('themeMode persistence', () => {
+  const baseRow: PortfolioPageRow = {
+    id: 'page-1',
+    user_id: 'user-1',
+    slug: 'jtrue',
+    title: 'Justin True',
+    template_id: 'developer-01',
+    theme_id: 'midnight',
+    published: false,
+    data: {},
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  };
+
+  const page: PortfolioPage = {
+    schemaVersion: 2,
+    slug: 'jtrue',
+    title: 'Justin True',
+    templateId: 'developer-01',
+    themeId: 'midnight',
+    sections: [section],
+  };
+
+  it('stores the mode inside the data blob, not as a column', () => {
+    const columns = pageToColumns('user-1', { ...page, themeMode: 'light' });
+    expect(columns.data.themeMode).toBe('light');
+    // theme_id is the only theme column; a mode column would need a migration.
+    expect(Object.keys(columns)).toEqual([
+      'user_id',
+      'slug',
+      'title',
+      'template_id',
+      'theme_id',
+      'data',
+    ]);
+  });
+
+  it('reads the stored mode back off the data blob', () => {
+    const record = mapRowToRecord({ ...baseRow, data: { schemaVersion: 2, themeMode: 'light' } });
+    expect(record.themeMode).toBe('light');
+    expect(recordToPage(record).themeMode).toBe('light');
+  });
+
+  it('round-trips a page that stores a mode', () => {
+    const withMode: PortfolioPage = { ...page, themeMode: 'light' };
+    const columns = pageToColumns('user-1', withMode);
+    const record = mapRowToRecord({ ...baseRow, data: columns.data });
+    expect(recordToPage(record)).toEqual(withMode);
+  });
+
+  // The headline requirement: an existing row has no themeMode, and must come back out of the
+  // mapping exactly as it went in - no mode invented, none dropped.
+  it('round-trips a row with no themeMode unchanged', () => {
+    const row: PortfolioPageRow = {
+      ...baseRow,
+      data: { schemaVersion: 2, sections: [section] },
+    };
+
+    const record = mapRowToRecord(row);
+    expect(record.themeMode).toBeUndefined();
+
+    const roundTripped = recordToPage(record);
+    expect(roundTripped.themeMode).toBeUndefined();
+    expect('themeMode' in roundTripped).toBe(true);
+
+    const columns = pageToColumns('user-1', roundTripped);
+    expect(columns.data.themeMode).toBeUndefined();
+    expect(columns.data).toEqual(row.data);
+    expect(mapRowToRecord({ ...row, data: columns.data })).toEqual(record);
+  });
+
+  // An absent mode means "the style's default"; writing a concrete mode here would freeze
+  // today's default into the row and make a later change to that default invisible.
+  it('does not invent a mode for a row that has none', () => {
+    const record = mapRowToRecord({ ...baseRow, data: { schemaVersion: 2, sections: [] } });
+    expect(record.themeMode).toBeUndefined();
+    expect(pageToColumns('user-1', recordToPage(record)).data.themeMode).toBeUndefined();
+  });
+
+  // The mapping is a passthrough, not a validator: `resolveEffectiveMode` is the single place
+  // that decides what a junk value means, so a hand-edited row survives the trip intact.
+  it('passes a junk stored mode through without throwing', () => {
+    const data = { schemaVersion: 2, themeMode: 'sideways' as unknown as 'light', sections: [] };
+    const record = mapRowToRecord({ ...baseRow, data });
+    expect(record.themeMode).toBe('sideways');
+    expect(recordToPage(record).themeMode).toBe('sideways');
+  });
+});
+
 describe('pageToColumns', () => {
   it('splits a PortfolioPage into real columns and a data blob', () => {
     const page: PortfolioPage = {

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { ThemeMode } from '@true-tech-team/react-components';
 import { loadPortfolioPage, savePortfolioPage, setPortfolioPagePublished } from '../pages/crud';
 import { recordToPage } from '../pages/mapping';
 import { validatePortfolioPage } from '../schema/validate';
@@ -52,6 +53,7 @@ export interface UseSectionEditorResult {
   }) => void;
   setTitle: (title: string) => void;
   selectTheme: (themeId: string) => void;
+  selectThemeMode: (mode: ThemeMode) => void;
   save: () => Promise<void>;
   setPublished: (published: boolean) => Promise<void>;
 }
@@ -217,6 +219,15 @@ export function useSectionEditor({
     setSaveState('idle');
   }, []);
 
+  const selectThemeMode = useCallback((themeMode: ThemeMode) => {
+    // Writes the mode explicitly even when it equals the style's default: the user asked for
+    // THIS mode, and leaving it absent would let a later change to the style's default silently
+    // flip their page.
+    setPage((current) => (current ? { ...current, themeMode } : current));
+    setIsDirty(true);
+    setSaveState('idle');
+  }, []);
+
   const save = useCallback(async () => {
     if (!page) {
       return;
@@ -293,6 +304,7 @@ export function useSectionEditor({
     updateSelectedMeta,
     setTitle,
     selectTheme,
+    selectThemeMode,
     save,
     setPublished,
   };

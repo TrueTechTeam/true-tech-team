@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { PageSettingsDialog } from './PageSettingsDialog';
 import { CURRENT_SCHEMA_VERSION, type PortfolioPage } from '../schema/types';
-import { THEME_PRESETS } from '../themes/presets';
+import { THEME_STYLES } from '../themes/presets';
 
 function makePage(overrides: Partial<PortfolioPage> = {}): PortfolioPage {
   return {
@@ -10,7 +10,7 @@ function makePage(overrides: Partial<PortfolioPage> = {}): PortfolioPage {
     slug: 'jtrue',
     title: 'Justin True',
     templateId: 'default',
-    themeId: THEME_PRESETS[0]?.id,
+    themeId: THEME_STYLES[0]?.id,
     sections: [],
     ...overrides,
   };
@@ -31,6 +31,7 @@ function renderDialog({
 }: RenderOptions = {}) {
   const onTitleChange = vi.fn();
   const onThemeSelect = vi.fn();
+  const onThemeModeSelect = vi.fn();
   const onPublishedChange = vi.fn();
   const onClose = vi.fn();
   render(
@@ -41,11 +42,12 @@ function renderDialog({
       publishError={publishError}
       onTitleChange={onTitleChange}
       onThemeSelect={onThemeSelect}
+      onThemeModeSelect={onThemeModeSelect}
       onPublishedChange={onPublishedChange}
       onClose={onClose}
     />
   );
-  return { onTitleChange, onThemeSelect, onPublishedChange, onClose };
+  return { onTitleChange, onThemeSelect, onThemeModeSelect, onPublishedChange, onClose };
 }
 
 describe('PageSettingsDialog', () => {
@@ -63,11 +65,34 @@ describe('PageSettingsDialog', () => {
     expect(slug).toHaveAttribute('readonly');
   });
 
-  it('offers the theme presets', () => {
+  it('offers the theme styles', () => {
     renderDialog();
     expect(
-      screen.getByRole('button', { name: new RegExp(THEME_PRESETS[0]!.name, 'i') })
+      screen.getByRole('button', { name: new RegExp(THEME_STYLES[0]!.name, 'i') })
     ).toBeInTheDocument();
+  });
+
+  it('shows the mode toggle off for a page on a light-default style with no stored mode', () => {
+    renderDialog({ page: makePage({ themeId: 'ocean', themeMode: undefined }) });
+    expect(screen.getByLabelText(/dark mode/i)).not.toBeChecked();
+  });
+
+  it('shows the mode toggle on for a page on a dark-default style with no stored mode', () => {
+    renderDialog({ page: makePage({ themeId: 'midnight', themeMode: undefined }) });
+    expect(screen.getByLabelText(/dark mode/i)).toBeChecked();
+  });
+
+  it("prefers the page's stored mode over the style default", () => {
+    renderDialog({ page: makePage({ themeId: 'midnight', themeMode: 'light' }) });
+    expect(screen.getByLabelText(/dark mode/i)).not.toBeChecked();
+  });
+
+  it('reports a mode change as an explicit light/dark literal', () => {
+    const { onThemeModeSelect } = renderDialog({
+      page: makePage({ themeId: 'ocean', themeMode: 'light' }),
+    });
+    fireEvent.click(screen.getByLabelText(/dark mode/i));
+    expect(onThemeModeSelect).toHaveBeenCalledWith('dark');
   });
 
   it('reports a publish request', () => {

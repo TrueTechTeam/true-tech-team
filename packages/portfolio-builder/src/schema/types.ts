@@ -1,4 +1,4 @@
-import type { ThemeOverride } from '@true-tech-team/react-components';
+import type { ThemeMode, ThemeOverride } from '@true-tech-team/react-components';
 
 export const SECTION_TYPES = [
   'navbar',
@@ -50,6 +50,13 @@ export interface PortfolioPage {
   title: string;
   templateId: string;
   themeId?: string;
+  /**
+   * The light/dark mode this page renders in, independent of which theme style it names.
+   *
+   * Absent means "the style's default mode", which is how every row written before themes gained
+   * a mode axis behaves - so leaving it unset is not a missing value, it is a real state.
+   */
+  themeMode?: ThemeMode;
   themeOverride?: ThemeOverride;
   sections: PageSection[];
 }

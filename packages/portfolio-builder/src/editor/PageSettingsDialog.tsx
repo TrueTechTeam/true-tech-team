@@ -1,8 +1,9 @@
 'use client';
 
-import { Button, Checkbox, Dialog, Input } from '@true-tech-team/react-components';
+import { Button, Checkbox, Dialog, Input, type ThemeMode } from '@true-tech-team/react-components';
 import { ThemeDropdown } from '../themes/ThemeDropdown';
-import { THEME_PRESETS } from '../themes/presets';
+import { THEME_STYLES } from '../themes/presets';
+import { resolveEffectiveMode } from '../themes/resolveTheme';
 import type { PortfolioPage } from '../schema/types';
 import styles from './PageSettingsDialog.module.scss';
 
@@ -13,6 +14,7 @@ export interface PageSettingsDialogProps {
   publishError?: string | null;
   onTitleChange: (title: string) => void;
   onThemeSelect: (themeId: string) => void;
+  onThemeModeSelect: (mode: ThemeMode) => void;
   onPublishedChange: (published: boolean) => void;
   onClose: () => void;
 }
@@ -28,6 +30,7 @@ export function PageSettingsDialog({
   publishError,
   onTitleChange,
   onThemeSelect,
+  onThemeModeSelect,
   onPublishedChange,
   onClose,
 }: PageSettingsDialogProps) {
@@ -63,10 +66,14 @@ export function PageSettingsDialog({
 
         <div className={styles.group}>
           <h3 className={styles.groupHeading}>Theme</h3>
+          {/* `mode` shows what the page will actually render in: its stored mode, or - while
+              it has none - the selected style's default, so the toggle never misreports it. */}
           <ThemeDropdown
-            presets={THEME_PRESETS}
-            selectedId={page.themeId ?? THEME_PRESETS[0]?.id}
+            themeStyles={THEME_STYLES}
+            selectedId={page.themeId ?? THEME_STYLES[0]?.id}
+            mode={resolveEffectiveMode(page)}
             onSelect={onThemeSelect}
+            onModeChange={onThemeModeSelect}
           />
         </div>
 

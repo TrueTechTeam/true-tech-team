@@ -13,6 +13,8 @@ export interface PortfolioPageRow {
     /** Absent on rows written before the section-type pivot. */
     schemaVersion?: number;
     sections?: PageSection[];
+    /** Absent on rows written before themes gained a light/dark axis - see `PortfolioPage`. */
+    themeMode?: PortfolioPage['themeMode'];
     themeOverride?: PortfolioPage['themeOverride'];
   };
   created_at: string;
@@ -33,6 +35,10 @@ export function mapRowToRecord(row: PortfolioPageRow): PortfolioPageRecord {
     // can find it by discriminator instead of sniffing section shape.
     schemaVersion: row.data.schemaVersion ?? PRE_PIVOT_SCHEMA_VERSION,
     sections: row.data.sections ?? [],
+    // Passed through verbatim, NOT defaulted: absent means "the style's default mode", and
+    // substituting a concrete mode here would freeze today's default into the row on next save.
+    // `resolveEffectiveMode` is the one place that turns absent-or-junk into a real mode.
+    themeMode: row.data.themeMode,
     themeOverride: row.data.themeOverride,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -48,6 +54,7 @@ export interface PortfolioPageColumns {
   data: {
     schemaVersion: number;
     sections: PageSection[];
+    themeMode?: PortfolioPage['themeMode'];
     themeOverride?: PortfolioPage['themeOverride'];
   };
 }
@@ -62,6 +69,7 @@ export function pageToColumns(userId: string, page: PortfolioPage): PortfolioPag
     data: {
       schemaVersion: page.schemaVersion,
       sections: page.sections,
+      themeMode: page.themeMode,
       themeOverride: page.themeOverride,
     },
   };
@@ -74,6 +82,7 @@ export function recordToPage(record: PortfolioPageRecord): PortfolioPage {
     title: record.title,
     templateId: record.templateId,
     themeId: record.themeId,
+    themeMode: record.themeMode,
     themeOverride: record.themeOverride,
     sections: record.sections,
   };

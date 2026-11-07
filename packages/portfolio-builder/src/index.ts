@@ -13,8 +13,10 @@ export { PageRenderer } from './render/PageRenderer';
 export { ThemedPageView } from './render/ThemedPageView';
 export type { ThemedPageViewProps } from './render/ThemedPageView';
 
-export { THEME_PRESETS, getThemePreset } from './themes/presets';
-export type { ThemePreset } from './themes/types';
+// THEME_STYLES is the selection list (20 styles); getThemePreset(styleId, mode?) addresses the
+// 40 presets behind it. THEME_PRESETS stays at one default-mode preset per style - see presets.ts.
+export { THEME_PRESETS, THEME_STYLES, getThemePreset, getThemeStyle } from './themes/presets';
+export { THEME_MODES, isThemeMode, type ThemePreset, type ThemeStyle } from './themes/types';
 export { ThemeDropdown } from './themes/ThemeDropdown';
 export type { ThemeDropdownProps } from './themes/ThemeDropdown';
 

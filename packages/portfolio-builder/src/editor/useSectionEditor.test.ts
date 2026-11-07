@@ -210,6 +210,37 @@ describe('useSectionEditor — editing', () => {
     act(() => result.current.selectTheme('coral-reef'));
     expect(result.current.page?.themeOverride).toBeUndefined();
   });
+
+  it('sets the theme mode and marks the page dirty', async () => {
+    const { result } = await readyEditor();
+    act(() => result.current.selectThemeMode('dark'));
+    expect(result.current.page?.themeMode).toBe('dark');
+    expect(result.current.isDirty).toBe(true);
+  });
+
+  it('keeps the chosen style when only the mode changes', async () => {
+    const { result } = await readyEditor();
+    act(() => result.current.selectTheme('coral-reef'));
+    act(() => result.current.selectThemeMode('dark'));
+    expect(result.current.page?.themeId).toBe('coral-reef');
+    expect(result.current.page?.themeMode).toBe('dark');
+  });
+
+  // Written even though it matches the style's default: the user asked for THIS mode, and
+  // leaving it absent would let a later change to the default silently flip their page.
+  it("stores the mode explicitly even when it equals the style's default", async () => {
+    const { result } = await readyEditor();
+    act(() => result.current.selectTheme('coral-reef'));
+    act(() => result.current.selectThemeMode('light'));
+    expect(result.current.page?.themeMode).toBe('light');
+  });
+
+  it('keeps the stored mode when a different style is chosen afterwards', async () => {
+    const { result } = await readyEditor();
+    act(() => result.current.selectThemeMode('dark'));
+    act(() => result.current.selectTheme('coral-reef'));
+    expect(result.current.page?.themeMode).toBe('dark');
+  });
 });
 
 describe('useSectionEditor — saving', () => {
