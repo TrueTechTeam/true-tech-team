@@ -45,7 +45,12 @@ export const THEME_STYLES: ThemeStyle[] = [
   style('midnight', 'Midnight', 'blue', 'indigo', 'slate', 'dark'),
   style('charcoal', 'Charcoal', 'amber', 'orange', 'zinc', 'dark'),
   style('indigo-night', 'Indigo Night', 'violet', 'fuchsia', 'slate', 'dark'),
-  style('plum', 'Plum', 'magenta', 'purple', 'neutral', 'dark'),
+  // Neutral family is `gray`, not `neutral`, for the same reason as `rose-gold` above: on
+  // `neutral` this style's LIGHT mode measured 2.67:1 for secondary text (neutral-700 #999 on
+  // magenta-50 #fff5fa). `gray` measures 7.93:1 light / 10.84:1 dark - chosen over `zinc` (4.78)
+  // and `stone` (5.30, and warm enough to fight the magenta) for the headroom, and because
+  // `lavender` already pairs `gray` with this same violet/purple colour region.
+  style('plum', 'Plum', 'magenta', 'purple', 'gray', 'dark'),
 ];
 
 interface StyleEntry {

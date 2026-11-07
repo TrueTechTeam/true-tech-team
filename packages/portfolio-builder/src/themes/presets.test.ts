@@ -65,10 +65,20 @@ describe('THEME_STYLES', () => {
     expect(THEME_STYLES.filter((style) => style.defaultMode === 'light')).toHaveLength(16);
   });
 
-  // Task 1 moved rose-gold off the `neutral` family because that family's ramp runs light and
-  // failed the secondary-text audit. Pinned so a refactor cannot quietly restore it.
+  // Both of these were moved off the `neutral` family because its ramp runs ~2 steps light
+  // (neutral-700 is #999) and failed the secondary-text audit. Pinned so a refactor cannot
+  // quietly restore it - no style should use `neutral` until that ramp changes.
   it('keeps rose-gold on the stone neutral family', () => {
     expect(getThemeStyle('rose-gold')?.neutralFamily).toBe('stone');
+  });
+
+  it('keeps plum on the gray neutral family', () => {
+    expect(getThemeStyle('plum')?.neutralFamily).toBe('gray');
+  });
+
+  it('puts no style on the light-running neutral family', () => {
+    const onNeutral = THEME_STYLES.filter((style) => style.neutralFamily === 'neutral');
+    expect(onNeutral.map((style) => style.id)).toEqual([]);
   });
 });
 
