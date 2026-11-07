@@ -26,9 +26,12 @@ async function savePreset(
   next: string,
   expected: RegExp
 ): Promise<void> {
-  await page.goto('/portfolio-builder');
+  // Explicit timeouts, like every other navigation in this file - a cold dev server compiles the
+  // route on first hit and this goto was seen failing with net::ERR_ABORTED without one. Note the
+  // per-test cap still bounds the whole call; see the timeout on the test that calls this twice.
+  await page.goto('/portfolio-builder', { timeout: 90_000 });
   await page.getByRole('link', { name: new RegExp(pageTitle) }).click();
-  await page.waitForURL(/\/portfolio-builder\/edit\//);
+  await page.waitForURL(/\/portfolio-builder\/edit\//, { timeout: 90_000 });
 
   await page.getByRole('button', { name: /settings/i }).click();
   await page.getByRole('button', { name: current }).click();
@@ -287,6 +290,10 @@ test.describe('portfolio builder: create from template, edit, publish', () => {
   // it restores Coral Reef in a `finally`: a retry (CI runs retries: 2) or a --grep of either test
   // must not depend on what the other left in the database.
   test('a dark preset still publishes dark', async ({ page, browser }) => {
+    // Twice the work of any other test here: two full settings round-trips (switch, then restore)
+    // either side of an anonymous page load. That does not fit Playwright's 30s default, and it
+    // failed on exactly that cap - not on any single step, each of which has its own timeout.
+    test.setTimeout(150_000);
     expect(publicPath, 'publish step must run first').not.toBe('');
 
     await savePreset(page, /coral reef/i, 'Midnight', /midnight/i);
