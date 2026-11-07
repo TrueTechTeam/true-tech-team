@@ -5,6 +5,31 @@ function colorVar(family: ColorFamily, shade: ColorShade): string {
   return `var(--color-${family}-${shade})`;
 }
 
+const ON_LIGHT = '#ffffff';
+const ON_DARK = '#111111';
+
+// Which on-colour reads best is a property of the family AND the shade (the light builder uses
+// 500, the dark builder 400), so it is decided per shade from measured WCAG contrast against
+// ON_LIGHT / ON_DARK - never assumed. These are the families where white wins; every other
+// family gets dark text. contrast.test.ts re-measures every preset, so a wrong entry fails there.
+const WHITE_TEXT_ON_500: ReadonlySet<ColorFamily> = new Set<ColorFamily>([
+  'blue', // 4.83 white vs 3.91 dark
+  'brown', // 5.73 vs 3.29
+  'navy', // 16.56 vs 1.14
+  'violet', // 5.96 vs 3.17
+  'purple', // 9.42 vs 2.00
+  'indigo', // 12.95 vs 1.46
+]);
+const WHITE_TEXT_ON_400: ReadonlySet<ColorFamily> = new Set<ColorFamily>([
+  'slate', // 5.01 white vs 3.77 dark
+  'indigo', // 5.35 vs 3.53
+]);
+
+function textOn(family: ColorFamily, shade: 400 | 500): string {
+  const whiteSet = shade === 500 ? WHITE_TEXT_ON_500 : WHITE_TEXT_ON_400;
+  return whiteSet.has(family) ? ON_LIGHT : ON_DARK;
+}
+
 export function buildLightPreset(
   id: string,
   name: string,
@@ -19,6 +44,7 @@ export function buildLightPreset(
     overrides: {
       colors: {
         primary: colorVar(primaryFamily, 500),
+        textOnPrimary: textOn(primaryFamily, 500),
         primaryHover: colorVar(primaryFamily, 600),
         primaryActive: colorVar(primaryFamily, 700),
         secondary: colorVar(secondaryFamily, 500),
@@ -58,6 +84,7 @@ export function buildDarkPreset(
     overrides: {
       colors: {
         primary: colorVar(primaryFamily, 400),
+        textOnPrimary: textOn(primaryFamily, 400),
         primaryHover: colorVar(primaryFamily, 300),
         primaryActive: colorVar(primaryFamily, 200),
         secondary: colorVar(secondaryFamily, 400),
