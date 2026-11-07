@@ -50,4 +50,17 @@ describe('root layout', () => {
 
     expect(html.props['data-theme']).toBe('dark');
   });
+
+  // A published portfolio rewrites `data-theme` in an inline script before React hydrates, so the
+  // attribute React finds is not the one the server sent. Without this, every light-themed
+  // portfolio logged a hydration mismatch (measured anonymously against the dev server: 0 errors
+  // on a route with no script, 1 on a light page, 0 on a dark one where the script agrees with
+  // the server). It is scoped to this element's own attributes, not its subtree.
+  it('suppresses the hydration warning for its own attributes, which the theme script rewrites', () => {
+    const html = RootLayout({ children: null }) as ReactElement<{
+      suppressHydrationWarning?: boolean;
+    }>;
+
+    expect(html.props.suppressHydrationWarning).toBe(true);
+  });
 });

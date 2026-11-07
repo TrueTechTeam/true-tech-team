@@ -16,7 +16,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" data-theme="dark">
+    // `suppressHydrationWarning` covers this element's own attributes only, not its subtree. It is
+    // here because `data-theme` below is deliberately rewritten before React hydrates: a published
+    // portfolio at /p/<slug> emits an inline script that sets the page's own mode so the first
+    // paint is not the app's dark. React then finds the attribute changed from what the server
+    // sent and logs a hydration mismatch on every light-themed portfolio - measured: 0 errors on a
+    // route with no script, 1 on a light page, 0 on a dark one, where the script agrees with the
+    // server. The client value is the one we want and React keeps it, so the warning is noise.
+    <html lang="en" data-scroll-behavior="smooth" data-theme="dark" suppressHydrationWarning>
       <body>
         <Providers>{children}</Providers>
       </body>
