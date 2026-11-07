@@ -50,11 +50,15 @@
   min-width: 0;
 }
 
+/* An icon-only link is a pointer target (A11Y-4): --spacing-xxl (48px) clears the 44px touch
+   preference and the 24px floor, as a spacing token rather than a literal. */
 .backLink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   justify-self: start;
+  min-width: var(--spacing-xxl);
+  min-height: var(--spacing-xxl);
   color: inherit;
 }
 

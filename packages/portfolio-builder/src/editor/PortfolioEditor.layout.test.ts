@@ -84,6 +84,13 @@ describe('PortfolioEditor.module.scss chrome', () => {
     );
   });
 
+  it('gives the icon-only back link a real hit area (A11Y-4: at least 44px, floor 24px)', () => {
+    // --spacing-xxl is 48px in the library; assert the token on both axes, not a literal.
+    const link = declarations(scss.rule('.backLink'));
+    expect(link['min-width']).toBe('var(--spacing-xxl)');
+    expect(link['min-height']).toBe('var(--spacing-xxl)');
+  });
+
   it('keeps the header a plain flex row below the breakpoint', () => {
     expect(declarations(scss.rule('.editorHeader'))['display']).toBe('flex');
     expect(declarations(scss.rule('.editorHeader'))['grid-template-columns']).toBeUndefined();
