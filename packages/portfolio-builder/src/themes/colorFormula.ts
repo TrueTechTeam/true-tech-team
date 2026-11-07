@@ -61,7 +61,7 @@ export function buildLightPreset(
         surfaceSecondary: colorVar(neutralFamily, 100),
         surfaceElevated: colorVar(neutralFamily, 50),
         textPrimary: colorVar(neutralFamily, 900),
-        textSecondary: colorVar(neutralFamily, 600),
+        textSecondary: colorVar(neutralFamily, 700),
         textTertiary: colorVar(neutralFamily, 400),
         borderPrimary: colorVar(neutralFamily, 200),
         borderSecondary: colorVar(neutralFamily, 300),

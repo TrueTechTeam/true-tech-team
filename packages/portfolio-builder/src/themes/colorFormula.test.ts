@@ -20,7 +20,7 @@ describe('buildLightPreset', () => {
     expect(preset.overrides.colors?.surfaceSecondary).toBe('var(--color-slate-100)');
     expect(preset.overrides.colors?.surfaceElevated).toBe('var(--color-slate-50)');
     expect(preset.overrides.colors?.textPrimary).toBe('var(--color-slate-900)');
-    expect(preset.overrides.colors?.textSecondary).toBe('var(--color-slate-600)');
+    expect(preset.overrides.colors?.textSecondary).toBe('var(--color-slate-700)');
     expect(preset.overrides.colors?.textTertiary).toBe('var(--color-slate-400)');
     expect(preset.overrides.colors?.borderPrimary).toBe('var(--color-slate-200)');
     expect(preset.overrides.colors?.borderSecondary).toBe('var(--color-slate-300)');

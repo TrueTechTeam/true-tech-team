@@ -14,7 +14,7 @@ export const THEME_PRESETS: ThemePreset[] = [
   buildLightPreset('arctic', 'Arctic', 'sky', 'cyan', 'zinc'),
   buildLightPreset('terracotta', 'Terracotta', 'brown', 'coral', 'stone'),
   buildLightPreset('sage', 'Sage', 'olive', 'green', 'stone'),
-  buildLightPreset('rose-gold', 'Rose Gold', 'rose', 'gold', 'neutral'),
+  buildLightPreset('rose-gold', 'Rose Gold', 'rose', 'gold', 'stone'),
   buildLightPreset('steel', 'Steel', 'gray', 'sky', 'zinc'),
   buildLightPreset('sand', 'Sand', 'gold', 'brown', 'stone'),
   buildLightPreset('emerald', 'Emerald', 'emerald', 'teal', 'slate'),
