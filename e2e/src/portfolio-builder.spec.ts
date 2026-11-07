@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Browser, type Page } from '@playwright/test';
 
 // One serial flow: each step depends on the last. The value is proving the whole path works once,
 // which no amount of unit testing has established for this feature.
@@ -15,6 +15,30 @@ const APP_FAVICON = '/logo.svg';
 /** What the published page emits so the first paint already carries its own mode. */
 const LIGHT_MODE_SCRIPT = "document.documentElement.dataset.theme='light'";
 const DARK_MODE_SCRIPT = "document.documentElement.dataset.theme='dark'";
+
+/**
+ * Opens the fixture page's settings, switches the theme preset through the real dropdown, and
+ * saves. `current` is the trigger's present label; the trigger is labelled with the active preset.
+ */
+async function savePreset(
+  page: Page,
+  current: RegExp,
+  next: string,
+  expected: RegExp
+): Promise<void> {
+  await page.goto('/portfolio-builder');
+  await page.getByRole('link', { name: new RegExp(pageTitle) }).click();
+  await page.waitForURL(/\/portfolio-builder\/edit\//);
+
+  await page.getByRole('button', { name: /settings/i }).click();
+  await page.getByRole('button', { name: current }).click();
+  await page.getByText(next, { exact: true }).click();
+  await expect(page.getByRole('button', { name: expected })).toBeVisible();
+  await page.getByRole('button', { name: /^done$/i }).click();
+
+  await page.getByRole('button', { name: /^save$/i }).click();
+  await expect(page.getByText(/^saved$/i)).toBeVisible({ timeout: 30_000 });
+}
 
 test.describe('portfolio builder: create from template, edit, publish', () => {
   test('the page list is reachable (not access-denied)', async ({ page }) => {
@@ -258,23 +282,22 @@ test.describe('portfolio builder: create from template, edit, publish', () => {
   // Four of the twenty presets are dark, and a fix aimed at making light pages light is exactly
   // the kind that inverts them. This switches the live page to a dark preset through the real
   // theme dropdown and asserts the published result goes dark, first paint included.
+  //
+  // This test persists Midnight, and the branding test above needs the seeded light Coral Reef. So
+  // it restores Coral Reef in a `finally`: a retry (CI runs retries: 2) or a --grep of either test
+  // must not depend on what the other left in the database.
   test('a dark preset still publishes dark', async ({ page, browser }) => {
     expect(publicPath, 'publish step must run first').not.toBe('');
 
-    await page.goto('/portfolio-builder');
-    await page.getByRole('link', { name: new RegExp(pageTitle) }).click();
-    await page.waitForURL(/\/portfolio-builder\/edit\//);
+    await savePreset(page, /coral reef/i, 'Midnight', /midnight/i);
+    try {
+      await assertPublishedDark(browser);
+    } finally {
+      await savePreset(page, /midnight/i, 'Coral Reef', /coral reef/i);
+    }
+  });
 
-    await page.getByRole('button', { name: /settings/i }).click();
-    // The dropdown trigger is labelled with the current preset; Graphic Design seeds Coral Reef.
-    await page.getByRole('button', { name: /coral reef/i }).click();
-    await page.getByText('Midnight', { exact: true }).click();
-    await expect(page.getByRole('button', { name: /midnight/i })).toBeVisible();
-    await page.getByRole('button', { name: /^done$/i }).click();
-
-    await page.getByRole('button', { name: /^save$/i }).click();
-    await expect(page.getByText(/^saved$/i)).toBeVisible({ timeout: 30_000 });
-
+  async function assertPublishedDark(browser: Browser): Promise<void> {
     const context = await browser.newContext({ storageState: { cookies: [], origins: [] } });
     const anon = await context.newPage();
     await anon.goto(publicPath, { timeout: 90_000 });
@@ -297,7 +320,7 @@ test.describe('portfolio builder: create from template, edit, publish', () => {
       .toBe('dark');
 
     await context.close();
-  });
+  }
 
   test.afterAll(async () => {
     const url = process.env['NEXT_PUBLIC_SUPABASE_URL'];

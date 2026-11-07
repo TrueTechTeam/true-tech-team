@@ -107,6 +107,7 @@ describe('ListField', () => {
     expect(screen.getByRole('button', { name: 'Move Button 2 down' }).className).toMatch(/chevron/);
   });
 
+  // Wiring only: that `.panelDense` removes the padding is asserted in ListField.layout.test.ts.
   it('renders each entry body in the dense panel so padding does not stack on the entry padding', () => {
     renderField(ctasField, [{ label: 'One' }]);
     const panel = screen.getByDisplayValue('One').closest('[class*="panel"]');

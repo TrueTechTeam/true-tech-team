@@ -34,7 +34,7 @@
 .entryControls {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--spacing-xs);
 }
 
 .empty {
