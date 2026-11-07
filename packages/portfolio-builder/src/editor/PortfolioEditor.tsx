@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { Button, Dialog } from '@true-tech-team/react-components';
+import { Button, Dialog, Icon } from '@true-tech-team/react-components';
 import { PortfolioPreviewFrame } from '../preview/PortfolioPreviewFrame';
 import { EditorCanvas } from './EditorCanvas';
 import { PageSettingsDialog } from './PageSettingsDialog';
@@ -68,27 +68,33 @@ export function PortfolioEditor({ pageId, userId, supabase }: PortfolioEditorPro
   return (
     <div className={styles.editorRoot}>
       <div className={styles.editorHeader}>
-        <div className={styles.editorHeaderTitle}>
-          <h2>{page.title}</h2>
-        </div>
-        <div className={styles.editorHeaderActions}>
-          <Button type="button" variant="ghost" onClick={() => setShowSettings(true)}>
-            Settings
-          </Button>
-          <Button type="button" variant="ghost" onClick={() => setShowPreview(true)}>
-            Preview
-          </Button>
-          <Button
-            type="button"
-            onClick={() => void editor.save()}
-            disabled={editor.saveState === 'saving'}
-          >
-            Save
-          </Button>
-          {editor.saveState === 'saved' && <span className={styles.saveStatus}>Saved</span>}
-          {editor.saveState === 'error' && editor.saveError && (
-            <span className={styles.saveStatusError}>{editor.saveError}</span>
-          )}
+        {/* The page list is this editor's parent and always a valid destination; history is not. */}
+        <Link href="/portfolio-builder" className={styles.backLink} aria-label="Back to pages">
+          <Icon name="arrow-left" size="lg" />
+        </Link>
+        <div className={styles.editorHeaderCanvas}>
+          <div className={styles.editorHeaderTitle}>
+            <h2>{page.title}</h2>
+          </div>
+          <div className={styles.editorHeaderActions}>
+            <Button type="button" variant="ghost" onClick={() => setShowSettings(true)}>
+              Settings
+            </Button>
+            <Button type="button" variant="ghost" onClick={() => setShowPreview(true)}>
+              Preview
+            </Button>
+            <Button
+              type="button"
+              onClick={() => void editor.save()}
+              disabled={editor.saveState === 'saving'}
+            >
+              Save
+            </Button>
+            {editor.saveState === 'saved' && <span className={styles.saveStatus}>Saved</span>}
+            {editor.saveState === 'error' && editor.saveError && (
+              <span className={styles.saveStatusError}>{editor.saveError}</span>
+            )}
+          </div>
         </div>
       </div>
 

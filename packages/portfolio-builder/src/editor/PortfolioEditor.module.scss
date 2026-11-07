@@ -1,4 +1,10 @@
 .editorRoot {
+  /* The column template, declared ONCE. The workspace and the header both read it, so the title
+     and actions line up with the canvas edges by construction instead of by two copies agreeing. */
+  --editor-columns: 260px minmax(0, 1fr) 320px;
+  --editor-column-gap: var(--spacing-md);
+  --editor-inline-inset: var(--spacing-lg);
+
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
@@ -28,10 +34,28 @@
 .editorHeader {
   display: flex;
   align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--editor-inline-inset) 0;
+}
+
+/* The single wrapper that sits in the canvas column on wide screens: title at its left edge,
+   actions at its right. */
+.editorHeaderCanvas {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: var(--spacing-lg);
   flex-wrap: wrap;
-  padding: var(--spacing-md) var(--spacing-lg) 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
+  color: inherit;
 }
 
 .editorHeaderTitle {
@@ -52,11 +76,11 @@
    stacked below. */
 .workspace {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr) 320px;
-  gap: var(--spacing-md);
+  grid-template-columns: var(--editor-columns);
+  gap: var(--editor-column-gap);
   flex: 1 1 auto;
   min-height: 0;
-  padding: 0 var(--spacing-lg) var(--spacing-md);
+  padding: 0 var(--editor-inline-inset) var(--spacing-md);
 }
 
 /* The side panes are chrome floating above the flat canvas: elevation (shadow) separates them,
@@ -66,15 +90,32 @@
   position: relative;
   overflow-y: auto;
   min-height: 0;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-md);
   border-radius: var(--radius-sm);
-  background: var(--theme-surface-primary);
+  background: var(--theme-surface-elevated);
   box-shadow: var(--theme-shadow-md);
 }
 
 @media (width > 1100px) {
   .workspace {
     grid-template-rows: minmax(0, 1fr);
+  }
+
+  /* Same template and gap as the workspace: the back link takes the sidebar column, the wrapper
+     takes the canvas column. Below this width the workspace is one column, so the header stays the
+     plain flex row above and nothing here applies. */
+  .editorHeader {
+    display: grid;
+    grid-template-columns: var(--editor-columns);
+    column-gap: var(--editor-column-gap);
+  }
+
+  .backLink {
+    grid-column: 1;
+  }
+
+  .editorHeaderCanvas {
+    grid-column: 2;
   }
 }
 

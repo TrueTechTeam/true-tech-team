@@ -43,3 +43,57 @@ describe('PortfolioEditor.module.scss viewport fit', () => {
     );
   });
 });
+
+// These are CSS-declaration assertions, not behavioural ones: jsdom has no layout engine, so
+// "the title lines up with the canvas" cannot be observed. What can be pinned is that the header and
+// the workspace resolve to the SAME template, which is the only way they can stay aligned.
+describe('PortfolioEditor.module.scss chrome', () => {
+  const resolveVar = (value: string | undefined): string | undefined => {
+    const name = /^var\((--[\w-]+)\)$/.exec(value ?? '')?.[1];
+    // Strip comments first: `declarations` would otherwise fold a leading comment into the key.
+    const root = scss.rule('.editorRoot').replace(/\/\*[\s\S]*?\*\//g, '');
+    return name ? declarations(root)[name] : value;
+  };
+
+  it('declares the column template exactly once, and the header and workspace resolve to it', () => {
+    expect(scss.source.match(/grid-template-columns:[^;]*\d+px/g)).toBeNull();
+    expect(scss.source.match(/--editor-columns:/g)).toHaveLength(1);
+
+    const workspace = resolveVar(declarations(scss.rule('.workspace'))['grid-template-columns']);
+    const header = resolveVar(
+      declarations(scss.mediaRule(WIDE, '.editorHeader'))['grid-template-columns']
+    );
+    expect(workspace).toBe('260px minmax(0, 1fr) 320px');
+    expect(header).toBe(workspace);
+    expect(resolveVar(declarations(scss.mediaRule(WIDE, '.editorHeader'))['column-gap'])).toBe(
+      resolveVar(declarations(scss.rule('.workspace'))['gap'])
+    );
+  });
+
+  it('puts the title/actions wrapper in the canvas column', () => {
+    expect(declarations(scss.mediaRule(WIDE, '.editorHeaderCanvas'))['grid-column']).toBe('2');
+    expect(declarations(scss.rule('.editorHeaderCanvas'))['justify-content']).toBe('space-between');
+  });
+
+  it('gives the header and workspace the same inline inset', () => {
+    expect(declarations(scss.rule('.editorHeader'))['padding']).toContain(
+      'var(--editor-inline-inset)'
+    );
+    expect(declarations(scss.rule('.workspace'))['padding']).toContain(
+      'var(--editor-inline-inset)'
+    );
+  });
+
+  it('keeps the header a plain flex row below the breakpoint', () => {
+    expect(declarations(scss.rule('.editorHeader'))['display']).toBe('flex');
+    expect(declarations(scss.rule('.editorHeader'))['grid-template-columns']).toBeUndefined();
+  });
+
+  it('gives the side panels the elevated surface and medium padding', () => {
+    const panel = declarations(scss.rule('.sidebar,' + '\n' + '.formPanel'));
+    expect(panel['padding']).toBe('var(--spacing-md)');
+    expect(panel['background']).toBe('var(--theme-surface-elevated)');
+    expect(panel['box-shadow']).toBe('var(--theme-shadow-md)');
+    expect(panel['border']).toBeUndefined();
+  });
+});

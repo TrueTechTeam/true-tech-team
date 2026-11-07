@@ -48,6 +48,15 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+describe('PortfolioEditor — back button', () => {
+  it('links to the page list with an accessible name, rather than using history', async () => {
+    vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
+    renderEditor();
+    const back = await screen.findByRole('link', { name: 'Back to pages' });
+    expect(back).toHaveAttribute('href', '/portfolio-builder');
+  });
+});
+
 describe('PortfolioEditor — load states', () => {
   it('renders the page content once loaded', async () => {
     vi.spyOn(crud, 'loadPortfolioPage').mockResolvedValue(makeRecord());
