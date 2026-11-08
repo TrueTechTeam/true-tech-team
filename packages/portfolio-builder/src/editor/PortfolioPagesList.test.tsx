@@ -6,6 +6,7 @@ import * as crud from '../pages/crud';
 import * as slugModule from '../pages/slug';
 import type { PortfolioPageRecord } from '../pages/types';
 import { TEMPLATES, TEMPLATE_IDS } from '../templates/registry';
+import { getThemeStyle } from '../themes/presets';
 
 const fakeSupabase = {} as SupabaseClient;
 
@@ -116,6 +117,8 @@ describe('PortfolioPagesList', () => {
       title: 'New Page',
       templateId: firstTemplate.id,
       themeId: firstTemplate.themeId,
+      // Stored explicitly, even untouched: the picker showed this mode, so the page keeps it.
+      themeMode: getThemeStyle(firstTemplate.themeId)!.defaultMode,
       sections: firstTemplate.sections.map((section) =>
         expect.objectContaining({
           id: expect.any(String),
@@ -257,5 +260,112 @@ describe('PortfolioPagesList', () => {
     expect(
       screen.getByRole('button', { name: TEMPLATES[TEMPLATE_IDS[0]!]!.label })
     ).toHaveAttribute('aria-pressed', 'true');
+  });
+});
+
+// The create dialog's light/dark toggle. What matters is the mode the created page carries, so
+// these assert the saved payload's `themeMode` - never anything a thumbnail draws.
+describe('PortfolioPagesList create-time theme mode', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const firstTemplate = TEMPLATES[TEMPLATE_IDS[0]!]!;
+
+  function stubSave() {
+    vi.spyOn(slugModule, 'generateUniqueSlug').mockResolvedValue('new-page');
+    return vi.spyOn(crud, 'savePortfolioPage').mockResolvedValue(makeRecord({ id: 'page-2' }));
+  }
+
+  function openDialog() {
+    render(<PortfolioPagesList pages={[]} userId="user-1" supabase={fakeSupabase} />);
+    fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
+  }
+
+  function submit() {
+    fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'New Page' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+  }
+
+  it("preselects the selected template's style default mode", () => {
+    openDialog();
+    const expected = getThemeStyle(firstTemplate.themeId)!.defaultMode;
+    expect(
+      screen.getByRole('radio', { name: expected === 'dark' ? 'Dark' : 'Light' })
+    ).toHaveAttribute('aria-checked', 'true');
+  });
+
+  it('stores dark on the created page when dark is chosen', async () => {
+    const save = stubSave();
+    openDialog();
+    fireEvent.click(screen.getByRole('radio', { name: 'Dark' }));
+    submit();
+
+    await waitFor(() => expect(save).toHaveBeenCalled());
+    expect(save.mock.calls[0]![2].themeMode).toBe('dark');
+  });
+
+  it('stores light on the created page when the toggle is switched back', async () => {
+    const save = stubSave();
+    openDialog();
+    fireEvent.click(screen.getByRole('radio', { name: 'Dark' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Light' }));
+    submit();
+
+    await waitFor(() => expect(save).toHaveBeenCalled());
+    expect(save.mock.calls[0]![2].themeMode).toBe('light');
+  });
+
+  it("stores the template style's default mode when the toggle is never touched", async () => {
+    const save = stubSave();
+    openDialog();
+    submit();
+
+    await waitFor(() => expect(save).toHaveBeenCalled());
+    expect(save.mock.calls[0]![2].themeMode).toBe(
+      getThemeStyle(firstTemplate.themeId)!.defaultMode
+    );
+  });
+
+  it('keeps the chosen mode through the duplicate-slug retry', async () => {
+    vi.spyOn(slugModule, 'generateUniqueSlug').mockResolvedValue('new-page');
+    const save = vi
+      .spyOn(crud, 'savePortfolioPage')
+      .mockRejectedValueOnce(new Error('That page URL is already taken.'))
+      .mockResolvedValueOnce(makeRecord({ id: 'page-2' }));
+
+    openDialog();
+    fireEvent.click(screen.getByRole('radio', { name: 'Dark' }));
+    submit();
+
+    await waitFor(() => expect(save).toHaveBeenCalledTimes(2));
+    expect(save.mock.calls[1]![2].themeMode).toBe('dark');
+  });
+
+  it('keeps an explicitly chosen mode when the template selection changes', async () => {
+    const save = stubSave();
+    openDialog();
+    fireEvent.click(screen.getByRole('radio', { name: 'Dark' }));
+    fireEvent.click(screen.getByRole('button', { name: TEMPLATES['marketing']!.label }));
+    submit();
+
+    await waitFor(() => expect(save).toHaveBeenCalled());
+    expect(save.mock.calls[0]![2].templateId).toBe('marketing');
+    expect(save.mock.calls[0]![2].themeMode).toBe('dark');
+  });
+
+  it('resets the mode to the template default when the dialog is cancelled and reopened', async () => {
+    openDialog();
+    fireEvent.click(screen.getByRole('radio', { name: 'Dark' }));
+    expect(screen.getByRole('radio', { name: 'Dark' })).toHaveAttribute('aria-checked', 'true');
+
+    fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+    await waitFor(() => expect(screen.queryByLabelText(/title/i)).not.toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole('button', { name: 'New Page' }));
+    const expected = getThemeStyle(firstTemplate.themeId)!.defaultMode;
+    expect(
+      screen.getByRole('radio', { name: expected === 'dark' ? 'Dark' : 'Light' })
+    ).toHaveAttribute('aria-checked', 'true');
   });
 });

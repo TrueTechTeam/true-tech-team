@@ -85,6 +85,21 @@ describe('PortfolioPublicPage', () => {
       );
     });
 
+    // The stored mode is the axis the template picker now writes, so a page can hold a mode that
+    // contradicts its style's default. The script must follow the stored mode, not the default -
+    // otherwise a dark page created on a light-default style flashes light before hydration.
+    it("sets dark for a light-default style with a stored 'dark'", async () => {
+      expect(await scriptFor(makeRecord({ themeId: 'coral-reef', themeMode: 'dark' }))).toBe(
+        "document.documentElement.dataset.theme='dark'"
+      );
+    });
+
+    it("sets light for a dark-default style with a stored 'light'", async () => {
+      expect(await scriptFor(makeRecord({ themeId: 'midnight', themeMode: 'light' }))).toBe(
+        "document.documentElement.dataset.theme='light'"
+      );
+    });
+
     it('sets light when the page names no theme', async () => {
       expect(await scriptFor(makeRecord())).toBe("document.documentElement.dataset.theme='light'");
     });

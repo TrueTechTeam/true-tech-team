@@ -4,6 +4,16 @@
   gap: var(--spacing-sm);
 }
 
+// Label and mode toggle on one row, wrapping to two when the dialog is narrow. One layout for
+// every width - the wrap is the breakpoint, so there is no JS width branch.
+.labelRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
 .label {
   font-weight: 600;
   color: var(--theme-text-primary);
