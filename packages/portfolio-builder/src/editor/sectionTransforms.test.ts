@@ -72,10 +72,13 @@ describe('addSection', () => {
     expect(added?.type).toBe('header');
     expect(added?.name).toBe('Header');
     expect(added?.props).toEqual({
+      variant: 'plain',
+      eyebrow: '',
       heading: 'Your name here',
       subheading: '',
       backgroundImage: '',
       align: 'left',
+      stats: [],
       ctas: [],
     });
     expect(added?.id).toMatch(/[0-9a-f-]{36}/);

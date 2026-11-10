@@ -1,7 +1,9 @@
+import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { ALL_THEME_PRESETS } from './presets';
 import { contrastRatio } from './contrastHelpers';
 import type { ThemePreset } from './types';
+import { declarations, readScss } from '../testSupport/scss';
 
 type ColorKey = keyof NonNullable<ThemePreset['overrides']['colors']>;
 
@@ -50,5 +52,51 @@ describe('theme preset contrast (WCAG AA 4.5:1)', () => {
         ).toBeGreaterThanOrEqual(4.5);
       });
     }
+  }
+});
+
+// Spec 4.6a. The four pairs above had no entry for "brand colour used as text", which is how an
+// outline button labelled --theme-primary on the page background (coral on coral-50, 2.34:1; 15 of
+// 20 light styles and 2 of 20 dark ones fail) shipped unmeasured. This pair is read from the
+// stylesheet rather than restated here: whatever token `.ctaSecondary` uses for its label is
+// mapped to its preset colour and measured against the background the button sits on, so changing
+// the label to a colour that fails turns these red. (The button is transparent, so its background
+// is the page background; its border is a COLOR-6 boundary and is not text.)
+const TOKEN_TO_COLOR: Record<string, ColorKey> = {
+  '--theme-primary': 'primary',
+  '--theme-text-primary': 'textPrimary',
+  '--theme-text-secondary': 'textSecondary',
+  '--theme-text-on-primary': 'textOnPrimary',
+};
+
+describe('outline button label contrast (spec 4.6a)', () => {
+  const scss = readScss(resolve(__dirname, '../sections/header/HeaderSection.module.scss'));
+  const outline = declarations(scss.rule('.ctaSecondary'));
+  const labelToken = /^var\((--[a-z0-9-]+)\)$/.exec(outline.color ?? '')?.[1] ?? '';
+
+  it('reads a known theme token for the outline label, over a transparent background', () => {
+    expect(TOKEN_TO_COLOR[labelToken], `unmapped label colour ${outline.color}`).toBeDefined();
+    expect(outline.background).toBe('transparent');
+  });
+
+  it('does not use the brand colour as text', () => {
+    expect(labelToken).not.toBe('--theme-primary');
+  });
+
+  for (const preset of ALL_THEME_PRESETS) {
+    it(`${preset.id}/${preset.mode}: outline label on backgroundPrimary`, () => {
+      const colors = preset.overrides.colors ?? {};
+      const key = TOKEN_TO_COLOR[labelToken];
+      const fgValue = key ? colors[key] : undefined;
+      const bgValue = colors.backgroundPrimary;
+      if (!fgValue || !bgValue) {
+        throw new Error(`${preset.id}/${preset.mode}: outline label pair cannot be measured`);
+      }
+      const ratio = contrastRatio(fgValue, bgValue);
+      expect(
+        ratio,
+        `${preset.id}/${preset.mode}: outline label ${labelToken} (${fgValue}) on backgroundPrimary (${bgValue}) measured ${ratio.toFixed(2)}:1, needs 4.5:1`
+      ).toBeGreaterThanOrEqual(4.5);
+    });
   }
 });
