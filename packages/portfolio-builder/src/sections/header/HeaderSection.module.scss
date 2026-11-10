@@ -159,9 +159,9 @@
 
 /* imageBleed: oversized display type, one ask. With no image there is no scrim and nothing to
    bleed, so the band keeps the page background (text stays on a measured pairing) and gains a
-   brand rule so it still reads as a deliberate hero rather than an empty one. */
+   brand rule so it still reads as a deliberate hero rather than an empty one. Its height comes
+   from the section shell's meta.minHeight, not from here. */
 .imageBleed {
-  min-height: 60vh;
   border-block-end: var(--spacing-xs) solid var(--theme-primary);
 }
 

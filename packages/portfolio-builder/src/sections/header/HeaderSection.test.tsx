@@ -261,12 +261,17 @@ describe('HeaderSection variants', () => {
       expect(statList(container)).toBeNull();
     });
 
-    it('with no backgroundImage keeps real text and applies neither image nor scrim', () => {
+    // jsdom loads no CSS, so this cannot show the text is legible; it only pins that, with no
+    // image, the band carries neither an inline background nor the scrim class, and the heading
+    // and button are still rendered. The legibility itself rests on the scrim/page-background
+    // pairing asserted on the SCSS source below.
+    it('with no backgroundImage renders text with no inline background and no scrim class', () => {
       const { container } = renderHeader(
         makeHeader({ heading: 'Big idea', variant: 'imageBleed', ctas: CTAS })
       );
       const band = bandOf(container);
-      expect(screen.getByRole('heading', { name: 'Big idea' })).toBeVisible();
+      expect(screen.getByRole('heading', { name: 'Big idea' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'First ask' })).toBeInTheDocument();
       expect(band.style.backgroundImage).toBe('');
       expect(band.className).not.toMatch(/hasImage/);
     });
@@ -317,6 +322,15 @@ describe('HeaderSection variants', () => {
       );
       expect(within(statList(container)).getAllByRole('term')).toHaveLength(1);
       expect(screen.getByText('Numeric')).toBeInTheDocument();
+    });
+
+    it('renders at most four stats, whatever a hand-edited row holds', () => {
+      const many = Array.from({ length: 7 }, (_, i) => ({ value: String(i), label: `Stat ${i}` }));
+      const { container } = renderHeader(
+        makeHeader({ heading: 'H', variant: 'outcome', stats: many })
+      );
+      expect(within(statList(container)).getAllByRole('term')).toHaveLength(4);
+      expect(screen.queryByText('Stat 4')).not.toBeInTheDocument();
     });
 
     it('renders two identical stats without key collisions', () => {
@@ -438,5 +452,68 @@ describe('HeaderSection styling (asserted on the SCSS source)', () => {
     expect(declarations(scss.rule('.imageBleed .heading'))['font-size']).toContain(
       '--font-size-4xl'
     );
+  });
+
+  // Layout: the declarations that make each variant look different from the others. jsdom
+  // cannot lay anything out, so these are asserted on the SCSS source with the exact-selector
+  // helper. A refactor that flattens a variant back to the plain layout turns these red.
+  describe('variant layout declarations', () => {
+    const wide = '(width >= 769px)';
+
+    it('split is a two-column grid from tablet up, one column before', () => {
+      expect(declarations(scss.rule('.splitGrid')).display).toBe('grid');
+      expect(declarations(scss.rule('.splitGrid'))['grid-template-columns']).toBeUndefined();
+      expect(declarations(scss.mediaRule(wide, '.splitGrid'))['grid-template-columns']).toBe(
+        'minmax(0, 3fr) minmax(0, 2fr)'
+      );
+    });
+
+    it('split marks its facts column with a primary rule', () => {
+      expect(declarations(scss.rule('.facts'))['border-inline-start']).toBe(
+        '4px solid var(--theme-primary)'
+      );
+    });
+
+    it('outcome and proof centre their content; plain only when aligned centre', () => {
+      const group = /(?:^|\n)([^{}]*\.outcome \.content[^{}]*)\{([^}]*)\}/.exec(scss.source);
+      const selectors = (group?.[1] ?? '').split(',').map((x) => x.trim());
+      expect(selectors).toEqual(['.centered .content', '.outcome .content', '.proof .content']);
+      const body = declarations(group?.[2] ?? '');
+      expect(body['align-items']).toBe('center');
+      expect(body['text-align']).toBe('center');
+      // And the base .content does not centre, so left-aligned variants stay left.
+      expect(declarations(scss.rule('.content'))['align-items']).toBeUndefined();
+    });
+
+    it('outcome lays its stats out as a wrapping grid', () => {
+      const row = declarations(scss.rule('.outcomeStats'));
+      expect(row.display).toBe('grid');
+      expect(row['grid-template-columns']).toBe('repeat(auto-fit, minmax(10rem, 1fr))');
+    });
+
+    it('place stacks its work links as a bare list', () => {
+      const list = declarations(scss.rule('.workList'));
+      expect(list['flex-direction']).toBe('column');
+      expect(list['list-style']).toBe('none');
+      expect(declarations(scss.rule('.workLink'))['text-decoration']).toBe('underline');
+    });
+
+    it('proof marks its single stat with a primary rule and scales it up', () => {
+      expect(declarations(scss.rule('.proofStat'))['border-block-end']).toBe(
+        '4px solid var(--theme-primary)'
+      );
+      expect(declarations(scss.rule('.proofStat .statValue'))['font-size']).toContain(
+        '--font-size-4xl'
+      );
+    });
+
+    it('shows each stat value above its label while the markup reads label first', () => {
+      expect(declarations(scss.rule('.stat'))['flex-direction']).toBe('column-reverse');
+    });
+
+    it('does not set its own height: the section shell owns min-height', () => {
+      expect(declarations(scss.rule('.imageBleed'))['min-height']).toBeUndefined();
+      expect(scss.source).not.toMatch(/min-height/);
+    });
   });
 });

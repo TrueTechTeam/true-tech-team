@@ -22,29 +22,38 @@ interface Stat {
   label: string;
 }
 
-/** Like `readCtas`: drop entries that are not usable instead of letting one blank the page. */
+/** Matches `maxItems` on the schema, which only the editor enforces. */
+const MAX_STATS = 4;
+
+/**
+ * Like `readCtas`: drop entries that are not usable instead of letting one blank the page. Also
+ * cap the list, because a hand-edited row can exceed the schema's `maxItems` and blow out the
+ * layouts.
+ */
 function readStats(value: unknown): Stat[] {
   if (!Array.isArray(value)) {
     return [];
   }
   const seen = new Map<string, number>();
-  return value.flatMap((entry): Stat[] => {
-    if (typeof entry !== 'object' || entry === null) {
-      return [];
-    }
-    const candidate = entry as Record<string, unknown>;
-    const stat = typeof candidate.value === 'number' ? String(candidate.value) : candidate.value;
-    if (typeof stat !== 'string' || stat.trim().length === 0) {
-      return [];
-    }
-    if (typeof candidate.label !== 'string' || candidate.label.trim().length === 0) {
-      return [];
-    }
-    const base = `${stat}-${candidate.label}`;
-    const occurrence = seen.get(base) ?? 0;
-    seen.set(base, occurrence + 1);
-    return [{ key: `${base}-${occurrence}`, value: stat, label: candidate.label }];
-  });
+  return value
+    .flatMap((entry): Stat[] => {
+      if (typeof entry !== 'object' || entry === null) {
+        return [];
+      }
+      const candidate = entry as Record<string, unknown>;
+      const stat = typeof candidate.value === 'number' ? String(candidate.value) : candidate.value;
+      if (typeof stat !== 'string' || stat.trim().length === 0) {
+        return [];
+      }
+      if (typeof candidate.label !== 'string' || candidate.label.trim().length === 0) {
+        return [];
+      }
+      const base = `${stat}-${candidate.label}`;
+      const occurrence = seen.get(base) ?? 0;
+      seen.set(base, occurrence + 1);
+      return [{ key: `${base}-${occurrence}`, value: stat, label: candidate.label }];
+    })
+    .slice(0, MAX_STATS);
 }
 
 /**
