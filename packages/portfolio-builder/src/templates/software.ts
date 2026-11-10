@@ -22,9 +22,12 @@ export const softwareTemplate: TemplateDefinition = {
       name: 'Intro',
       showInNav: true,
       props: {
+        variant: 'split',
+        eyebrow: 'Replace this with your role, e.g. Backend engineer',
         heading: 'Your name here',
-        subheading: 'Software engineer. I build reliable, well-tested systems.',
-        align: 'center',
+        subheading:
+          'Replace this with a specific positioning line: the niche you work in and the context you work in, e.g. payments infrastructure for early-stage fintech teams.',
+        align: 'left',
         ctas: [
           { label: 'See my work', href: '#projects', variant: 'primary' },
           { label: 'Get in touch', href: '#contact', variant: 'secondary' },

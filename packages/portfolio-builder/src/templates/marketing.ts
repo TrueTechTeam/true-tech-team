@@ -17,13 +17,14 @@ export const marketingTemplate: TemplateDefinition = {
       name: 'Intro',
       showInNav: true,
       props: {
+        variant: 'proof',
         heading: 'Your name here',
-        subheading: 'Marketer building campaigns that move the numbers.',
+        subheading: 'Replace this with the one thing you do for clients and who it is for.',
         align: 'center',
-        ctas: [
-          { label: 'See campaigns', href: '#campaigns', variant: 'primary' },
-          { label: 'Get in touch', href: '#contact', variant: 'secondary' },
+        stats: [
+          { value: 'XX%', label: 'Replace this with your strongest result, and name the client' },
         ],
+        ctas: [{ label: 'See campaigns', href: '#campaigns', variant: 'primary' }],
       },
     },
     {

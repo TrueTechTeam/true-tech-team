@@ -17,9 +17,15 @@ export const projectManagerTemplate: TemplateDefinition = {
       name: 'Intro',
       showInNav: true,
       props: {
+        variant: 'outcome',
         heading: 'Your name here',
-        subheading: 'Project manager delivering complex work on time and in scope.',
+        subheading: 'Replace this with the kind of work you deliver and the result it produced.',
         align: 'center',
+        stats: [
+          { value: 'XX%', label: 'Replace this with a result, e.g. on-time delivery' },
+          { value: '$X.XM', label: 'Replace this with a budget you managed' },
+          { value: 'XX', label: 'Replace this with a team size or number of projects' },
+        ],
         ctas: [
           { label: 'See case studies', href: '#case-studies', variant: 'primary' },
           { label: 'Get in touch', href: '#contact', variant: 'secondary' },

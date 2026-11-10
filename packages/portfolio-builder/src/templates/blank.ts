@@ -16,6 +16,7 @@ export const blankTemplate: TemplateDefinition = {
       type: 'header',
       name: 'Intro',
       showInNav: true,
+      props: { variant: 'plain' },
     },
   ],
 };

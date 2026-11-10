@@ -22,13 +22,11 @@ export const graphicDesignTemplate: TemplateDefinition = {
       name: 'Intro',
       showInNav: true,
       props: {
+        variant: 'imageBleed',
         heading: 'Your name here',
-        subheading: 'Graphic designer working in brand, print and digital.',
-        align: 'center',
-        ctas: [
-          { label: 'View portfolio', href: '#portfolio', variant: 'primary' },
-          { label: 'Work with me', href: '#contact', variant: 'secondary' },
-        ],
+        subheading: 'Replace this with a few words on what you design.',
+        align: 'left',
+        ctas: [{ label: 'View portfolio', href: '#portfolio', variant: 'primary' }],
       },
     },
     {

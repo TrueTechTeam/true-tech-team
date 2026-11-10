@@ -59,7 +59,11 @@ describe('buildPageFromTemplate', () => {
 
   it('uses the type defaults wholesale when a template section omits props', () => {
     const blank = getTemplate('blank')!;
-    const page = buildPageFromTemplate(blank, 'T', 't');
+    const bare = {
+      ...blank,
+      sections: blank.sections.map(({ props: _props, ...rest }) => rest),
+    };
+    const page = buildPageFromTemplate(bare, 'T', 't');
     expect(page.sections[1]?.props).toEqual(SECTION_META.header.defaultProps);
   });
 

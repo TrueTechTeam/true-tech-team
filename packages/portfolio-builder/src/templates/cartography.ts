@@ -22,12 +22,23 @@ export const cartographyTemplate: TemplateDefinition = {
       name: 'Intro',
       showInNav: true,
       props: {
+        variant: 'place',
+        eyebrow: 'Replace this with your location, e.g. City, Country',
         heading: 'Your name here',
-        subheading: 'Cartographer and spatial designer. I make maps that explain things.',
-        align: 'center',
+        subheading:
+          'Replace this with a plain statement of your craft, e.g. a cartographer working in data visualisation.',
+        align: 'left',
         ctas: [
-          { label: 'View maps', href: '#map-gallery', variant: 'primary' },
-          { label: 'Get in touch', href: '#contact', variant: 'secondary' },
+          {
+            label: 'Replace this with the name of a map',
+            href: '#map-gallery',
+            variant: 'primary',
+          },
+          {
+            label: 'Replace this with the name of another map',
+            href: '#map-gallery',
+            variant: 'secondary',
+          },
         ],
       },
     },

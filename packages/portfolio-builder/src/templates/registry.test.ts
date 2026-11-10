@@ -4,6 +4,9 @@ import { SECTION_TYPES } from '../schema/types';
 import { SECTION_META } from '../sections/meta';
 import { getThemePreset } from '../themes/presets';
 import { isSafeHref } from '../sections/safeHref';
+import { HEADER_VARIANTS } from '../sections/header/variants';
+import { validateSectionProps } from '../schema/validate';
+import { buildPageFromTemplate } from './buildPageFromTemplate';
 
 const entries = Object.entries(TEMPLATES);
 
@@ -158,6 +161,67 @@ describe('template registry', () => {
   it('the blank template reproduces the previous hardcoded seed shape', () => {
     const blank = getTemplate('blank');
     expect(blank?.sections.map((section) => section.type)).toEqual(['navbar', 'header']);
-    expect(blank?.sections[1]?.props).toBeUndefined();
+    expect(blank?.sections[1]?.props).toEqual({ variant: 'plain' });
+  });
+
+  // The guard against the six templates collapsing back into identical heroes. Reads the header
+  // as it is actually seeded (type defaults merged under the template's props), so a template
+  // that omits `variant` is judged by the variant it would really render.
+  describe('header variants', () => {
+    const seededHeader = (id: string) => {
+      const page = buildPageFromTemplate(getTemplate(id)!, 'T', 't');
+      return page.sections.find((section) => section.type === 'header')!;
+    };
+
+    it('every template seeds a header whose props validate against the schema', () => {
+      for (const id of TEMPLATE_IDS) {
+        const header = seededHeader(id);
+        expect(
+          validateSectionProps(header.props, SECTION_META.header.propertySchema, id),
+          id
+        ).toEqual([]);
+        const stats = header.props['stats'];
+        expect(Array.isArray(stats) ? stats.length : 0, `${id} stats`).toBeLessThanOrEqual(4);
+      }
+    });
+
+    it('every template seeds a recognised header variant', () => {
+      for (const id of TEMPLATE_IDS) {
+        expect(HEADER_VARIANTS, id).toContain(seededHeader(id).props['variant']);
+      }
+    });
+
+    it('no two templates seed the same header variant', () => {
+      const byVariant = new Map<unknown, string[]>();
+      for (const id of TEMPLATE_IDS) {
+        const variant = seededHeader(id).props['variant'];
+        byVariant.set(variant, [...(byVariant.get(variant) ?? []), id]);
+      }
+      const shared = [...byVariant].filter(([, ids]) => ids.length > 1);
+      expect(shared, 'variants shared between templates').toEqual([]);
+    });
+
+    it('each discipline seeds its matching variant', () => {
+      const expected: Record<string, string> = {
+        software: 'split',
+        'graphic-design': 'imageBleed',
+        'project-manager': 'outcome',
+        cartography: 'place',
+        marketing: 'proof',
+        blank: 'plain',
+      };
+      for (const [id, variant] of Object.entries(expected)) {
+        expect(seededHeader(id).props['variant'], id).toBe(variant);
+      }
+    });
+
+    it('the variants that need supporting props seed them', () => {
+      expect(seededHeader('project-manager').props['stats']).toHaveLength(3);
+      expect(seededHeader('marketing').props['stats']).toHaveLength(1);
+      expect(String(seededHeader('cartography').props['eyebrow'])).not.toBe('');
+      expect(seededHeader('graphic-design').props['ctas']).toHaveLength(1);
+      expect(seededHeader('marketing').props['ctas']).toHaveLength(1);
+      expect(seededHeader('graphic-design').props['backgroundImage']).toBe('');
+    });
   });
 });
