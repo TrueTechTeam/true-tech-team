@@ -9,14 +9,17 @@
   color: var(--theme-text-primary);
 }
 
+/* Same treatment as the section rows, the panel's own surface plus a bottom rule. */
 .entry {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  border: 1px solid var(--theme-border-secondary);
+  padding: var(--spacing-md);
+  border: none;
+  border-bottom: 1px solid var(--theme-border-primary);
+  border-inline-start: var(--spacing-xs) solid transparent;
   border-radius: var(--radius-sm);
-  background: var(--theme-surface-primary);
+  background: inherit;
 }
 
 .entryHeader {
@@ -36,9 +39,11 @@
 }
 
 .entryDragging {
-  border-style: dashed;
+  opacity: 0.5;
+  border-bottom-style: dashed;
 }
 
 .entryOver {
-  border-color: var(--theme-primary);
+  border-bottom-color: var(--theme-primary);
+  background: var(--theme-interactive-hover);
 }

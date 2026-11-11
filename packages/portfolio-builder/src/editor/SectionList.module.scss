@@ -10,18 +10,24 @@
   margin-bottom: var(--spacing-xs);
 }
 
+/* Sits on the panel's own surface (it inherits rather than restating the token) and is separated
+   by a bottom rule. The inline-start edge is a transparent bar of fixed width so the selected
+   accent can colour it without shifting the content. */
 .row {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  padding: var(--spacing-xs);
-  border: 1px solid var(--theme-border-secondary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-bottom: 1px solid var(--theme-border-primary);
+  border-inline-start: var(--spacing-xs) solid transparent;
   border-radius: var(--radius-sm);
-  background: var(--theme-surface-primary);
+  background: inherit;
 }
 
 .rowSelected {
-  border-color: var(--theme-primary);
+  border-inline-start-color: var(--theme-primary);
+  background: var(--theme-interactive-hover);
 }
 
 .rowButton {
@@ -60,9 +66,11 @@
 }
 
 .rowDragging {
-  border-style: dashed;
+  opacity: 0.5;
+  border-bottom-style: dashed;
 }
 
 .rowOver {
-  border-color: var(--theme-primary);
+  border-bottom-color: var(--theme-primary);
+  background: var(--theme-interactive-hover);
 }

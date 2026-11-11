@@ -16,3 +16,30 @@ describe('PropertyPanel.module.scss dense panel', () => {
     expect(panel.source.indexOf('.panelDense {')).toBeGreaterThan(panel.source.indexOf('.panel {'));
   });
 });
+
+// Declaration assertions (jsdom has no layout engine): list entries get the same treatment as the
+// section rows in SectionList, so the two draggable lists read as one family.
+const entry = readScss(resolve(__dirname, './ListField.module.scss'));
+
+describe('ListField.module.scss entries', () => {
+  it('sits on the panel surface with a bottom rule and generous padding', () => {
+    const e = declarations(entry.rule('.entry'));
+    expect(e['background']).toBe('inherit');
+    expect(e['border']).toBe('none');
+    expect(e['border-bottom']).toBe('1px solid var(--theme-border-primary)');
+    expect(e['border-inline-start']).toBe('var(--spacing-xs) solid transparent');
+    expect(e['padding']).toBe('var(--spacing-md)');
+  });
+
+  it('marks drag-over with a primary rule and a tint', () => {
+    const over = declarations(entry.rule('.entryOver'));
+    expect(over['border-bottom-color']).toBe('var(--theme-primary)');
+    expect(over['background']).toBe('var(--theme-interactive-hover)');
+  });
+
+  it('dims the dragged entry and dashes its rule', () => {
+    const drag = declarations(entry.rule('.entryDragging'));
+    expect(drag['opacity']).toBe('0.5');
+    expect(drag['border-bottom-style']).toBe('dashed');
+  });
+});

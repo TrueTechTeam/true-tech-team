@@ -1,7 +1,7 @@
 .editorRoot {
   /* The column template, declared ONCE. The workspace and the header both read it, so the title
      and actions line up with the canvas edges by construction instead of by two copies agreeing. */
-  --editor-columns: 260px minmax(0, 1fr) 320px;
+  --editor-columns: 260px minmax(0, 1fr) 520px;
   --editor-column-gap: var(--spacing-md);
   --editor-inline-inset: var(--spacing-lg);
 

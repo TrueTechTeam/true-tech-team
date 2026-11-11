@@ -63,7 +63,7 @@ describe('PortfolioEditor.module.scss chrome', () => {
     const header = resolveVar(
       declarations(scss.mediaRule(WIDE, '.editorHeader'))['grid-template-columns']
     );
-    expect(workspace).toBe('260px minmax(0, 1fr) 320px');
+    expect(workspace).toBe('260px minmax(0, 1fr) 520px');
     expect(header).toBe(workspace);
     expect(resolveVar(declarations(scss.mediaRule(WIDE, '.editorHeader'))['column-gap'])).toBe(
       resolveVar(declarations(scss.rule('.workspace'))['gap'])
