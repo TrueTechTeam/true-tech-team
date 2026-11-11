@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getAppUsage, recordAppUsage, logAppError } from '@true-tech-team/project-gateway';
+import { getAppUsage, recordUsageFromStream, logAppError } from '@true-tech-team/project-gateway';
 import { toNdjsonResponse } from '@true-tech-team/agent-kit';
 import { createClient } from '../../../../lib/supabase/server';
 import { checkAppAccess, JOB_SEARCH_PERMISSION_SLUG } from '../../../../lib/auth/appAccess';
@@ -149,15 +149,18 @@ export async function POST() {
     .map((row) => row['application_url'] as string | null)
     .filter((url): url is string => Boolean(url));
 
-  // 5. Record usage (fire and forget) right before streaming
-  void recordAppUsage(supabase, user.id, APP_SLUG);
-
-  // 6. Stream the agent response, inserting suggested jobs as they come in
-  const generator = insertJobsOnResult(
-    runJobSearchAgent(profile, excludeUrls, process.env.ANTHROPIC_API_KEY ?? ''),
+  // 5. Stream the agent response, inserting suggested jobs as they come in;
+  // usage is recorded once the stream completes and token counts are known.
+  const generator = recordUsageFromStream(
+    insertJobsOnResult(
+      runJobSearchAgent(profile, excludeUrls, process.env.ANTHROPIC_API_KEY ?? '', user.id),
+      supabase,
+      user.id,
+      excludeUrls
+    ),
     supabase,
     user.id,
-    excludeUrls
+    APP_SLUG
   );
 
   return toNdjsonResponse(generator);

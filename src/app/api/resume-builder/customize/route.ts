@@ -1,6 +1,6 @@
 import { type NextRequest } from 'next/server';
 import { toNdjsonResponse, type AgentStreamEvent } from '@true-tech-team/agent-kit';
-import { getAppUsage, recordAppUsage } from '@true-tech-team/project-gateway';
+import { getAppUsage, recordUsageFromStream } from '@true-tech-team/project-gateway';
 import { createClient } from '../../../../lib/supabase/server';
 import { checkAppAccess, JOB_SEARCH_PERMISSION_SLUG } from '../../../../lib/auth/appAccess';
 import {
@@ -91,10 +91,10 @@ export async function POST(request: NextRequest) {
     return new Response('Job not found', { status: 404 });
   }
 
-  // 5. Record usage and stream the agent response, persisting the tailored
-  // result as a new resume document once it lands.
-  void recordAppUsage(supabase, user.id, USAGE_SLUG);
-
+  // 5. Stream the agent response, persisting the tailored result as a new
+  // resume document once it lands; usage is recorded once the stream
+  // completes.
+  //
   // Reassigned to plain consts so the narrowed (non-null) types survive
   // capture inside the withPersistence closure below.
   const userId = user.id;
@@ -103,12 +103,18 @@ export async function POST(request: NextRequest) {
 
   const targetJobDescription = composeTargetJobDescription(job.title, job.company, job.description);
 
-  const generator = runResumeFillAgent(
-    {
-      existingDraft: sourceDoc.data as ResumeData,
-      targetJobDescription,
-    },
-    process.env.ANTHROPIC_API_KEY ?? ''
+  const generator = recordUsageFromStream(
+    runResumeFillAgent(
+      {
+        existingDraft: sourceDoc.data as ResumeData,
+        targetJobDescription,
+      },
+      process.env.ANTHROPIC_API_KEY ?? '',
+      userId
+    ),
+    supabase,
+    userId,
+    USAGE_SLUG
   );
 
   async function* withPersistence(): AsyncGenerator<AgentStreamEvent<ResumeDocument>> {

@@ -1,7 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { getAppUsage, type UsageStatus } from '@true-tech-team/project-gateway';
+import {
+  getAppUsage,
+  getUsageHistory,
+  type UsageStatus,
+  type UserUsageHistory,
+} from '@true-tech-team/project-gateway';
 import { createClient } from '../../../lib/supabase/client';
 import AdminUserRow from './AdminUserRow';
 import styles from './admin.module.scss';
@@ -34,6 +39,7 @@ export default function AdminPanel({ currentUserId }: Props) {
   const [adminIds, setAdminIds] = useState<Set<string>>(new Set());
   const [appAccessMap, setAppAccessMap] = useState<Record<string, Set<string>>>({});
   const [usageMap, setUsageMap] = useState<Record<string, UsageStatus[]>>({});
+  const [usageHistoryMap, setUsageHistoryMap] = useState<Record<string, UserUsageHistory>>({});
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -79,6 +85,10 @@ export default function AdminPanel({ currentUserId }: Props) {
       })
     );
     setUsageMap(usage);
+
+    const history = await getUsageHistory(supabase);
+    setUsageHistoryMap(history);
+
     setLoading(false);
   }, []);
 
@@ -133,6 +143,7 @@ export default function AdminPanel({ currentUserId }: Props) {
             isAdmin={adminIds.has(u.id)}
             grantedSlugs={appAccessMap[u.id] ?? new Set<string>()}
             usage={usageMap[u.id] ?? []}
+            usageHistory={usageHistoryMap[u.id]}
             onToggleAdmin={() => toggleAdmin(u.id)}
             onSaveAppAccess={(slugs) => saveAppAccess(u.id, slugs)}
           />

@@ -202,9 +202,10 @@ export function buildCritiqueSystemPrompt(
 // turn with stop_reason 'end_turn'). agent-kit's runAgentLoop handles that
 // case fine with an empty tools/toolExecutors set.
 
-export function runResumeFillAgent(opts: BuildFillPromptOptions, apiKey: string) {
+export function runResumeFillAgent(opts: BuildFillPromptOptions, apiKey: string, userId: string) {
   return runAgentLoop<ResumeData>({
     apiKey,
+    userId,
     model: 'claude-opus-4-5',
     systemPrompt: buildFillSystemPrompt(opts),
     tools: [],
@@ -218,10 +219,12 @@ export function runResumeFillAgent(opts: BuildFillPromptOptions, apiKey: string)
 export function runResumeCritiqueAgent(
   resumeData: ResumeData,
   targetJobDescription: string | undefined,
-  apiKey: string
+  apiKey: string,
+  userId: string
 ) {
   return runAgentLoop<ResumeCritique>({
     apiKey,
+    userId,
     model: 'claude-opus-4-5',
     systemPrompt: buildCritiqueSystemPrompt(resumeData, targetJobDescription),
     tools: [],
