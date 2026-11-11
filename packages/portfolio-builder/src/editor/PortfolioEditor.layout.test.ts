@@ -57,17 +57,29 @@ describe('PortfolioEditor.module.scss chrome', () => {
 
   it('declares the column template exactly once, and the header and workspace resolve to it', () => {
     expect(scss.source.match(/grid-template-columns:[^;]*\d+px/g)).toBeNull();
-    expect(scss.source.match(/--editor-columns:/g)).toHaveLength(1);
+    // One base declaration plus a single override inside the large-viewport media block.
+    expect(scss.source.match(/--editor-columns:/g)).toHaveLength(2);
 
     const workspace = resolveVar(declarations(scss.rule('.workspace'))['grid-template-columns']);
     const header = resolveVar(
       declarations(scss.mediaRule(WIDE, '.editorHeader'))['grid-template-columns']
     );
-    expect(workspace).toBe('260px minmax(0, 1fr) 520px');
+    expect(workspace).toBe('260px minmax(0, 1fr) 320px');
     expect(header).toBe(workspace);
     expect(resolveVar(declarations(scss.mediaRule(WIDE, '.editorHeader'))['column-gap'])).toBe(
       resolveVar(declarations(scss.rule('.workspace'))['gap'])
     );
+  });
+
+  it('widens only the third column, to 520px, from 1400px up', () => {
+    const base = declarations(scss.rule('.editorRoot').replace(/\/\*[\s\S]*?\*\//g, ''))[
+      '--editor-columns'
+    ];
+    const wide = declarations(scss.mediaRule('(width >= 1400px)', '.editorRoot'))[
+      '--editor-columns'
+    ];
+    expect(base).toBe('260px minmax(0, 1fr) 320px');
+    expect(wide).toBe('260px minmax(0, 1fr) 520px');
   });
 
   it('puts the title/actions wrapper in the canvas column', () => {

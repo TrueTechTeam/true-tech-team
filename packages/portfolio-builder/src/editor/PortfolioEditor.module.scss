@@ -1,7 +1,7 @@
 .editorRoot {
   /* The column template, declared ONCE. The workspace and the header both read it, so the title
      and actions line up with the canvas edges by construction instead of by two copies agreeing. */
-  --editor-columns: 260px minmax(0, 1fr) 520px;
+  --editor-columns: 260px minmax(0, 1fr) 320px;
   --editor-column-gap: var(--spacing-md);
   --editor-inline-inset: var(--spacing-lg);
 
@@ -74,6 +74,15 @@
   align-items: center;
   gap: var(--spacing-sm);
   flex-wrap: wrap;
+}
+
+/* The properties column widens on large viewports only. Overriding the custom property here keeps
+   the template declared in one place, and keeps the canvas usable just above the three-column
+   breakpoint. */
+@media (width >= 1400px) {
+  .editorRoot {
+    --editor-columns: 260px minmax(0, 1fr) 520px;
+  }
 }
 
 /* One responsive layout, no JS breakpoint branching: three columns on wide screens,
