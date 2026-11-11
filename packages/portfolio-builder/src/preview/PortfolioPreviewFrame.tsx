@@ -17,7 +17,7 @@ export interface PortfolioPreviewFrameProps {
 
 export function PortfolioPreviewFrame({
   page,
-  previewPath = '/portfolio-builder/preview',
+  previewPath = '/portfolio-preview',
   className,
   style,
 }: PortfolioPreviewFrameProps) {

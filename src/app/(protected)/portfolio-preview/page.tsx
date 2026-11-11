@@ -1,5 +1,5 @@
 import { PortfolioPreviewReceiver } from '@true-tech-team/portfolio-builder';
 
-export default function PortfolioBuilderPreviewPage() {
+export default function PortfolioPreviewPage() {
   return <PortfolioPreviewReceiver />;
 }

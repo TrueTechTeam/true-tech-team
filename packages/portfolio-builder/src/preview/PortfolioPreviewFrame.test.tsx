@@ -59,10 +59,10 @@ describe('PortfolioPreviewFrame', () => {
     expect(iframe.getAttribute('src')).toBe('/custom-preview');
   });
 
-  it('defaults previewPath to /portfolio-builder/preview', () => {
+  it('defaults previewPath to /portfolio-preview', () => {
     render(<PortfolioPreviewFrame page={makePage()} />);
     const iframe = screen.getByTitle('Portfolio preview') as HTMLIFrameElement;
-    expect(iframe.getAttribute('src')).toBe('/portfolio-builder/preview');
+    expect(iframe.getAttribute('src')).toBe('/portfolio-preview');
   });
 
   it('does not post an update before any ready message is received', () => {
