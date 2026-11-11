@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { Button, IconButton } from '@true-tech-team/react-components';
+import { ReorderableList } from '../editor/ReorderableList';
 import type { PropertyField, PropertySchema } from './types';
 import { PropertyPanel } from './PropertyPanel';
 import styles from './ListField.module.scss';
@@ -46,15 +47,30 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
   const entries = readEntries(value);
 
   // The sub-forms below close over the entry OBJECT, not its index, because an async edit (an
-  // ImageField upload) can resolve after the user has reordered. `handleMove` splices the same
-  // object references, so identity survives a reorder while an index does not. The ref keeps the
-  // lookup against the CURRENT array rather than the one captured at render time.
+  // ImageField upload) can resolve after the user has reordered. A reorder moves the same object
+  // references, so identity survives it while an index does not. The ref keeps the lookup against
+  // the CURRENT array rather than the one captured at render time.
   const entriesRef = useRef(entries);
   entriesRef.current = entries;
 
   // Maps an entry object to the object that replaced it after an edit. A WeakMap so replaced
   // entries garbage-collect naturally and there is nothing to prune.
   const superseded = useRef(new WeakMap<object, Record<string, unknown>>());
+
+  // Stored entries carry no id, but a reorderable row needs one that survives both a reorder and an
+  // edit (an edit replaces the entry object). Ids live beside the data, keyed by object identity,
+  // and an edit hands its id on to the replacement. Two entries with identical content still get
+  // different ids, so the right one moves.
+  const entryIds = useRef(new WeakMap<object, string>());
+  const nextEntryId = useRef(0);
+  function entryId(entry: Record<string, unknown>): string {
+    let id = entryIds.current.get(entry);
+    if (id === undefined) {
+      id = `entry-${nextEntryId.current++}`;
+      entryIds.current.set(entry, id);
+    }
+    return id;
+  }
 
   const itemSchema = field.itemSchema;
   if (!itemSchema) {
@@ -96,6 +112,7 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
       replacement = { ...target, ...patch };
     }
     superseded.current.set(target, replacement);
+    entryIds.current.set(replacement, entryId(target));
     onChange(current.map((candidate, i) => (i === index ? replacement : candidate)));
   }
 
@@ -107,71 +124,54 @@ export function ListField({ field, value, onChange, supabase, userId }: ListFiel
     onChange(entries.filter((_entry, i) => i !== index));
   }
 
-  function handleMove(index: number, delta: -1 | 1) {
-    const target = index + delta;
-    if (target < 0 || target >= entries.length) {
-      return;
-    }
-    const next = [...entries];
-    const moved = next[index];
-    if (!moved) {
-      return;
-    }
-    next.splice(index, 1);
-    next.splice(target, 0, moved);
-    onChange(next);
-  }
-
   return (
     <div className={styles.field}>
       <span className={styles.label}>{field.label}</span>
 
       {entries.length === 0 && <p className={styles.empty}>No {itemLabel.toLowerCase()}s yet.</p>}
 
-      {entries.map((entry, index) => {
-        const title = `${itemLabel} ${index + 1}`;
-        return (
-          // eslint-disable-next-line react/no-array-index-key -- list entries have no stable id in stored data; position IS their identity, and reorder replaces the whole array
-          <div key={index} className={styles.entry}>
-            <div className={styles.entryHeader}>
-              <span className={styles.entryTitle}>{title}</span>
-              <span className={styles.entryControls}>
-                <IconButton
-                  icon="chevron-up"
-                  className={styles.chevron}
-                  aria-label={`Move ${title} up`}
-                  size="sm"
-                  disabled={index === 0}
-                  onClick={() => handleMove(index, -1)}
+      {entries.length > 0 && (
+        <ReorderableList
+          items={entries}
+          label={field.label}
+          getId={entryId}
+          getLabel={(_entry, index) => `${itemLabel} ${index + 1}`}
+          onReorder={(next) => onChange(next)}
+          renderItem={(entry, { handle, index, isDragging, isOver }) => {
+            const title = `${itemLabel} ${index + 1}`;
+            const classes = [
+              styles.entry,
+              isDragging ? styles.entryDragging : '',
+              isOver ? styles.entryOver : '',
+            ]
+              .filter(Boolean)
+              .join(' ');
+            return (
+              <div className={classes}>
+                <div className={styles.entryHeader}>
+                  {handle}
+                  <span className={styles.entryTitle}>{title}</span>
+                  <IconButton
+                    icon="delete"
+                    aria-label={`Remove ${title}`}
+                    size="sm"
+                    onClick={() => handleRemove(index)}
+                  />
+                </div>
+                <PropertyPanel
+                  dense
+                  schema={entrySchema}
+                  values={entry}
+                  onChange={(next) => handleEntryChange(entry, next)}
+                  supabase={supabase}
+                  userId={userId}
+                  idPrefix={`${field.key}-${index}`}
                 />
-                <IconButton
-                  icon="chevron-down"
-                  className={styles.chevron}
-                  aria-label={`Move ${title} down`}
-                  size="sm"
-                  disabled={index === entries.length - 1}
-                  onClick={() => handleMove(index, 1)}
-                />
-                <IconButton
-                  icon="delete"
-                  aria-label={`Remove ${title}`}
-                  size="sm"
-                  onClick={() => handleRemove(index)}
-                />
-              </span>
-            </div>
-            <PropertyPanel
-              dense
-              schema={entrySchema}
-              values={entry}
-              onChange={(next) => handleEntryChange(entry, next)}
-              supabase={supabase}
-              userId={userId}
-              idPrefix={`${field.key}-${index}`}
-            />
-          </div>
-        );
-      })}
+              </div>
+            );
+          }}
+        />
+      )}
 
       {canAdd && (
         <Button type="button" variant="ghost" onClick={handleAdd}>

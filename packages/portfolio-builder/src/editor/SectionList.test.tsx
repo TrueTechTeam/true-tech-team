@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SectionList } from './SectionList';
 import type { PageSection } from '../schema/types';
 
@@ -32,19 +33,6 @@ describe('SectionList', () => {
     expect(button.querySelector('[data-testid="icon-plus"]')).not.toBeNull();
   });
 
-  it('marks every chevron with the local class that neutralises the library disabled fill', () => {
-    renderList([makeSection({ id: 'a', name: 'Home' }), makeSection({ id: 'b', name: 'Intro' })]);
-    const up = screen.getByRole('button', { name: 'Move Home up (section 1)' });
-    const down = screen.getByRole('button', { name: 'Move Intro down (section 2)' });
-    expect(up).toBeDisabled();
-    expect(up.className).toMatch(/chevron/);
-    expect(down).toBeDisabled();
-    expect(down.className).toMatch(/chevron/);
-    expect(screen.getByRole('button', { name: 'Move Home down (section 1)' }).className).toMatch(
-      /chevron/
-    );
-  });
-
   it('renders a row per section showing its name and type label', () => {
     renderList([
       makeSection({ id: 'a', type: 'navbar', name: 'Home' }),
@@ -71,21 +59,72 @@ describe('SectionList', () => {
     expect(screen.getByRole('button', { name: '2. Work' })).toHaveAttribute('aria-current', 'true');
   });
 
-  it('moves a section up and down', () => {
+  it('has no up/down chevron buttons: reordering is by handle', () => {
+    renderList([makeSection({ id: 'a', name: 'Home' }), makeSection({ id: 'b', name: 'Intro' })]);
+    expect(screen.queryByRole('button', { name: /^Move / })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /^Reorder / })).toHaveLength(2);
+  });
+
+  it('names each handle by section and position', () => {
+    renderList([makeSection({ id: 'a', name: 'Home' }), makeSection({ id: 'b', name: 'Intro' })]);
+    expect(
+      screen.getByRole('button', { name: 'Reorder Home, position 1 of 2' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Reorder Intro, position 2 of 2' })
+    ).toBeInTheDocument();
+  });
+
+  // Keyboard parity: this is the replacement for the chevrons, so drive it with real key presses.
+  it('moves a section up from the keyboard: pick up, ArrowUp', async () => {
+    const user = userEvent.setup();
     const { onMove } = renderList([
       makeSection({ id: 'a', name: 'Home' }),
       makeSection({ id: 'b', name: 'Intro' }),
     ]);
-    fireEvent.click(screen.getByRole('button', { name: 'Move Intro up (section 2)' }));
+    screen.getByRole('button', { name: 'Reorder Intro, position 2 of 2' }).focus();
+    await user.keyboard(' {ArrowUp}');
+    expect(onMove).toHaveBeenCalledTimes(1);
     expect(onMove).toHaveBeenCalledWith('b', -1);
-    fireEvent.click(screen.getByRole('button', { name: 'Move Home down (section 1)' }));
+  });
+
+  it('moves a section down from the keyboard: pick up, ArrowDown', async () => {
+    const user = userEvent.setup();
+    const { onMove } = renderList([
+      makeSection({ id: 'a', name: 'Home' }),
+      makeSection({ id: 'b', name: 'Intro' }),
+    ]);
+    screen.getByRole('button', { name: 'Reorder Home, position 1 of 2' }).focus();
+    await user.keyboard('{Enter}{ArrowDown}');
     expect(onMove).toHaveBeenCalledWith('a', 1);
   });
 
-  it('disables move-up on the first row and move-down on the last', () => {
-    renderList([makeSection({ id: 'a', name: 'Home' }), makeSection({ id: 'b', name: 'Intro' })]);
-    expect(screen.getByRole('button', { name: 'Move Home up (section 1)' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Move Intro down (section 2)' })).toBeDisabled();
+  it('does not move a section that has not been picked up', async () => {
+    const user = userEvent.setup();
+    const { onMove } = renderList([
+      makeSection({ id: 'a', name: 'Home' }),
+      makeSection({ id: 'b', name: 'Intro' }),
+    ]);
+    screen.getByRole('button', { name: 'Reorder Intro, position 2 of 2' }).focus();
+    await user.keyboard('{ArrowUp}');
+    expect(onMove).not.toHaveBeenCalled();
+  });
+
+  it('applies a multi-place pointer drag as that many one-place moves', () => {
+    const { onMove } = renderList([
+      makeSection({ id: 'a', name: 'Home' }),
+      makeSection({ id: 'b', name: 'Intro' }),
+      makeSection({ id: 'c', name: 'Work' }),
+    ]);
+    const handle = screen.getByRole('button', { name: 'Reorder Home, position 1 of 3' });
+    const rows = document.querySelectorAll('[data-sortable-id]');
+    fireEvent.dragStart(handle);
+    fireEvent.dragEnter(rows[2] as Element);
+    fireEvent.dragEnd(handle);
+    expect(onMove.mock.calls).toEqual([
+      ['a', 1],
+      ['a', 1],
+    ]);
   });
 
   it('confirms before removing, and only then reports the removal', () => {
@@ -117,14 +156,16 @@ describe('SectionList', () => {
   });
 
   // Review Focus 5
-  it('keeps every control unambiguous when two sections share a name', () => {
+  it('keeps every control unambiguous when two sections share a name', async () => {
+    const user = userEvent.setup();
     const { onMove } = renderList([
       makeSection({ id: 'a', name: 'Gallery' }),
       makeSection({ id: 'b', name: 'Gallery' }),
     ]);
     expect(screen.getByRole('button', { name: '1. Gallery' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '2. Gallery' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Move Gallery up (section 2)' }));
+    screen.getByRole('button', { name: 'Reorder Gallery, position 2 of 2' }).focus();
+    await user.keyboard(' {ArrowUp}');
     expect(onMove).toHaveBeenCalledWith('b', -1);
   });
 

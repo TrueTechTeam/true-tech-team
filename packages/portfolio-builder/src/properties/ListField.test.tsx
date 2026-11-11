@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { ListField } from './ListField';
 import * as assets from '../assets/upload';
@@ -83,28 +85,32 @@ describe('ListField', () => {
     expect(onChange).toHaveBeenCalledWith([{ label: 'Two' }]);
   });
 
-  it('moves an entry up', () => {
+  it('has no up/down chevron buttons: reordering is by handle', () => {
+    renderField(ctasField, [{ label: 'One' }, { label: 'Two' }]);
+    expect(screen.queryByRole('button', { name: /^Move / })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Reorder Button 1, position 1 of 2' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Reorder Button 2, position 2 of 2' })
+    ).toBeInTheDocument();
+  });
+
+  it('moves an entry up from the keyboard, passing the whole reordered array', async () => {
+    const user = userEvent.setup();
     const { onChange } = renderField(ctasField, [{ label: 'One' }, { label: 'Two' }]);
-    fireEvent.click(screen.getByRole('button', { name: 'Move Button 2 up' }));
+    screen.getByRole('button', { name: 'Reorder Button 2, position 2 of 2' }).focus();
+    await user.keyboard(' {ArrowUp}');
+    expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith([{ label: 'Two' }, { label: 'One' }]);
   });
 
-  it('moves an entry down', () => {
+  it('moves an entry down from the keyboard', async () => {
+    const user = userEvent.setup();
     const { onChange } = renderField(ctasField, [{ label: 'One' }, { label: 'Two' }]);
-    fireEvent.click(screen.getByRole('button', { name: 'Move Button 1 down' }));
+    screen.getByRole('button', { name: 'Reorder Button 1, position 1 of 2' }).focus();
+    await user.keyboard('{Enter}{ArrowDown}');
     expect(onChange).toHaveBeenCalledWith([{ label: 'Two' }, { label: 'One' }]);
-  });
-
-  it('disables move-up on the first entry and move-down on the last', () => {
-    renderField(ctasField, [{ label: 'One' }, { label: 'Two' }]);
-    expect(screen.getByRole('button', { name: 'Move Button 1 up' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Move Button 2 down' })).toBeDisabled();
-  });
-
-  it('marks the entry chevrons with the local class that neutralises the library disabled fill', () => {
-    renderField(ctasField, [{ label: 'One' }, { label: 'Two' }]);
-    expect(screen.getByRole('button', { name: 'Move Button 1 up' }).className).toMatch(/chevron/);
-    expect(screen.getByRole('button', { name: 'Move Button 2 down' }).className).toMatch(/chevron/);
   });
 
   // Wiring only: that `.panelDense` removes the padding is asserted in ListField.layout.test.ts.
@@ -132,6 +138,7 @@ describe('ListField', () => {
   ])('reads %s as an empty list instead of throwing', (_label, value) => {
     expect(() => renderField(ctasField, value)).not.toThrow();
     expect(screen.queryByText('Button 1')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Reorder / })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Add Button' })).toBeInTheDocument();
   });
 
@@ -256,7 +263,9 @@ describe('ListField', () => {
       const finishUpload = startUpload(0);
 
       // ... the user moves entry 1 down before it resolves ...
-      fireEvent.click(screen.getByRole('button', { name: 'Move Item 1 down' }));
+      const user = userEvent.setup();
+      screen.getByRole('button', { name: 'Reorder Item 1, position 1 of 2' }).focus();
+      await user.keyboard(' {ArrowDown}');
       expect(onChange).toHaveBeenCalledWith([second, first]);
       onChange.mockClear();
       rerender([second, first]);
@@ -330,5 +339,110 @@ describe('ListField', () => {
         'the URL must land on the same entry as the alt text typed meanwhile'
       ).toEqual([{ image: 'https://cdn.example.com/uploaded.png', alt: 'A lighthouse' }, second]);
     });
+  });
+});
+
+// A real stateful parent: onChange feeds back into `value`, as the editor does. These drive the
+// reorder by keyboard and assert what the user would see.
+describe('ListField reordering (stateful parent)', () => {
+  function Harness({
+    initial,
+    onChange,
+  }: {
+    initial: Array<Record<string, unknown>>;
+    onChange?: (next: Array<Record<string, unknown>>) => void;
+  }) {
+    const [value, setValue] = useState<unknown>(initial);
+    return (
+      <ListField
+        field={{ ...ctasField, maxItems: undefined }}
+        value={value}
+        onChange={(next) => {
+          onChange?.(next);
+          setValue(next);
+        }}
+        supabase={fakeSupabase}
+        userId="user-1"
+      />
+    );
+  }
+
+  function labels(): string[] {
+    return screen.getAllByLabelText(/^Label/).map((el) => (el as HTMLInputElement).value);
+  }
+
+  it('moves an entry and keeps focus on its handle', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={[{ label: 'One' }, { label: 'Two' }, { label: 'Three' }]} />);
+    screen.getByRole('button', { name: 'Reorder Button 1, position 1 of 3' }).focus();
+    await user.keyboard(' {ArrowDown}{ArrowDown}');
+    expect(labels()).toEqual(['Two', 'Three', 'One']);
+    expect(screen.getByRole('button', { name: 'Reorder Button 3, position 3 of 3' })).toHaveFocus();
+  });
+
+  it('Escape restores the original order', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={[{ label: 'One' }, { label: 'Two' }, { label: 'Three' }]} />);
+    screen.getByRole('button', { name: 'Reorder Button 1, position 1 of 3' }).focus();
+    await user.keyboard(' {ArrowDown}{ArrowDown}');
+    expect(labels()).toEqual(['Two', 'Three', 'One']);
+    await user.keyboard('{Escape}');
+    expect(labels()).toEqual(['One', 'Two', 'Three']);
+  });
+
+  // Review Focus 4: identical entries, so the only thing separating them is their identity.
+  it('moves the right entry when two entries are identical', async () => {
+    const user = userEvent.setup();
+    const first = { label: 'Same', href: '/x' };
+    const second = { label: 'Same', href: '/x' };
+    const onChange = vi.fn<(next: Array<Record<string, unknown>>) => void>();
+    render(<Harness initial={[first, second]} onChange={onChange} />);
+    screen.getByRole('button', { name: 'Reorder Button 2, position 2 of 2' }).focus();
+    await user.keyboard(' {ArrowUp}');
+    const next = onChange.mock.calls[0]?.[0] as Array<Record<string, unknown>>;
+    expect(next[0], 'the entry that was second must now be first').toBe(second);
+    expect(next[1]).toBe(first);
+  });
+
+  it('keeps an entry mounted, and its input focused, while it is edited', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={[{ label: '' }, { label: 'Two' }]} />);
+    const input = screen.getAllByLabelText(/^Label/)[0] as HTMLInputElement;
+    await user.click(input);
+    await user.keyboard('abc');
+    // Each keystroke replaces the entry object; if that also changed the row's identity the row
+    // would remount and the input would lose focus after one character.
+    expect(input.value).toBe('abc');
+    expect(input).toHaveFocus();
+    expect(input).toBe(screen.getAllByLabelText(/^Label/)[0]);
+  });
+
+  it('an entry edited and then moved keeps its content and moves once', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={[{ label: 'One' }, { label: 'Two' }]} />);
+    await user.type(screen.getAllByLabelText(/^Label/)[0] as HTMLElement, '!');
+    screen.getByRole('button', { name: 'Reorder Button 1, position 1 of 2' }).focus();
+    await user.keyboard(' {ArrowDown}');
+    expect(labels()).toEqual(['Two', 'One!']);
+  });
+
+  it('builds a reorderable list out of a non-array value via Add', async () => {
+    const user = userEvent.setup();
+    function FromJunk() {
+      const [value, setValue] = useState<unknown>('not a list');
+      return (
+        <ListField
+          field={{ ...ctasField, maxItems: undefined }}
+          value={value}
+          onChange={setValue}
+          supabase={fakeSupabase}
+          userId="user-1"
+        />
+      );
+    }
+    render(<FromJunk />);
+    await user.click(screen.getByRole('button', { name: 'Add Button' }));
+    await user.click(screen.getByRole('button', { name: 'Add Button' }));
+    expect(screen.getAllByRole('button', { name: /^Reorder / })).toHaveLength(2);
   });
 });

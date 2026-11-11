@@ -139,11 +139,14 @@ describe('PortfolioEditor — editing', () => {
     expect(screen.getByRole('button', { name: '2. About' })).toBeInTheDocument();
   });
 
-  it('reorders a section from the sidebar', async () => {
+  it('reorders a section from the sidebar by keyboard, keeping focus on its handle', async () => {
+    const user = userEvent.setup();
     await ready();
-    fireEvent.click(screen.getByRole('button', { name: 'Move Intro up (section 2)' }));
+    screen.getByRole('button', { name: 'Reorder Intro, position 2 of 2' }).focus();
+    await user.keyboard(' {ArrowUp}');
     expect(screen.getByRole('button', { name: '1. Intro' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '2. Home' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Reorder Intro, position 1 of 2' })).toHaveFocus();
   });
 
   it('adds a section from the catalog', async () => {
