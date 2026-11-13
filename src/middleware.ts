@@ -8,6 +8,7 @@ const PROTECTED_PATHS = [
   '/job-search',
   '/resume-builder',
   '/resume-print',
+  '/portfolio-builder',
 ];
 const AUTH_PATHS = ['/login', '/signup'];
 

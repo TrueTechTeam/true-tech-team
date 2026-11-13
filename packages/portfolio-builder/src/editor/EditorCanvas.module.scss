@@ -1,0 +1,28 @@
+.canvas {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-y: auto;
+  background: var(--theme-background-primary);
+  color: var(--theme-text-primary);
+}
+
+.section {
+  position: relative;
+  cursor: pointer;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+}
+
+.section:hover {
+  outline-color: var(--theme-border-secondary);
+}
+
+.section[data-selected='true'] {
+  outline-color: var(--theme-primary);
+}
+
+.empty {
+  padding: var(--spacing-xxl) var(--spacing-md);
+  text-align: center;
+  color: var(--theme-text-secondary);
+}

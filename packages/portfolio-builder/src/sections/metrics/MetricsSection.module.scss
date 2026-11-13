@@ -1,0 +1,35 @@
+.metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  width: 100%;
+}
+
+.heading {
+  margin: 0;
+  color: var(--theme-text-primary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--spacing-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.label {
+  color: var(--theme-text-secondary);
+}
+
+.empty {
+  color: var(--theme-text-secondary);
+}

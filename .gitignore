@@ -84,3 +84,6 @@ blob-report/
 
 # Local planning docs (specs/plans) - not pushed to the remote
 docs/
+
+# Playwright storage state - contains a real session token
+e2e/.auth/

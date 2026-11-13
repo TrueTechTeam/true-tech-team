@@ -1,0 +1,33 @@
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.groupHeading {
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  border-bottom: 1px solid var(--theme-border-secondary);
+  padding-bottom: var(--spacing-xs);
+}
+
+.hint {
+  color: var(--theme-text-secondary);
+  font-size: 0.85em;
+}
+
+.error {
+  color: var(--theme-error);
+}
+
+.publicUrl {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}

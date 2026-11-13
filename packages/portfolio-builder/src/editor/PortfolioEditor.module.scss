@@ -1,0 +1,166 @@
+.editorRoot {
+  /* The column template, declared ONCE. The workspace and the header both read it, so the title
+     and actions line up with the canvas edges by construction instead of by two copies agreeing. */
+  --editor-columns: 260px minmax(0, 1fr) 320px;
+  --editor-column-gap: var(--spacing-md);
+  --editor-inline-inset: var(--spacing-lg);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  min-height: 0;
+}
+
+/* Fit the viewport structurally, with no hard-coded offsets. The editor mounts as a direct child
+   of <body>, between the app header and footer, so while it is on screen the body becomes a flex
+   column the height of the viewport: the chrome keeps its natural size, the editor takes whatever
+   is left, and the panes scroll internally. If the app header or footer changes height, the
+   editor simply gets more or less room. Only applies where the panes sit side by side; below the
+   breakpoint the layout stacks and the page scrolls normally. */
+@media (width > 1100px) {
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- CSS Modules :global */
+  :global(body):has(.editorRoot) {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .editorRoot {
+    flex: 1 1 0;
+  }
+}
+
+.editorHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--editor-inline-inset) 0;
+}
+
+/* The single wrapper that sits in the canvas column on wide screens: title at its left edge,
+   actions at its right. */
+.editorHeaderCanvas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* An icon-only link is a pointer target (A11Y-4): --spacing-xxl (48px) clears the 44px touch
+   preference and the 24px floor, as a spacing token rather than a literal. */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
+  min-width: var(--spacing-xxl);
+  min-height: var(--spacing-xxl);
+  color: inherit;
+}
+
+.editorHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.editorHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+/* The properties column widens on large viewports only. Overriding the custom property here keeps
+   the template declared in one place, and keeps the canvas usable just above the three-column
+   breakpoint. */
+@media (width >= 1400px) {
+  .editorRoot {
+    --editor-columns: 260px minmax(0, 1fr) 520px;
+  }
+}
+
+/* One responsive layout, no JS breakpoint branching: three columns on wide screens,
+   stacked below. */
+.workspace {
+  display: grid;
+  grid-template-columns: var(--editor-columns);
+  gap: var(--editor-column-gap);
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 var(--editor-inline-inset) var(--spacing-md);
+}
+
+/* The side panes are chrome floating above the flat canvas: elevation (shadow) separates them,
+   not a border, and the canvas itself stays flat. */
+.sidebar,
+.formPanel {
+  position: relative;
+  overflow-y: auto;
+  min-height: 0;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  background: var(--theme-surface-elevated);
+  box-shadow: var(--theme-shadow-md);
+}
+
+@media (width > 1100px) {
+  .workspace {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  /* Same template and gap as the workspace: the back link takes the sidebar column, the wrapper
+     takes the canvas column. Below this width the workspace is one column, so the header stays the
+     plain flex row above and nothing here applies. */
+  .editorHeader {
+    display: grid;
+    grid-template-columns: var(--editor-columns);
+    column-gap: var(--editor-column-gap);
+  }
+
+  .backLink {
+    grid-column: 1;
+  }
+
+  .editorHeaderCanvas {
+    grid-column: 2;
+  }
+}
+
+@media (width <= 1100px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar,
+  .formPanel {
+    overflow-y: visible;
+  }
+}
+
+.saveStatus {
+  color: var(--theme-success);
+}
+
+.saveStatusError {
+  color: var(--theme-error);
+}
+
+.validationErrors {
+  margin: 0;
+  padding: 0 var(--spacing-lg) 0 var(--spacing-xl);
+  color: var(--theme-error);
+}
+
+.stateMessage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl);
+  text-align: center;
+}

@@ -40,6 +40,15 @@ export const APPS: AppDefinition[] = [
     href: '/job-search',
   },
   {
+    slug: 'portfolio-builder',
+    label: 'Portfolio Builder',
+    description:
+      'Build and publish a personal portfolio site — pick a template, customize the theme and content, and share it with a link.',
+    icon: 'monitor',
+    accent: 'primary',
+    href: '/portfolio-builder',
+  },
+  {
     slug: 'analytics',
     label: 'Analytics',
     description: 'Project analytics and usage metrics.',

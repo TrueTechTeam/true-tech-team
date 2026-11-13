@@ -1,0 +1,25 @@
+.faq {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  width: 100%;
+}
+
+.heading {
+  margin: 0;
+  color: var(--theme-text-primary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.item {
+  min-width: 0;
+}
+
+.empty {
+  color: var(--theme-text-secondary);
+}
