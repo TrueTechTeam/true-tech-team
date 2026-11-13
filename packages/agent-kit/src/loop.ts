@@ -10,6 +10,7 @@ export async function* runAgentLoop<TResult>(
 ): AsyncGenerator<AgentStreamEvent<TResult>> {
   const {
     apiKey,
+    userId,
     model,
     systemPrompt,
     tools,
@@ -19,18 +20,36 @@ export async function* runAgentLoop<TResult>(
     maxTokens = DEFAULT_MAX_TOKENS,
     resultFenceTag,
     parseResult,
+    timeoutMs,
+    maxTotalDurationMs,
   } = options;
 
-  const client = new Anthropic({ apiKey });
+  const client = new Anthropic({ apiKey, timeout: timeoutMs });
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: initialMessage }];
+  const startedAt = Date.now();
+  let totalInputTokens = 0;
+  let totalOutputTokens = 0;
 
   for (let i = 0; i < maxIterations; i++) {
+    if (maxTotalDurationMs !== undefined && Date.now() - startedAt > maxTotalDurationMs) {
+      console.error(
+        `[agent-kit] runAgentLoop exceeded maxTotalDurationMs (${maxTotalDurationMs}ms) after ${i} iteration(s)`
+      );
+      yield {
+        type: 'error',
+        message: 'The search took too long and was stopped. Please try again.',
+      };
+      yield { type: 'done' };
+      return;
+    }
+
     const stream = client.messages.stream({
       model,
       max_tokens: maxTokens,
       system: systemPrompt,
       tools,
       messages,
+      ...(userId ? { metadata: { user_id: userId } } : {}),
     });
 
     let assistantText = '';
@@ -43,6 +62,8 @@ export async function* runAgentLoop<TResult>(
     }
 
     const finalMessage = await stream.finalMessage();
+    totalInputTokens += finalMessage.usage.input_tokens;
+    totalOutputTokens += finalMessage.usage.output_tokens;
     messages.push({ role: 'assistant', content: finalMessage.content });
 
     if (finalMessage.stop_reason === 'end_turn') {
@@ -55,6 +76,12 @@ export async function* runAgentLoop<TResult>(
           message: err instanceof Error ? err.message : 'Could not parse the agent result.',
         };
       }
+      yield {
+        type: 'usage',
+        model,
+        inputTokens: totalInputTokens,
+        outputTokens: totalOutputTokens,
+      };
       yield { type: 'done' };
       return;
     }
@@ -64,6 +91,12 @@ export async function* runAgentLoop<TResult>(
     );
 
     if (toolUses.length === 0) {
+      yield {
+        type: 'usage',
+        model,
+        inputTokens: totalInputTokens,
+        outputTokens: totalOutputTokens,
+      };
       yield { type: 'done' };
       return;
     }
@@ -99,6 +132,7 @@ export async function* runAgentLoop<TResult>(
     messages.push({ role: 'user', content: toolResults });
   }
 
+  yield { type: 'usage', model, inputTokens: totalInputTokens, outputTokens: totalOutputTokens };
   yield { type: 'error', message: 'Agent exceeded maximum iterations without producing a result.' };
   yield { type: 'done' };
 }

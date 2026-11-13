@@ -14,6 +14,7 @@ export default tseslint.config(
       'node_modules/**',
       'e2e/playwright-report/**',
       '.claude/**',
+      '.worktrees/**',
       '**/*.md',
     ],
   },

@@ -20,6 +20,11 @@ interface JobSearchSearchContextValue {
   // Bumped once a search finishes, so the results table knows to refetch.
   doneVersion: number;
   runSearch: () => void;
+  // Non-null only right after a search ends in status 'error' — consumers
+  // (JobSearchHeader) toast it once. There was previously no way for a
+  // failed search to surface anything to the user at all: isSearching just
+  // flipped back to false with no jobs and no explanation.
+  searchErrorMessage: string | null;
   // undefined until the profile fetch resolves — never assume "configured"
   // just because we haven't heard back yet.
   profileConfigured: boolean | undefined;
@@ -46,7 +51,7 @@ export function JobSearchSearchProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<JobSearchProfile | null | undefined>(undefined);
   const [profileRefreshKey, setProfileRefreshKey] = useState(0);
 
-  const { status, run } = useAgentStream<JobsAgentResult>({
+  const { status, run, errorMessage } = useAgentStream<JobsAgentResult>({
     onDone: () => {
       setUsageRefreshKey((k) => k + 1);
       setDoneVersion((v) => v + 1);
@@ -91,10 +96,19 @@ export function JobSearchSearchProvider({ children }: { children: ReactNode }) {
       usageRefreshKey,
       doneVersion,
       runSearch,
+      searchErrorMessage: status === 'error' ? errorMessage : null,
       profileConfigured,
       refreshProfile,
     }),
-    [status, usageRefreshKey, doneVersion, runSearch, profileConfigured, refreshProfile]
+    [
+      status,
+      usageRefreshKey,
+      doneVersion,
+      runSearch,
+      errorMessage,
+      profileConfigured,
+      refreshProfile,
+    ]
   );
 
   return (

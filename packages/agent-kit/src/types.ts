@@ -5,6 +5,7 @@ export type AgentStreamEvent<TResult = unknown> =
   | { type: 'tool_result'; toolName: string; summary: string }
   | { type: 'text'; text: string }
   | { type: 'result'; result: TResult }
+  | { type: 'usage'; model: string; inputTokens: number; outputTokens: number }
   | { type: 'error'; message: string }
   | { type: 'done' };
 
@@ -20,6 +21,7 @@ export interface ToolExecutorEntry {
 
 export interface RunAgentLoopOptions<TResult> {
   apiKey: string;
+  userId?: string;
   model: string;
   systemPrompt: string;
   // Anthropic.ToolUnion covers both custom tools (Tool, with input_schema) and
@@ -33,4 +35,13 @@ export interface RunAgentLoopOptions<TResult> {
   maxTokens?: number; // default 4096
   resultFenceTag: string; // e.g. 'recipe-json' | 'jobs-json' | 'resume-json' | 'critique-json'
   parseResult: (json: unknown) => TResult;
+  // Per-request timeout (ms) passed to the Anthropic client. Left undefined
+  // preserves the SDK's own default (10 minutes, retried up to maxRetries
+  // times) — set explicitly for agents that can run long, open-ended
+  // server-tool loops (e.g. web_search) so a stalled request fails fast
+  // with a clear error instead of hanging far longer than any caller expects.
+  timeoutMs?: number;
+  // Overall wall-clock budget (ms) for the whole loop, checked once per
+  // iteration. Left undefined preserves existing behavior (no cap).
+  maxTotalDurationMs?: number;
 }
