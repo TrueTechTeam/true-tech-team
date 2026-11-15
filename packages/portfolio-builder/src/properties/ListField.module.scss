@@ -1,0 +1,49 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.label {
+  font-weight: 600;
+  color: var(--theme-text-primary);
+}
+
+/* Same treatment as the section rows, the panel's own surface plus a bottom rule. */
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border: none;
+  border-bottom: 1px solid var(--theme-border-primary);
+  border-inline-start: var(--spacing-xs) solid transparent;
+  border-radius: var(--radius-sm);
+  background: inherit;
+}
+
+.entryHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.entryTitle {
+  flex: 1 1 auto;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+}
+
+.empty {
+  color: var(--theme-text-secondary);
+}
+
+.entryDragging {
+  opacity: 0.5;
+  border-bottom-style: dashed;
+}
+
+.entryOver {
+  border-bottom-color: var(--theme-primary);
+  background: var(--theme-interactive-hover);
+}

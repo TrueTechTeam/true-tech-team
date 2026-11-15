@@ -1,0 +1,228 @@
+/* The band: full width, carries the background image. Its content is constrained below, so the
+   image bleeds to the viewport edges while the text keeps the page measure (LAYOUT-1).
+
+   Every colour in this file is a theme custom property, so each variant follows the active style
+   and mode. Text is only ever --theme-text-primary / --theme-text-secondary on the page
+   background (or on the scrim, which is that same background), the pairings the contrast audit in
+   themes/contrast.test.ts already measures for all 40 presets. */
+.band {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-position: center;
+  background-size: cover;
+  flex: 1;
+}
+
+/* Scrim. Text over an arbitrary photo cannot be guaranteed 4.5:1, so any band with a background
+   image gets the page background laid over it at 88% opacity. The text colours are already
+   >= 4.5:1 against that background, and even the worst photo (the opposite extreme from the page
+   background) only moves the blend by the remaining 12%. */
+.hasImage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--theme-background-primary) 88%, transparent);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--content-width-page);
+  margin-inline: auto;
+  padding-inline: var(--spacing-md);
+}
+
+@media (width >= 769px) {
+  .content {
+    padding-inline: var(--spacing-xl);
+  }
+}
+
+.centered .content,
+.outcome .content,
+.proof .content {
+  align-items: center;
+  text-align: center;
+}
+
+.heading {
+  margin: 0;
+  color: var(--theme-text-primary);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.subheading {
+  margin: 0;
+  max-width: var(--content-width-prose);
+  color: var(--theme-text-secondary);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-normal);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--theme-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.cta,
+.ctaSecondary {
+  display: inline-block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--theme-primary);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-weight: var(--font-weight-semibold);
+}
+
+.cta {
+  background: var(--theme-primary);
+  color: var(--theme-text-on-primary);
+}
+
+/* An outline button: the border carries the brand, the label carries the contrast. The label is
+   --theme-text-primary, not --theme-primary: a saturated brand colour on its own light tint
+   measured 2.34:1 (coral on coral-50) and darkening the shade cannot fix it. COLOR-6 permits the
+   low-contrast border. Guarded across all 40 presets by themes/contrast.test.ts. */
+.ctaSecondary {
+  background: transparent;
+  color: var(--theme-text-primary);
+}
+
+/* split: text beside a column of facts. One column on a phone, two from tablet up. */
+.splitGrid {
+  display: grid;
+  gap: var(--spacing-xl);
+  align-items: center;
+}
+
+@media (width >= 769px) {
+  .splitGrid {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+/* The number sits above its label; the markup keeps term-then-description for assistive tech. */
+.stat {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--spacing-xs);
+}
+
+.statValue {
+  margin: 0;
+  color: var(--theme-text-primary);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  color: var(--theme-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin: 0;
+  padding-inline-start: var(--spacing-md);
+  border-inline-start: 4px solid var(--theme-primary);
+}
+
+/* imageBleed: oversized display type, one ask. With no image there is no scrim and nothing to
+   bleed, so the band keeps the page background (text stays on a measured pairing) and gains a
+   brand rule so it still reads as a deliberate hero rather than an empty one. Its height comes
+   from the section shell's meta.minHeight, not from here. */
+.imageBleed {
+  border-block-end: var(--spacing-xs) solid var(--theme-primary);
+}
+
+.imageBleed .heading {
+  font-size: calc(var(--font-size-4xl) * 1.5);
+  line-height: 1;
+}
+
+@media (width >= 769px) {
+  .imageBleed .heading {
+    font-size: calc(var(--font-size-4xl) * 2.5);
+  }
+}
+
+/* outcome: the numbers lead. A grid that wraps rather than a fixed column count. */
+.outcomeStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--spacing-lg);
+  width: 100%;
+  margin: 0;
+  padding-block: var(--spacing-md);
+  border-block: 1px solid var(--theme-border-secondary);
+}
+
+.outcomeStats .stat {
+  align-items: center;
+}
+
+/* place: the craft stated plainly, then named pieces of work as a list of text links. */
+.workList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workLink {
+  display: inline-block;
+  padding-block: var(--spacing-sm);
+  color: var(--theme-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+}
+
+/* proof: a single highlighted stat between the claim and the one ask. */
+.proofStat {
+  margin: 0;
+  padding-block: var(--spacing-sm);
+  border-block-end: 4px solid var(--theme-primary);
+}
+
+.proofStat .stat {
+  align-items: center;
+}
+
+.proofStat .statValue {
+  font-size: calc(var(--font-size-4xl) * 1.5);
+}

@@ -10,6 +10,7 @@ const nextConfig = {
     '@true-tech-team/dashboard-kit',
     '@true-tech-team/recipes',
     '@true-tech-team/job-search',
+    '@true-tech-team/portfolio-builder',
   ],
 };
 

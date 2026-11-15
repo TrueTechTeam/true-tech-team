@@ -1,0 +1,79 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+// Label and mode toggle on one row, wrapping to two when the dialog is narrow. One layout for
+// every width - the wrap is the breakpoint, so there is no JS width branch.
+.labelRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.label {
+  font-weight: 600;
+  color: var(--theme-text-primary);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-xs);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--theme-border-secondary);
+  border-radius: var(--radius-sm);
+  background: var(--theme-surface-primary);
+  color: var(--theme-text-primary);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.cardLabel {
+  align-self: flex-start;
+}
+
+// Check badge: a second, non-colour signal that the card is selected.
+.check {
+  position: absolute;
+  top: var(--spacing-xs);
+  right: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--theme-primary);
+  color: var(--theme-text-on-primary);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.card[aria-pressed='true'] {
+  // A thick ring offset from the card edge reads as a distinct shape, not just a colour change, and
+  // the bold label backs it up in low-contrast themes.
+  border-color: var(--theme-primary);
+  outline: 3px solid var(--theme-primary);
+  outline-offset: 2px;
+  font-weight: 700;
+}
+
+.description {
+  color: var(--theme-text-secondary);
+  font-size: 0.9em;
+  margin: 0;
+  min-height: 2.5em;
+}

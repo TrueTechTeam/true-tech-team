@@ -1,0 +1,26 @@
+.richText,
+.richTextCenter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+  max-width: 70ch;
+}
+
+.richTextCenter {
+  align-items: center;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.heading {
+  margin: 0;
+  color: var(--theme-text-primary);
+}
+
+.paragraph {
+  margin: 0;
+  color: var(--theme-text-secondary);
+  line-height: 1.6;
+  white-space: pre-line;
+}
