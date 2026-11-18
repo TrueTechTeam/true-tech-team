@@ -4,6 +4,7 @@ type Fixture = {
   user: { id: string; email: string | null } | null;
   roles: unknown[];
   perms: { app_slug: string }[];
+  failTable?: string;
 };
 let fixture: Fixture;
 
@@ -13,8 +14,13 @@ function fakeClient() {
     from: (table: string) => ({
       select: () => ({
         eq: async () => ({
-          data: table === 'user_roles' ? fixture.roles : fixture.perms,
-          error: null,
+          data:
+            fixture.failTable === table
+              ? null
+              : table === 'user_roles'
+                ? fixture.roles
+                : fixture.perms,
+          error: fixture.failTable === table ? { message: 'db down' } : null,
         }),
       }),
     }),
@@ -60,5 +66,13 @@ describe('GET /api/recipes/me', () => {
   it('denies AI access to a user with neither', async () => {
     fixture.perms = [{ app_slug: 'job-search' }];
     expect(await (await call()).json()).toMatchObject({ isAdmin: false, aiAccess: false });
+  });
+
+  it('answers 500 instead of claiming no access when a lookup fails', async () => {
+    fixture.perms = [{ app_slug: 'recipe-agent' }];
+    fixture.failTable = 'app_permissions';
+    const res = await call();
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: 'Could not check access' });
   });
 });
