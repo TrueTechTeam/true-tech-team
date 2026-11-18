@@ -14,10 +14,16 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const [{ data: roles }, { data: perms }] = await Promise.all([
-    supabase.from('user_roles').select('role').eq('user_id', user.id),
-    supabase.from('app_permissions').select('app_slug').eq('user_id', user.id),
-  ]);
+  const [{ data: roles, error: rolesError }, { data: perms, error: permsError }] =
+    await Promise.all([
+      supabase.from('user_roles').select('role').eq('user_id', user.id),
+      supabase.from('app_permissions').select('app_slug').eq('user_id', user.id),
+    ]);
+
+  // A failed lookup must not read as "no access": the app would cache that answer.
+  if (rolesError || permsError) {
+    return NextResponse.json({ error: 'Could not check access' }, { status: 500 });
+  }
 
   const isAdmin = (roles ?? []).length > 0;
   const hasGrant = (perms ?? []).some((p: { app_slug: string }) => p.app_slug === APP_SLUG);
