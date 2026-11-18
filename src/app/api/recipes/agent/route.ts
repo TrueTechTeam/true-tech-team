@@ -1,6 +1,6 @@
 import { type NextRequest } from 'next/server';
 import { getAppUsage, recordUsageFromStream } from '@true-tech-team/project-gateway';
-import { createClient } from '../../../../lib/supabase/server';
+import { createClientForRequest } from '../../../../lib/supabase/request';
 import {
   runRecipeAgent,
   scrapePage,
@@ -56,7 +56,7 @@ async function webSearch(query: string, numResults: number): Promise<unknown> {
 
 export async function POST(request: NextRequest) {
   // 1. Auth check
-  const supabase = await createClient();
+  const supabase = await createClientForRequest(request);
   const {
     data: { user },
   } = await supabase.auth.getUser();

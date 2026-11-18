@@ -1,10 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../../../lib/supabase/server';
+import { createClientForRequest } from '../../../../../lib/supabase/request';
 import { mapRecipeRow, type UpdateRecipePayload } from '@true-tech-team/recipes';
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
+  const supabase = await createClientForRequest(request);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -32,7 +32,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
+  const supabase = await createClientForRequest(request);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -90,11 +90,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const supabase = await createClient();
+  const supabase = await createClientForRequest(request);
   const {
     data: { user },
   } = await supabase.auth.getUser();
